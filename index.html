@@ -26,6 +26,13 @@
   --full-height-bleed: calc(var(--one-third-width)*4);
 }
 
+::-webkit-scrollbar { width: 0; display: none; }
+html {
+  -ms-overflow-style: none;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
 .grid { display: grid; }
 .grid--top {
   grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
@@ -58,6 +65,11 @@
 .editor:focus { z-index: 999; }
 textarea { resize: none; }
 
+textarea::placeholder {
+  color: #fff;
+  mix-blend-mode: difference;
+}
+	
 @media print{
   .print-hide { display: none }
 }
@@ -65,10 +77,12 @@ textarea { resize: none; }
 </head>
 <body class="w-100 h-100 ma0">
 
-<div class="grid grid--left">
+<div class="grid">
   <div class="nav buttons bg-hot-pink code f7">
     <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-    onclick="prompt('','https://itty.bitty.site/#/data:text/html;charset=utf-8,'+viewer.srcdoc)">C</button>
+    onclick="window.open('https://itty.bitty.site/#/data:text/html;charset=utf-8,'+viewer.srcdoc+'','_blank')">C</button>
+    <!-- onclick="prompt('','https://itty.bitty.site/#/data:text/html;charset=utf-8,'+viewer.srcdoc)">C</button> -->
+    <!-- window.open('www.yourdomain.com','_blank') -->
 
     <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
     onclick="document.getElementById('viewer').scrollIntoView(true);">V</button>
@@ -162,11 +176,22 @@ if(window.location.hash) {
     updateViewer();
 }
 
+function getSetLayout() {
+  var gridLayout = localStorage.getItem('gridLayout');
+  if (gridLayout) {
+    layout(gridLayout);
+  } else {
+    localStorage.setItem('gridLayout', 'left');
+    getSetLayout();
+  }
+}
 function layout(pos) {
 	var layout = "grid--" + pos;
 	grid.classList.remove("grid--top", "grid--right", "grid--bottom", "grid--left");
     grid.classList.add(layout);
+    localStorage.setItem('gridLayout', pos);
 }
+getSetLayout();
 </script>
 </body>
 </html>
