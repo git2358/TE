@@ -139,7 +139,7 @@ textarea::placeholder {
 
 <script type="text/javascript">
 // elements
-var grid = document.querySelector(".grid");
+var grid = document.querySelector('.grid');
 var editorHTML = document.querySelector('.html');
 var editorCSS = document.querySelector('.css');
 var editorJS = document.querySelector('.js');
@@ -168,7 +168,7 @@ if(window.location.hash) {
     // update viewer
     function updateViewerHash() {
         HTMLView = editorHTML.value;
-        CSSView = '<style>\n@import url(https://unpkg.com/tachyons/css/tachyons.min.css);\n' + editorCSS.value + '\n<\/style>';
+        CSSView = '<style>\n@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' + editorCSS.value + '\n<\/style>';
         JSView = '<script>\n' + editorJS.value + '\n<\/script>';
 
         viewer.srcdoc = HTMLView + CSSView + JSView;
@@ -196,7 +196,7 @@ if(window.location.hash) {
     // update viewer
     function updateViewer() {
         HTMLView = editorHTML.value;
-        CSSView = '<style>\n@import url(https://unpkg.com/tachyons/css/tachyons.min.css);\n' + editorCSS.value + '\n<\/style>';
+        CSSView = '<style>\n@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' + editorCSS.value + '\n<\/style>';
         JSView = '<script\n' + editorJS.value + '\n<\/script>';
 
         viewer.srcdoc = HTMLView + CSSView + JSView;
@@ -243,84 +243,29 @@ function stampDate() {
     return stamp = new Date().YYYYMMDDHHMMSS();
 }
 
-// function downloadAll() {
-//     downloadThis(editorHTML, "html");
-//     downloadThis(editorCSS, "css");
-//     downloadThis(editorJS, "js");
-// }
-
-// function downloadThis(elem, ext) {
-//     var text = elem.value;
-//     var ext = ext;
-
-//     // To retain the Line breaks.
-//     text = text.replace(/\n/g, "\r\n");
-
-//     var blob = new Blob([text], { type: "text/plain"});
-
-//     var anchor = document.createElement("a");
-//     anchor.download = hash + "-" + stampDate() + "." + ext;
-
-//     anchor.href = window.URL.createObjectURL(blob);
-//     anchor.target ="_blank";
-
-//     anchor.style.display = "none";
-
-//     document.body.appendChild(anchor);
-//     anchor.click();
-//     document.body.removeChild(anchor);
-// }
-
-
-// TODO: chain string
-// <!doctype html>
-// <html lang="en" >
-// <head>
-// <meta charset="UTF-8">
-// <title>hash</title>
-// <link rel="stylesheet" href="./hash.css">
-// </head>
-// <body>
-
-// insert editorHTML.value here
-
-// <script  src="./hash.js"><\/script>
-// </body>
-// </html>
-
-// var editorHTMLZip = {'<!doctype html>\n' + 
-// '<html lang="en>\n' + 
-// '<head>\n' + 
-// '<meta charset="UTF-8">\n' + 
-// '<title>' + hash + '</title>\n' + 
-// '<link rel="stylesheet" href="./' + hash + '.css">\n' + 
-// '</head>\n' + 
-// '<body>\n' + 
-// editorHTML.value + 
-// '<script  src="./' + hash + '.js"><\/script>\n' + 
-// '</body>\n' + 
-// '</html>\n'
-// }
-
 var editorHTMLZip = [
 "<!doctype html>",
-"<html lang='en>",
+"<html lang=\"en\">",
 "<head>",
-"<meta charset='UTF-8'>",
+"<meta charset=\"UTF-8\">",
 "<title>" + hash + "</title>",
-"<link rel='stylesheet' href='./" + hash + ".css'>",
+"<link rel=\"stylesheet\" href=\"./" + hash + ".css\">",
 "</head>",
 "<body>",
+,
 editorHTML.value,
-"<script  src='./" + hash + ".js'><\/script>",
+,
+"<script  src=\"./" + hash + ".js\"><\/script>",
 "</body>",
-"</html>"
+"</html>",
+,
 ].join("\n");
 
 var editorCSSZip = [
-"@import url(https://unpkg.com/tachyons/css/tachyons.min.css);",
+"@import url(\"https://unpkg.com/tachyons/css/tachyons.min.css\");",
 ,
-editorCSS.value
+editorCSS.value,
+,
 ].join("\n");
 
 function downloadZip() {
