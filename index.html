@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-us">
 <head>
-<title>[ git2358 | TE ]</title>
+<title>[ 2358 | TE ]</title>
 
 <meta charset="utf-8" />
 <meta http-equiv="x-ua-compatible" content="ie=edge" />
@@ -15,10 +15,11 @@
 <meta name="application-name" content="[ TE ]">
 <meta name="theme-color" content="#ffffff">
 
-<meta name="author" content="git2358, https://git2358.github.io/" />
+<meta name="author" content="2358, https://git2358.github.io/" />
 <meta name="description" content="[ TE ]" />
 
 <style type="text/css">
+
 @import url("https://unpkg.com/tachyons/css/tachyons.min.css");
 
 :root {
@@ -31,53 +32,203 @@
   --one-third-width: calc(100vw/3);
   --two-thirds-width: calc(var(--one-third-width)*2);
   --half-width: calc((var(--one-third-width)*3)/2);
+  --half-third-width: calc(var(--one-third-width)/2);
   --full-width: calc(var(--one-third-width)*3);
   --full-width-bleed: calc(var(--one-third-width)*4);
 
   --one-third-height: calc(100vh/3);
   --two-thirds-height: calc(var(--one-third-height)*2);
   --half-height: calc((var(--one-third-height)*3)/2);
+  --half-third-height: calc(var(--one-third-height)/2);
   --full-height: calc(var(--one-third-height)*3);
   --full-height-bleed: calc(var(--one-third-width)*4);
 }
 
-::-webkit-scrollbar { width: 0; display: none; }
+::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
 html {
   -ms-overflow-style: none;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
 
-.grid { display: grid; }
+.grid {
+  display: grid;
+}
+
 .grid--top {
   grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
   grid-template-rows: var(--nav-horizontal-height) var(--two-thirds-height) var(--full-height);
-  grid-template-areas: "nav nav nav" "html css js" "viewer viewer viewer";
+  grid-template-areas:
+    "nav nav nav"
+    "html css js"
+    "viewer viewer viewer";
 }
+
+.grid--top.focus--html {
+  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
+  grid-template-rows: var(--nav-horizontal-height) var(--one-third-height) var(--one-third-height) var(--full-height);
+  grid-template-areas:
+    "nav nav"
+    "html css"
+    "html js"
+    "viewer viewer";
+}
+
+.grid--top.focus--css {
+  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
+  grid-template-rows: var(--nav-horizontal-height) var(--one-third-height) var(--one-third-height) var(--full-height);
+  grid-template-areas:
+    "nav nav"
+    "css html"
+    "css js"
+    "viewer viewer";
+}
+
+.grid--top.focus--js {
+  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
+  grid-template-rows: var(--nav-horizontal-height) var(--one-third-height) var(--one-third-height) var(--full-height);
+  grid-template-areas:
+    "nav nav"
+    "js html"
+    "js css"
+    "viewer viewer";
+}
+
 .grid--right {
   grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--one-third-width) var(--nav-vertical-width);
   grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas: "viewer html nav" "viewer css nav" "viewer js nav";
+  grid-template-areas:
+    "viewer html nav"
+    "viewer css nav"
+    "viewer js nav";
 }
+
+.grid--right.focus--html {
+  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--half-third-width) var(--half-third-width) var(--nav-vertical-width);
+  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-areas:
+    "viewer html html nav"
+    "viewer html html nav"
+    "viewer css js nav";
+}
+
+.grid--right.focus--css {
+  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--half-third-width) var(--half-third-width) var(--nav-vertical-width);
+  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-areas:
+    "viewer css css nav"
+    "viewer css css nav"
+    "viewer html js nav";
+}
+
+.grid--right.focus--js {
+  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--half-third-width) var(--half-third-width) var(--nav-vertical-width);
+  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-areas:
+    "viewer js js nav"
+    "viewer js js nav"
+    "viewer html css nav";
+}
+
 .grid--bottom {
-  display: grid;
   grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
   grid-template-rows: var(--full-height) var(--two-thirds-height) var(--nav-horizontal-height);
-  grid-template-areas: "viewer viewer viewer" "html css js" "nav nav nav" ;
+  grid-template-areas:
+    "viewer viewer viewer"
+    "html css js"
+    "nav nav nav";
 }
+
+.grid--bottom.focus--html {
+  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
+  grid-template-rows: var(--full-height) var(--one-third-height) var(--one-third-height) var(--nav-horizontal-height);
+  grid-template-areas:
+    "viewer viewer"
+    "html css"
+    "html js"
+    "nav nav";
+}
+
+.grid--bottom.focus--css {
+  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
+  grid-template-rows: var(--full-height) var(--one-third-height) var(--one-third-height) var(--nav-horizontal-height);
+  grid-template-areas:
+    "viewer viewer"
+    "css html"
+    "css js"
+    "nav nav";
+}
+
+.grid--bottom.focus--js {
+  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
+  grid-template-rows: var(--full-height) var(--one-third-height) var(--one-third-height) var(--nav-horizontal-height);
+  grid-template-areas:
+    "viewer viewer"
+    "js html"
+    "js css"
+    "nav nav";
+}
+
 .grid--left {
   grid-template-columns: var(--nav-vertical-width) var(--one-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
   grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas: "nav html viewer" "nav css viewer" "nav js viewer";
+  grid-template-areas:
+    "nav html viewer"
+    "nav css viewer"
+    "nav js viewer";
 }
 
-.nav{ grid-area: nav; }
-.html { grid-area: html; }
-.css { grid-area: css; }
-.js { grid-area: js; }
-.viewer { grid-area: viewer; }
+.grid--left.focus--html {
+  grid-template-columns: var(--nav-vertical-width) var(--half-third-width) var(--half-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
+  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-areas:
+    "nav html html viewer"
+    "nav html html viewer"
+    "nav css js viewer";
+}
 
-.editor:focus { z-index: 999; }
+.grid--left.focus--css {
+  grid-template-columns: var(--nav-vertical-width) var(--half-third-width) var(--half-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
+  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-areas:
+    "nav css css viewer"
+    "nav css css viewer"
+    "nav html js viewer";
+}
+
+.grid--left.focus--js {
+  grid-template-columns: var(--nav-vertical-width) var(--half-third-width) var(--half-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
+  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-areas:
+    "nav js js viewer"
+    "nav js js viewer"
+    "nav html css viewer";
+}
+
+.nav {
+  grid-area: nav;
+}
+
+.html {
+  grid-area: html;
+}
+
+.css {
+  grid-area: css;
+}
+
+.js {
+  grid-area: js;
+}
+
+.viewer {
+  grid-area: viewer;
+}
+
 textarea {
   resize: none;
   -webkit-border-radius: 0;
@@ -94,50 +245,148 @@ textarea::placeholder {
   color: #fff;
   mix-blend-mode: difference;
 }
-	
-@media print{
-  .print-hide { display: none }
+
+::selection {
+  background: #fff;
+  color: #333;
+  mix-blend-mode: difference;
 }
+
+::-moz-selection {
+  background: #fff;
+  color: #333;
+  mix-blend-mode: difference;
+}
+
+@media print {
+  .print-hide {
+    display: none;
+  }
+}
+
 </style>
 </head>
+
 <body class="w-100 h-100 ma0">
 
 <div class="grid">
+
   <div class="nav buttons bg-hot-pink code f7">
-    <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-    onclick="openCloud()">C</button>
 
-    <!-- <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-    onclick="downloadAll()">E</button> -->
+    <button
+      class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+      onclick="openCloud()"
+      title="Compile Shareable URL Link">
+      C
+    </button>
 
-    <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-    onclick="downloadZip()">E</button>
+    <button
+      class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+      onclick="downloadZip()"
+      title="Download Project ZIP">
+      D
+    </button>
 
-    <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-    onclick="document.getElementById('viewer').scrollIntoView(true);">V</button>
+    <button
+      class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+      onclick="document.getElementById('viewer').scrollIntoView(true);"
+      title="Jump to Viewer">
+      V
+    </button>
 
     <div class="layouts">
-      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-      onclick="setLayout('top')">T</button>
-      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-      onclick="setLayout('right')">R</button>
-      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-      onclick="setLayout('bottom')">B</button>
-      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-      onclick="setLayout('left')">L</button>
+
+      <button
+        class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+        onclick="setLayout('top')"
+        title="Set Layout Top">
+        T
+      </button>
+
+      <button
+        class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+        onclick="setLayout('right')"
+        title="Set Layout Right">
+        R
+      </button>
+
+      <button
+        class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+        onclick="setLayout('bottom')"
+        title="Set Layout Bottom">
+        B
+      </button>
+
+      <button
+        class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+        onclick="setLayout('left')"
+        title="Set Layout Left">
+        L
+      </button>
+
     </div>
+
+    <button
+      class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+      onclick="setFocus('')"
+      title="Reset Layout Focus">
+      X
+    </button>
+
   </div>
 
-  <textarea class="html editor print-hide bg-red near-white pa4 input-reset bn outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+  <textarea
+    class="html editor print-hide bg-red near-white pa4 lh-title input-reset bn outline-0 fl code f5"
+    placeholder="HTML"
+    wrap="soft"
+    autocomplete="on"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="on"
+    data-gramm="false"
+    onclick="setFocus('html')"></textarea>
 
-  <textarea class="css editor print-hide bg-green near-white pa4 input-reset bn outline-0 fl code f5" placeholder=CSS wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+  <textarea
+    class="css editor print-hide bg-green near-white pa4 lh-title input-reset bn outline-0 fl code f5"
+    placeholder="CSS"
+    wrap="soft"
+    autocomplete="on"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="on"
+    data-gramm="false"
+    onclick="setFocus('css')"></textarea>
 
-  <textarea class="js editor print-hide bg-blue near-white pa4 input-reset bn outline-0 fl code f5" placeholder=JS wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+  <textarea
+    class="js editor print-hide bg-blue near-white pa4 lh-title input-reset bn outline-0 fl code f5"
+    placeholder="JS"
+    wrap="soft"
+    autocomplete="on"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="on"
+    data-gramm="false"
+    onclick="setFocus('js')"></textarea>
 
-  <iframe id="viewer" class="viewer bg-gold overflow-auto pre w-100 h-100 bn"></iframe>
+  <iframe
+    id="viewer"
+    class="viewer bg-gold overflow-auto pre w-100 h-100 bn">
+  </iframe>
+
 </div>
 
+<script
+  type="text/javascript"
+  src="./jszip.min.js">
+</script>
+
+<script
+  type="text/javascript"
+  src="./FileSaver.min.js">
+</script>
+
 <script type="text/javascript">
+
 // elements
 var grid = document.querySelector('.grid');
 var editorHTML = document.querySelector('.html');
@@ -145,143 +394,356 @@ var editorCSS = document.querySelector('.css');
 var editorJS = document.querySelector('.js');
 var viewer = document.querySelector('.viewer');
 
-if(window.location.hash) {
-    // hash found
-    var hash = window.location.hash.substring(1); // puts hash in variable, and removes the # character
+// hash
+var hash = window.location.hash
+  ? window.location.hash.substring(1)
+  : "";
 
-    // populate editors if theres any data already stored
-    editorHTML.value = localStorage.getItem('HTMLcontent' + hash);
-    editorCSS.value = localStorage.getItem('CSScontent' + hash);
-    editorJS.value = localStorage.getItem('JScontent' + hash);
+// ----------------------------------------
+// Load saved editor content
+// ----------------------------------------
 
-    // save data for each editor
-    function saveHTMLDataHash() { localStorage.setItem('HTMLcontent' + hash, editorHTML.value); }
-    function saveCSSDataHash() { localStorage.setItem('CSScontent' + hash, editorCSS.value); }
-    function saveJSDataHash() { localStorage.setItem('JScontent' + hash, editorJS.value); }
+if (window.location.hash) {
 
-    // listen and fire
-    window.addEventListener("input", updateViewerHash);
-    editorHTML.addEventListener("keyup", saveHTMLDataHash);
-    editorCSS.addEventListener("keyup", saveCSSDataHash);
-    editorJS.addEventListener("keyup", saveJSDataHash);
+  // populate editors from hash
+  editorHTML.value = localStorage.getItem('HTMLcontent' + hash) || '';
+  editorCSS.value = localStorage.getItem('CSScontent' + hash) || '';
+  editorJS.value = localStorage.getItem('JScontent' + hash) || '';
 
-    // update viewer
-    function updateViewerHash() {
-        HTMLView = editorHTML.value;
-        CSSView = '<style>\n@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' + editorCSS.value + '\n<\/style>';
-        JSView = '<script>\n' + editorJS.value + '\n<\/script>';
+  // save data for each editor
+  function saveHTMLDataHash() {
+    localStorage.setItem('HTMLcontent' + hash, editorHTML.value);
+  }
 
-        viewer.srcdoc = HTMLView + CSSView + JSView;
-    }
-    updateViewerHash();
+  function saveCSSDataHash() {
+    localStorage.setItem('CSScontent' + hash, editorCSS.value);
+  }
+
+  function saveJSDataHash() {
+    localStorage.setItem('JScontent' + hash, editorJS.value);
+  }
+
+  // update viewer
+  function updateViewerHash() {
+
+    var HTMLView = editorHTML.value;
+
+    var CSSView =
+      '<style>\n' +
+      '@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' +
+      editorCSS.value +
+      '\n<\/style>';
+
+    var JSView =
+      '<script>\n' +
+      editorJS.value +
+      '\n<\/script>';
+
+    viewer.srcdoc = HTMLView + CSSView + JSView;
+
+    viewerIsEmpty();
+  }
+
+  // listen and fire
+  window.addEventListener("input", updateViewerHash);
+
+  editorHTML.addEventListener("keyup", saveHTMLDataHash);
+  editorCSS.addEventListener("keyup", saveCSSDataHash);
+  editorJS.addEventListener("keyup", saveJSDataHash);
+
+  updateViewerHash();
+
 } else {
-    // No hash found
 
-    // populate editors if theres any data already stored
-    editorHTML.value = localStorage.getItem('HTMLcontent');
-    editorCSS.value = localStorage.getItem('CSScontent');
-    editorJS.value = localStorage.getItem('JScontent');
+  // populate editors from local storage
+  editorHTML.value = localStorage.getItem('HTMLcontent') || '';
+  editorCSS.value = localStorage.getItem('CSScontent') || '';
+  editorJS.value = localStorage.getItem('JScontent') || '';
 
-    // save data for each editor
-    function saveHTMLData() { localStorage.setItem('HTMLcontent', editorHTML.value); }
-    function saveCSSData() { localStorage.setItem('CSScontent', editorCSS.value); }
-    function saveJSData() { localStorage.setItem('JScontent', editorJS.value); }
+  // save data for each editor
+  function saveHTMLData() {
+    localStorage.setItem('HTMLcontent', editorHTML.value);
+  }
 
-    // listen and fire
-    window.addEventListener("input", updateViewer);
-    editorHTML.addEventListener("keyup", saveHTMLData);
-    editorCSS.addEventListener("keyup", saveCSSData);
-    editorJS.addEventListener("keyup", saveJSData);
+  function saveCSSData() {
+    localStorage.setItem('CSScontent', editorCSS.value);
+  }
 
-    // update viewer
-    function updateViewer() {
-        HTMLView = editorHTML.value;
-        CSSView = '<style>\n@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' + editorCSS.value + '\n<\/style>';
-        JSView = '<script\n' + editorJS.value + '\n<\/script>';
+  function saveJSData() {
+    localStorage.setItem('JScontent', editorJS.value);
+  }
 
-        viewer.srcdoc = HTMLView + CSSView + JSView;
-    }
-    updateViewer();
+  // update viewer
+  function updateViewer() {
+
+    var HTMLView = editorHTML.value;
+
+    var CSSView =
+      '<style>\n' +
+      '@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' +
+      editorCSS.value +
+      '\n<\/style>';
+
+    var JSView =
+      '<script>\n' +
+      editorJS.value +
+      '\n<\/script>';
+
+    viewer.srcdoc = HTMLView + CSSView + JSView;
+
+    viewerIsEmpty();
+  }
+
+  // listen and fire
+  window.addEventListener("input", updateViewer);
+
+  editorHTML.addEventListener("keyup", saveHTMLData);
+  editorCSS.addEventListener("keyup", saveCSSData);
+  editorJS.addEventListener("keyup", saveJSData);
+
+  updateViewer();
 }
+
+
+// ----------------------------------------
+// Class utilities
+// ----------------------------------------
+
+function removeClassesByPrefix(el, prefix) {
+
+  for (var i = el.classList.length - 1; i >= 0; i--) {
+
+    if (el.classList[i].startsWith(prefix)) {
+      el.classList.remove(el.classList[i]);
+    }
+
+  }
+
+}
+
+
+// ----------------------------------------
+// Layout
+// ----------------------------------------
 
 function getLayout() {
-    var gridLayout = localStorage.getItem('gridLayout');
-    if (gridLayout) {
-        setLayout(gridLayout);
-    } else {
-        localStorage.setItem('gridLayout', 'left');
-        getLayout();
-    }
+
+  var gridLayout = localStorage.getItem('gridLayout');
+
+  if (gridLayout) {
+
+    setLayout(gridLayout);
+
+  } else {
+
+    localStorage.setItem('gridLayout', 'left');
+    getLayout();
+
+  }
+
 }
+
 function setLayout(pos) {
-    var setLayout = "grid--" + pos;
-    grid.classList.remove("grid--top", "grid--right", "grid--bottom", "grid--left");
-    grid.classList.add(setLayout);
-    localStorage.setItem('gridLayout', pos);
+
+  var layoutClass = "grid--" + pos;
+
+  removeClassesByPrefix(grid, "grid--");
+
+  grid.classList.add(layoutClass);
+
+  localStorage.setItem('gridLayout', pos);
+
 }
+
+
+// ----------------------------------------
+// Focus
+// ----------------------------------------
+
+function getFocus() {
+
+  var editorFocus = localStorage.getItem('editorFocus');
+
+  if (editorFocus) {
+
+    setFocus(editorFocus);
+
+  } else {
+
+    localStorage.setItem('editorFocus', '');
+    getLayout();
+
+  }
+
+}
+
+function setFocus(pos) {
+
+  var focusClass = "focus--" + pos;
+
+  removeClassesByPrefix(grid, "focus--");
+
+  if (pos) {
+    grid.classList.add(focusClass);
+  }
+
+  localStorage.setItem('editorFocus', pos);
+
+}
+
+
+// ----------------------------------------
+// Initialize layout
+// ----------------------------------------
+
 getLayout();
+getFocus();
+
+
+// ----------------------------------------
+// Open Cloud
+// ----------------------------------------
 
 function openCloud() {
-    window.open("http://git2358.github.io/urlpages/#" + btoa(encodeURIComponent(viewer.srcdoc)), "_blank");
+
+  window.open(
+    "http://git2358.github.io/urlpages/#" +
+    btoa(encodeURIComponent(viewer.srcdoc)),
+    "_blank"
+  );
+
 }
+
+
+// ----------------------------------------
+// Date stamp
+// ----------------------------------------
 
 Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
-    value: function() {
-        function pad2(n) {  // always returns a string
-            return (n < 10 ? '0' : '') + n;
-        }
 
-        return this.getFullYear() +
-               pad2(this.getMonth() + 1) + 
-               pad2(this.getDate()) +
-               pad2(this.getHours()) +
-               pad2(this.getMinutes()) +
-               pad2(this.getSeconds());
+  value: function() {
+
+    function pad2(n) {
+      return (n < 10 ? '0' : '') + n;
     }
+
+    return this.getFullYear() +
+      pad2(this.getMonth() + 1) +
+      pad2(this.getDate()) +
+      pad2(this.getHours()) +
+      pad2(this.getMinutes()) +
+      pad2(this.getSeconds());
+
+  }
+
 });
+
 function stampDate() {
-    return stamp = new Date().YYYYMMDDHHMMSS();
+
+  return new Date().YYYYMMDDHHMMSS();
+
 }
 
+
+// ----------------------------------------
+// ZIP HTML
+// ----------------------------------------
+
 var editorHTMLZip = [
-"<!doctype html>",
-"<html lang=\"en\">",
-"<head>",
-"<meta charset=\"UTF-8\">",
-"<title>" + hash + "</title>",
-"<link rel=\"stylesheet\" href=\"./" + hash + ".css\">",
-"</head>",
-"<body>",
-,
-editorHTML.value,
-,
-"<script  src=\"./" + hash + ".js\"><\/script>",
-"</body>",
-"</html>",
-,
+
+  "<!doctype html>",
+  "<html lang=\"en\">",
+  "<head>",
+  "<meta charset=\"UTF-8\">",
+  "<title>" + hash + "</title>",
+  "<link rel=\"stylesheet\" href=\"./" + hash + ".css\">",
+  "</head>",
+  "<body>",
+  editorHTML.value,
+  "<script src=\"./" + hash + ".js\"><\/script>",
+  "</body>",
+  "</html>"
+
 ].join("\n");
+
+
+// ----------------------------------------
+// ZIP CSS
+// ----------------------------------------
 
 var editorCSSZip = [
-"@import url(\"https://unpkg.com/tachyons/css/tachyons.min.css\");",
-,
-editorCSS.value,
-,
+
+  "@import url(\"https://unpkg.com/tachyons/css/tachyons.min.css\");",
+  editorCSS.value
+
 ].join("\n");
 
+
+// ----------------------------------------
+// Download ZIP
+// ----------------------------------------
+
 function downloadZip() {
+
   var zip = new JSZip();
 
   zip.file(hash + ".html", editorHTMLZip);
   zip.file(hash + ".css", editorCSSZip);
   zip.file(hash + ".js", editorJS.value);
 
-  zip.generateAsync({type:"blob"})
+  zip.generateAsync({
+    type: "blob"
+  })
   .then(function(content) {
-      saveAs(content, hash + "-" + stampDate() + ".zip");
+
+    saveAs(
+      content,
+      hash + "-" + stampDate() + ".zip"
+    );
+
   });
+
 }
+
+
+// ----------------------------------------
+// Viewer empty state
+// ----------------------------------------
+
+function viewerIsEmpty() {
+
+  if (
+    editorHTML.value !== "" ||
+    editorCSS.value !== "" ||
+    editorJS.value !== ""
+  ) {
+
+    viewer.classList.remove("bg-gold");
+
+  } else {
+
+    viewer.classList.add("bg-gold");
+
+  }
+
+}
+
+
+// ----------------------------------------
+// Scroll to viewer once on page load
+// ----------------------------------------
+
+window.addEventListener("load", function() {
+
+  setTimeout(function() {
+
+    document.getElementById("viewer").scrollIntoView(true);
+
+  }, 100);
+
+});
+
 </script>
-<script type="text/javascript" src="./jszip.min.js"></script>
-<script type="text/javascript" src="./FileSaver.min.js"></script>
+
 </body>
 </html>
