@@ -55,6 +55,9 @@
 .js { grid-area: js; }
 .viewer { grid-area: viewer; }
 
+.editor:focus { z-index: 999; }
+textarea { resize: none; }
+
 @media print{
   .print-hide { display: none }
 }
@@ -72,13 +75,13 @@
 
     <div class="layouts">
       <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-      onclick="layoutTop()">T</button>
+      onclick="layout('top')">T</button>
       <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-      onclick="layoutRight()">R</button>
+      onclick="layout('right')">R</button>
       <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-      onclick="layoutBottom()">B</button>
+      onclick="layout('bottom')">B</button>
       <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-      onclick="layoutLeft()">L</button>
+      onclick="layout('left')">L</button>
     </div>
   </div>
 
@@ -159,21 +162,10 @@ if(window.location.hash) {
     updateViewer();
 }
 
-function layoutTop() {
-    grid.classList.add("grid--top");
-    grid.classList.remove("grid--right", "grid--bottom", "grid--left");    
-}
-function layoutRight() {
-    grid.classList.add("grid--right");
-    grid.classList.remove("grid--top", "grid--bottom", "grid--left");    
-}
-function layoutBottom() {var grid = document.querySelector(".grid");
-    grid.classList.add("grid--bottom");
-    grid.classList.remove("grid--top", "grid--right", "grid--left");    
-}
-function layoutLeft() {var grid = document.querySelector(".grid");
-    grid.classList.add("grid--left");
-    grid.classList.remove("grid--top", "grid--right", "grid--bottom");    
+function layout(pos) {
+	var layout = "grid--" + pos;
+	grid.classList.remove("grid--top", "grid--right", "grid--bottom", "grid--left");
+    grid.classList.add(layout);
 }
 </script>
 </body>
