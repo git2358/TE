@@ -23,22 +23,22 @@
 .grid { display: grid; }
 .grid--top {
   grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
-  grid-template-rows: var(--half-height) var(--full-height);
+  grid-template-rows: var(--two-thirds-height) var(--full-height);
   grid-template-areas: "html css js" "viewer viewer viewer";
 }
 .grid--right {
-  grid-template-columns: var(--full-width) var(--half-width);
+  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
   grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
   grid-template-areas: "viewer html" "viewer css" "viewer js";
 }
 .grid--bottom {
   display: grid;
   grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--half-height);
+  grid-template-rows: var(--full-height) var(--two-thirds-height);
   grid-template-areas: "viewer viewer viewer" "html css js";
 }
 .grid--left {
-  grid-template-columns: var(--half-width) var(--full-width);
+  grid-template-columns: var(--one-third-width) var(--two-thirds-width);
   grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
   grid-template-areas: "html viewer" "css viewer" "js viewer";
 }
@@ -55,22 +55,22 @@
 </head>
 <body class="w-100 h-100 ma0">
 
-<div class="grid grid--left">
-  <textarea class="html editor print-hide bg-red near-white pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+<div class="grid grid--top">
+  <textarea class="html editor print-hide bg-red near-white pa4 input-reset bn outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
 
-  <textarea class="css editor print-hide bg-green near-white pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+  <textarea class="css editor print-hide bg-green near-white pa4 input-reset bn outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
 
-  <textarea class="js editor print-hide bg-blue near-white pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+  <textarea class="js editor print-hide bg-blue near-white pa4 input-reset bn outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
 
   <iframe id="viewer" class="viewer bg-gold overflow-auto pre w-100 h-100 bn"></iframe>
 </div>
 
 <div class="buttons">
-  <button class="print-hide pointer absolute top-0 right-0 w2 h2 bg-dark-gray near-white b--black-50 ba br0 outline-0 pa2 dim" 
+  <button class="print-hide pointer absolute top-0 right-0 w2 h2 bg-dark-gray near-white bn outline-0 pa2 dim" 
   onclick="prompt('','https://itty.bitty.site/#/data:text/html;charset=utf-8,'+viewer.srcdoc)">&#9729;</button>
 
   <a href="#viewer">
-    <button class="print-hide pointer absolute top-2 right-0 w2 h2 bg-dark-gray near-white b--black-50 ba br0 outline-0 pa2 dim">&#8609;</button>
+    <button class="print-hide pointer absolute top-2 right-0 w2 h2 bg-dark-gray near-white bn outline-0 pa2 dim">&#8609;</button>
   </a>
 </div>
 
