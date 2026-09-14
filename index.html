@@ -246,17 +246,15 @@ html {
   height: 100vh;
 }
 
+.mobile-nav {
+  display: none;
+}
+
 @media screen and (max-width: 600px) {
 
   .grid[class*="grid--"] {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 100vh 100vh 100vh 100vh;
-    grid-template-areas:
-      "nav"
-      "html"
-      "css"
-      "js"
-      "viewer";
+    display: flex;
+    flex-direction: column;
   }
 
   .nav {
@@ -269,6 +267,10 @@ html {
     display: none;
   }
 
+  .mobile-nav {
+    display: block;
+  }
+
   .nav button[onclick="setFocus('')"] {
     display: none;
   }
@@ -279,6 +281,19 @@ html {
   .viewer {
     min-width: 0;
     min-height: 100vh;
+    width: 100%;
+  }
+
+  .html,
+  .css,
+  .js {
+    height: auto !important;
+    min-height: calc(100vh - 32px);
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: auto;
   }
 
   .viewer {
@@ -292,6 +307,8 @@ html {
   .viewer {
     position: sticky;
     top: 32px;
+    align-self: start;
+    flex: 0 0 auto;
   }
 
   .html {
@@ -308,6 +325,8 @@ html {
 
   .viewer {
     z-index: 4;
+    top: 0;
+    min-height: calc(100vh + 32px);
   }
 
   .grid.viewer-only {
@@ -376,6 +395,27 @@ textarea::placeholder {
       onclick="downloadZip()"
       title="Download Project ZIP">
       D
+    </button>
+
+    <button
+      class="mobile-nav print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+      onclick="scrollToEditor('html')"
+      title="Jump to HTML">
+      H
+    </button>
+
+    <button
+      class="mobile-nav print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+      onclick="scrollToEditor('css')"
+      title="Jump to CSS">
+      C
+    </button>
+
+    <button
+      class="mobile-nav print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
+      onclick="scrollToEditor('js')"
+      title="Jump to JS">
+      J
     </button>
 
     <button
@@ -595,10 +635,33 @@ function getUrlMarker() {
 function updateHashFromEditors() {
 
   if (hash) {
-    window.location.hash = hash +
+    history.replaceState(null, "", "#" + hash +
       ((urlLayout || urlHide) ? "?" + getUrlMarker() : "") +
-      "?" + encodeEditorData();
+      "?" + encodeEditorData());
   }
+
+}
+
+function resizeMobileEditor(editor) {
+
+  if (window.innerWidth <= 600) {
+    editor.style.setProperty("height", "auto", "important");
+    editor.style.setProperty(
+      "height",
+      Math.max(editor.scrollHeight, window.innerHeight) + "px",
+      "important"
+    );
+  } else {
+    editor.style.removeProperty("height");
+  }
+
+}
+
+function resizeMobileEditors() {
+
+  resizeMobileEditor(editorHTML);
+  resizeMobileEditor(editorCSS);
+  resizeMobileEditor(editorJS);
 
 }
 
@@ -642,12 +705,15 @@ if (editorDataFromHash) {
   }
 
   window.addEventListener("input", updateViewerHashPayload);
+  window.addEventListener("input", resizeMobileEditors);
+  window.addEventListener("resize", resizeMobileEditors);
 
   editorHTML.addEventListener("keyup", saveHTMLDataHashPayload);
   editorCSS.addEventListener("keyup", saveCSSDataHashPayload);
   editorJS.addEventListener("keyup", saveJSDataHashPayload);
 
   updateViewerHashPayload();
+  resizeMobileEditors();
 
 } else if (window.location.hash) {
 
@@ -693,12 +759,15 @@ if (editorDataFromHash) {
 
   // listen and fire
   window.addEventListener("input", updateViewerHash);
+  window.addEventListener("input", resizeMobileEditors);
+  window.addEventListener("resize", resizeMobileEditors);
 
   editorHTML.addEventListener("keyup", saveHTMLDataHash);
   editorCSS.addEventListener("keyup", saveCSSDataHash);
   editorJS.addEventListener("keyup", saveJSDataHash);
 
   updateViewerHash();
+  resizeMobileEditors();
 
 } else {
 
@@ -744,13 +813,75 @@ if (editorDataFromHash) {
 
   // listen and fire
   window.addEventListener("input", updateViewer);
+  window.addEventListener("input", resizeMobileEditors);
+  window.addEventListener("resize", resizeMobileEditors);
 
   editorHTML.addEventListener("keyup", saveHTMLData);
   editorCSS.addEventListener("keyup", saveCSSData);
   editorJS.addEventListener("keyup", saveJSData);
 
   updateViewer();
+  resizeMobileEditors();
 }
+
+
+// ----------------------------------------
+// Editor undo and redo
+// ----------------------------------------
+
+function enableEditorHistory(editor) {
+
+  var history = {
+    undo: [],
+    redo: [],
+    value: editor.value,
+    restoring: false
+  };
+
+  editor.addEventListener("input", function() {
+
+    if (!history.restoring && editor.value !== history.value) {
+      history.undo.push(history.value);
+      history.redo = [];
+      history.value = editor.value;
+    }
+
+  });
+
+  editor.addEventListener("keydown", function(event) {
+
+    var modifier = event.metaKey || event.ctrlKey;
+    var undo = modifier && !event.shiftKey && event.key.toLowerCase() === "z";
+    var redo = modifier && event.shiftKey && event.key.toLowerCase() === "z";
+
+    if (!undo && !redo) {
+      return;
+    }
+
+    event.preventDefault();
+
+    var source = undo ? history.undo : history.redo;
+    var target = undo ? history.redo : history.undo;
+
+    if (!source.length) {
+      return;
+    }
+
+    target.push(editor.value);
+    editor.value = source.pop();
+    history.value = editor.value;
+    history.restoring = true;
+    editor.dispatchEvent(new Event("input", { bubbles: true }));
+    history.restoring = false;
+    editor.dispatchEvent(new Event("keyup", { bubbles: true }));
+
+  });
+
+}
+
+enableEditorHistory(editorHTML);
+enableEditorHistory(editorCSS);
+enableEditorHistory(editorJS);
 
 
 // ----------------------------------------
@@ -818,9 +949,9 @@ function setLayout(pos, updateUrl) {
 
   if (updateUrl && hash) {
     urlLayout = pos;
-    window.location.hash = hash +
+    history.replaceState(null, "", "#" + hash +
       "?" + getUrlMarker() +
-      "?" + encodeEditorData();
+      "?" + encodeEditorData());
   }
 
 }
@@ -1043,10 +1174,52 @@ function viewerIsEmpty() {
 
 function scrollToViewer() {
 
-  document.getElementById("viewer").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
+  scrollToSection(document.getElementById("viewer"));
+
+}
+
+function smoothScrollTo(top) {
+
+  window.scrollTo({
+    top: top,
+    behavior: "smooth"
   });
+
+}
+
+function scrollToSection(section) {
+
+  var navOffset = window.innerWidth <= 600 && section !== viewer
+    ? document.querySelector(".nav").offsetHeight
+    : 0;
+  var top = 0;
+
+  if (window.innerWidth <= 600) {
+
+    Array.from(grid.children).some(function(child) {
+
+      if (child === section) {
+        return true;
+      }
+
+      top += child.offsetHeight;
+      return false;
+
+    });
+
+  } else {
+
+    top = section.offsetTop;
+
+  }
+
+  smoothScrollTo(top - navOffset);
+
+}
+
+function scrollToEditor(type) {
+
+  scrollToSection(document.querySelector("." + type));
 
 }
 
