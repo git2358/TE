@@ -7,6 +7,12 @@
 @import url(https://unpkg.com/tachyons/css/tachyons.min.css);
 
 :root {
+  --nav-horizontal-width: 100vw;
+  --nav-horizontal-height: 2em;
+
+  --nav-vertical-width: 2em;
+  --nav-vertical-height: 100vh;
+
   --one-third-width: calc(100vw/3);
   --two-thirds-width: calc(var(--one-third-width)*2);
   --half-width: calc((var(--one-third-width)*3)/2);
@@ -23,26 +29,27 @@
 .grid { display: grid; }
 .grid--top {
   grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
-  grid-template-rows: var(--two-thirds-height) var(--full-height);
-  grid-template-areas: "html css js" "viewer viewer viewer";
+  grid-template-rows: var(--nav-horizontal-height) var(--two-thirds-height) var(--full-height);
+  grid-template-areas: "nav nav nav" "html css js" "viewer viewer viewer";
 }
 .grid--right {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
+  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--one-third-width) var(--nav-vertical-width);
   grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas: "viewer html" "viewer css" "viewer js";
+  grid-template-areas: "viewer html nav" "viewer css nav" "viewer js nav";
 }
 .grid--bottom {
   display: grid;
   grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--two-thirds-height);
-  grid-template-areas: "viewer viewer viewer" "html css js";
+  grid-template-rows: var(--full-height) var(--two-thirds-height) var(--nav-horizontal-height);
+  grid-template-areas: "viewer viewer viewer" "html css js" "nav nav nav" ;
 }
 .grid--left {
-  grid-template-columns: var(--one-third-width) var(--two-thirds-width);
+  grid-template-columns: var(--nav-vertical-width) var(--one-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
   grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas: "html viewer" "css viewer" "js viewer";
+  grid-template-areas: "nav html viewer" "nav css viewer" "nav js viewer";
 }
 
+.nav{ grid-area: nav; }
 .html { grid-area: html; }
 .css { grid-area: css; }
 .js { grid-area: js; }
@@ -55,7 +62,16 @@
 </head>
 <body class="w-100 h-100 ma0">
 
-<div class="grid grid--top">
+<div class="grid grid--left">
+  <div class="nav buttons bg-hot-pink">
+    <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
+    onclick="prompt('','https://itty.bitty.site/#/data:text/html;charset=utf-8,'+viewer.srcdoc)">&#9729;</button>
+
+    <a href="#viewer">
+      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim">&#8609;</button>
+    </a>
+  </div>
+
   <textarea class="html editor print-hide bg-red near-white pa4 input-reset bn outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
 
   <textarea class="css editor print-hide bg-green near-white pa4 input-reset bn outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
@@ -63,15 +79,6 @@
   <textarea class="js editor print-hide bg-blue near-white pa4 input-reset bn outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
 
   <iframe id="viewer" class="viewer bg-gold overflow-auto pre w-100 h-100 bn"></iframe>
-</div>
-
-<div class="buttons">
-  <button class="print-hide pointer absolute top-0 right-0 w2 h2 bg-dark-gray near-white bn outline-0 pa2 dim" 
-  onclick="prompt('','https://itty.bitty.site/#/data:text/html;charset=utf-8,'+viewer.srcdoc)">&#9729;</button>
-
-  <a href="#viewer">
-    <button class="print-hide pointer absolute top-2 right-0 w2 h2 bg-dark-gray near-white bn outline-0 pa2 dim">&#8609;</button>
-  </a>
 </div>
 
 <script>
