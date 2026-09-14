@@ -1,1 +1,115 @@
+<!DOCTYPE html>
+<html class="w-100 h-100 ma0 bg-near-black">
+<head>
+<title>TE</title>
+<meta name=viewport content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<style>
+@import url(https://unpkg.com/tachyons/css/tachyons.min.css);
 
+.h-33 { height: 33.33% }
+.h-66 { height: 66.66% }
+
+.editor {
+  min-height: 111.111px;
+  min-width: 111.111px;
+  max-height: 100vh;
+  max-width: 66vw;
+}
+@media print{
+  .print-hide { display: none }
+}
+</style>
+</head>
+<body class="w-100 h-100 ma0">
+
+<div class="editors h-50">
+  <textarea class="html editor print-hide bg-dark-gray near-white w-third h-100 pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" 
+  placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+
+  <textarea class="css editor print-hide bg-dark-gray near-white w-third h-100 pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" 
+  placeholder=CSS wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+
+  <textarea class="js editor print-hide bg-dark-gray near-white w-third h-100 pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" 
+  placeholder=JS wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+</div>
+
+<iframe id=viewer class="viewer w-100 min-vh-100 bn bg-white"></iframe>
+
+<div class="buttons">
+  <button class="print-hide pointer absolute top-0 right-0 w2 h2 bg-dark-gray near-white b--black-50 ba br0 outline-0 pa2 dim" 
+  onclick="prompt('','https://itty.bitty.site/#/data:text/html;charset=utf-8,'+viewer.srcdoc)">&#9729;</button>
+
+  <a href="#viewer">
+    <button class="print-hide pointer absolute top-2 right-0 w2 h2 bg-dark-gray near-white b--black-50 ba br0 outline-0 pa2 dim">&#8609;</button>
+  </a>
+</div>
+
+<script>
+// elements
+var editorHTML = document.querySelector('.html');
+var editorCSS = document.querySelector('.css');
+var editorJS = document.querySelector('.js');
+var viewer = document.querySelector('.viewer');
+
+if(window.location.hash) {
+    // hash found
+    var hash = window.location.hash.substring(1); // puts hash in variable, and removes the # character
+    console.log(hash);
+
+    // populate editors if theres any data already stored
+    editorHTML.value = localStorage.getItem('HTMLcontent' + hash);
+    editorCSS.value = localStorage.getItem('CSScontent' + hash);
+    editorJS.value = localStorage.getItem('JScontent' + hash);
+
+    // save data for each editor
+    function saveHTMLDataHash() { localStorage.setItem('HTMLcontent' + hash, editorHTML.value); }
+    function saveCSSDataHash() { localStorage.setItem('CSScontent' + hash, editorCSS.value); }
+    function saveJSDataHash() { localStorage.setItem('JScontent' + hash, editorJS.value); }
+
+    // listen and fire
+    window.addEventListener("input", updateViewerHash);
+    editorHTML.addEventListener("keyup", saveHTMLDataHash);
+    editorCSS.addEventListener("keyup", saveCSSDataHash);
+    editorJS.addEventListener("keyup", saveJSDataHash);
+
+    // update viewer
+    function updateViewerHash() {
+        HTMLView = editorHTML.value;
+        CSSView = '<style>@import url(https://unpkg.com/tachyons/css/tachyons.min.css);' + editorCSS.value + '<\/style>';
+        JSView = '<script>' + editorJS.value + '<\/script>';
+
+        viewer.srcdoc = HTMLView + CSSView + JSView;
+    }
+    updateViewerHash();
+} else {
+    // No hash found
+
+    // populate editors if theres any data already stored
+    editorHTML.value = localStorage.getItem('HTMLcontent');
+    editorCSS.value = localStorage.getItem('CSScontent');
+    editorJS.value = localStorage.getItem('JScontent');
+
+    // save data for each editor
+    function saveHTMLData() { localStorage.setItem('HTMLcontent', editorHTML.value); }
+    function saveCSSData() { localStorage.setItem('CSScontent', editorCSS.value); }
+    function saveJSData() { localStorage.setItem('JScontent', editorJS.value); }
+
+    // listen and fire
+    window.addEventListener("input", updateViewer);
+    editorHTML.addEventListener("keyup", saveHTMLData);
+    editorCSS.addEventListener("keyup", saveCSSData);
+    editorJS.addEventListener("keyup", saveJSData);
+
+    // update viewer
+    function updateViewer() {
+        HTMLView = editorHTML.value;
+        CSSView = '<style>@import url(https://unpkg.com/tachyons/css/tachyons.min.css);' + editorCSS.value + '<\/style>';
+        JSView = '<script>' + editorJS.value + '<\/script>';
+
+        viewer.srcdoc = HTMLView + CSSView + JSView;
+    }
+    updateViewer();
+}
+</script>
+</body>
+</html>
