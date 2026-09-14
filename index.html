@@ -63,13 +63,23 @@
 <body class="w-100 h-100 ma0">
 
 <div class="grid grid--left">
-  <div class="nav buttons bg-hot-pink">
+  <div class="nav buttons bg-hot-pink code f7">
     <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-    onclick="prompt('','https://itty.bitty.site/#/data:text/html;charset=utf-8,'+viewer.srcdoc)">&#9729;</button>
+    onclick="prompt('','https://itty.bitty.site/#/data:text/html;charset=utf-8,'+viewer.srcdoc)">C</button>
 
-    <a href="#viewer">
-      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim">&#8609;</button>
-    </a>
+    <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
+    onclick="document.getElementById('viewer').scrollIntoView(true);">V</button>
+
+    <div class="layout">
+      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
+      onclick="layoutTop()">T</button>
+      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
+      onclick="layoutRight()">R</button>
+      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
+      onclick="layoutBottom()">B</button>
+      <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
+      onclick="layoutLeft()">L</button>
+    </div>
   </div>
 
   <textarea class="html editor print-hide bg-red near-white pa4 input-reset bn outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
@@ -83,6 +93,7 @@
 
 <script>
 // elements
+var grid = document.querySelector(".grid");
 var editorHTML = document.querySelector('.html');
 var editorCSS = document.querySelector('.css');
 var editorJS = document.querySelector('.js');
@@ -146,6 +157,23 @@ if(window.location.hash) {
         viewer.srcdoc = HTMLView + CSSView + JSView;
     }
     updateViewer();
+}
+
+function layoutTop() {
+    grid.classList.add("grid--top");
+    grid.classList.remove("grid--right", "grid--bottom", "grid--left");    
+}
+function layoutRight() {
+    grid.classList.add("grid--right");
+    grid.classList.remove("grid--top", "grid--bottom", "grid--left");    
+}
+function layoutBottom() {var grid = document.querySelector(".grid");
+    grid.classList.add("grid--bottom");
+    grid.classList.remove("grid--top", "grid--right", "grid--left");    
+}
+function layoutLeft() {var grid = document.querySelector(".grid");
+    grid.classList.add("grid--left");
+    grid.classList.remove("grid--top", "grid--right", "grid--bottom");    
 }
 </script>
 </body>
