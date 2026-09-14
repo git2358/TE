@@ -289,7 +289,7 @@ textarea::placeholder {
 
     <button
       class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-      onclick="document.getElementById('viewer').scrollIntoView(true);"
+      onclick="scrollToViewer()"
       title="Jump to Viewer">
       V
     </button>
@@ -730,6 +730,20 @@ function viewerIsEmpty() {
 
 
 // ----------------------------------------
+// Smooth scroll to viewer
+// ----------------------------------------
+
+function scrollToViewer() {
+
+  document.getElementById("viewer").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+}
+
+
+// ----------------------------------------
 // Scroll to viewer once on page load
 // ----------------------------------------
 
@@ -737,9 +751,9 @@ window.addEventListener("load", function() {
 
   setTimeout(function() {
 
-    document.getElementById("viewer").scrollIntoView(true);
+    scrollToViewer();
 
-  }, 100);
+  }, 500);
 
 });
 
