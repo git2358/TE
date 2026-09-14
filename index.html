@@ -168,8 +168,8 @@ if(window.location.hash) {
     // update viewer
     function updateViewerHash() {
         HTMLView = editorHTML.value;
-        CSSView = '<style>@import url(https://unpkg.com/tachyons/css/tachyons.min.css);' + editorCSS.value + '<\/style>';
-        JSView = '<script>' + editorJS.value + '<\/script>';
+        CSSView = '<style>\n@import url(https://unpkg.com/tachyons/css/tachyons.min.css);\n' + editorCSS.value + '\n<\/style>';
+        JSView = '<script>\n' + editorJS.value + '\n<\/script>';
 
         viewer.srcdoc = HTMLView + CSSView + JSView;
     }
@@ -196,8 +196,8 @@ if(window.location.hash) {
     // update viewer
     function updateViewer() {
         HTMLView = editorHTML.value;
-        CSSView = '<style>@import url(https://unpkg.com/tachyons/css/tachyons.min.css);' + editorCSS.value + '<\/style>';
-        JSView = '<script>' + editorJS.value + '<\/script>';
+        CSSView = '<style>\n@import url(https://unpkg.com/tachyons/css/tachyons.min.css);\n' + editorCSS.value + '\n<\/style>';
+        JSView = '<script\n' + editorJS.value + '\n<\/script>';
 
         viewer.srcdoc = HTMLView + CSSView + JSView;
     }
@@ -271,10 +271,63 @@ function stampDate() {
 //     document.body.removeChild(anchor);
 // }
 
+
+// TODO: chain string
+// <!doctype html>
+// <html lang="en" >
+// <head>
+// <meta charset="UTF-8">
+// <title>hash</title>
+// <link rel="stylesheet" href="./hash.css">
+// </head>
+// <body>
+
+// insert editorHTML.value here
+
+// <script  src="./hash.js"><\/script>
+// </body>
+// </html>
+
+// var editorHTMLZip = {'<!doctype html>\n' + 
+// '<html lang="en>\n' + 
+// '<head>\n' + 
+// '<meta charset="UTF-8">\n' + 
+// '<title>' + hash + '</title>\n' + 
+// '<link rel="stylesheet" href="./' + hash + '.css">\n' + 
+// '</head>\n' + 
+// '<body>\n' + 
+// editorHTML.value + 
+// '<script  src="./' + hash + '.js"><\/script>\n' + 
+// '</body>\n' + 
+// '</html>\n'
+// }
+
+var editorHTMLZip = [
+"<!doctype html>",
+"<html lang='en>",
+"<head>",
+"<meta charset='UTF-8'>",
+"<title>" + hash + "</title>",
+"<link rel='stylesheet' href='./" + hash + ".css'>",
+"</head>",
+"<body>",
+editorHTML.value,
+"<script  src='./" + hash + ".js'><\/script>",
+"</body>",
+"</html>"
+].join("\n");
+
+var editorCSSZip = [
+"@import url(https://unpkg.com/tachyons/css/tachyons.min.css);",
+,
+editorCSS.value
+].join("\n");
+
 function downloadZip() {
   var zip = new JSZip();
-  zip.file(hash + ".html", editorHTML.value);
-  zip.file(hash + ".css", editorCSS.value);
+
+  zip.file(hash + ".html", editorHTMLZip);
+  zip.file(hash + ".css", editorCSSZip);
   zip.file(hash + ".js", editorJS.value);
 
   zip.generateAsync({type:"blob"})
