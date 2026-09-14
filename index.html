@@ -229,6 +229,23 @@ html {
   grid-area: viewer;
 }
 
+.grid.viewer-only {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+.grid.viewer-only .nav,
+.grid.viewer-only .editor {
+  display: none;
+}
+
+.grid.viewer-only .viewer {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
 textarea {
   resize: none;
   -webkit-border-radius: 0;
@@ -275,9 +292,9 @@ textarea::placeholder {
 
     <button
       class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-      onclick="openCloud()"
-      title="Compile Shareable URL Link">
-      C
+      onclick="shareHash()"
+      title="Share Named Project URL">
+      S
     </button>
 
     <button
@@ -298,28 +315,28 @@ textarea::placeholder {
 
       <button
         class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-        onclick="setLayout('top')"
+        onclick="setLayout('top', true)"
         title="Set Layout Top">
         T
       </button>
 
       <button
         class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-        onclick="setLayout('right')"
+        onclick="setLayout('right', true)"
         title="Set Layout Right">
         R
       </button>
 
       <button
         class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-        onclick="setLayout('bottom')"
+        onclick="setLayout('bottom', true)"
         title="Set Layout Bottom">
         B
       </button>
 
       <button
         class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-        onclick="setLayout('left')"
+        onclick="setLayout('left', true)"
         title="Set Layout Left">
         L
       </button>
@@ -395,15 +412,170 @@ var editorJS = document.querySelector('.js');
 var viewer = document.querySelector('.viewer');
 
 // hash
-var hash = window.location.hash
+var rawHash = window.location.hash
   ? window.location.hash.substring(1)
   : "";
+var hashParts = rawHash.split("?");
+var hash = hashParts[0];
+var urlMarker = (hashParts[1] || "").toUpperCase();
+var urlHide = urlMarker === "H";
+var urlLayout = /^(T|R|B|L)$/.test(urlMarker)
+    ? urlMarker.toLowerCase()
+    : "";
+var hashPayload = urlHide || urlLayout
+  ? hashParts.slice(2).join("?")
+  : hashParts.slice(1).join("?");
+
+// URL payload
+function loadEditorDataFromHash() {
+
+  if (!hashPayload) {
+    return false;
+  }
+
+  try {
+
+    var base64 = hashPayload
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+
+    while (base64.length % 4) {
+      base64 += "=";
+    }
+
+    var binary = atob(base64);
+    var decoded;
+
+    try {
+
+      decoded = decodeURIComponent(binary);
+
+    } catch (error) {
+
+      decoded = decodeURIComponent(
+        binary
+          .split("")
+          .map(function(character) {
+            return "%" + ("00" + character.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join("")
+      );
+
+    }
+
+    var data = JSON.parse(decoded);
+
+    if (
+      !data ||
+      typeof data.html !== "string" ||
+      typeof data.css !== "string" ||
+      typeof data.js !== "string"
+    ) {
+      return false;
+    }
+
+    editorHTML.value = data.html;
+    editorCSS.value = data.css;
+    editorJS.value = data.js;
+
+    return true;
+
+  } catch (error) {
+
+    return false;
+
+  }
+
+}
+
+var editorDataFromHash = loadEditorDataFromHash();
+
+function encodeEditorData() {
+
+  return btoa(
+    encodeURIComponent(JSON.stringify({
+      html: editorHTML.value,
+      css: editorCSS.value,
+      js: editorJS.value
+    }))
+  );
+
+}
+
+function getLayoutMarker() {
+
+  return normalizeLayout(urlLayout).charAt(0).toUpperCase();
+
+}
+
+function getUrlMarker() {
+
+  return urlHide
+    ? getLayoutMarker() + "H"
+    : urlLayout
+      ? getLayoutMarker()
+      : "H";
+
+}
+
+function updateHashFromEditors() {
+
+  if (hash) {
+    window.location.hash = hash +
+      ((urlLayout || urlHide) ? "?" + getUrlMarker() : "") +
+      "?" + encodeEditorData();
+  }
+
+}
 
 // ----------------------------------------
 // Load saved editor content
 // ----------------------------------------
 
-if (window.location.hash) {
+if (editorDataFromHash) {
+
+  function saveHTMLDataHashPayload() {
+    localStorage.setItem('HTMLcontent' + hash, editorHTML.value);
+  }
+
+  function saveCSSDataHashPayload() {
+    localStorage.setItem('CSScontent' + hash, editorCSS.value);
+  }
+
+  function saveJSDataHashPayload() {
+    localStorage.setItem('JScontent' + hash, editorJS.value);
+  }
+
+  function updateViewerHashPayload() {
+
+    var HTMLView = editorHTML.value;
+
+    var CSSView =
+      '<style>\n' +
+      '@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' +
+      editorCSS.value +
+      '\n<\/style>';
+
+    var JSView =
+      '<script>\n' +
+      editorJS.value +
+      '\n<\/script>';
+
+    viewer.srcdoc = HTMLView + CSSView + JSView;
+
+    updateHashFromEditors();
+    viewerIsEmpty();
+  }
+
+  window.addEventListener("input", updateViewerHashPayload);
+
+  editorHTML.addEventListener("keyup", saveHTMLDataHashPayload);
+  editorCSS.addEventListener("keyup", saveCSSDataHashPayload);
+  editorJS.addEventListener("keyup", saveJSDataHashPayload);
+
+  updateViewerHashPayload();
+
+} else if (window.location.hash) {
 
   // populate editors from hash
   editorHTML.value = localStorage.getItem('HTMLcontent' + hash) || '';
@@ -441,6 +613,7 @@ if (window.location.hash) {
 
     viewer.srcdoc = HTMLView + CSSView + JSView;
 
+    updateHashFromEditors();
     viewerIsEmpty();
   }
 
@@ -491,6 +664,7 @@ if (window.location.hash) {
 
     viewer.srcdoc = HTMLView + CSSView + JSView;
 
+    updateHashFromEditors();
     viewerIsEmpty();
   }
 
@@ -543,7 +717,22 @@ function getLayout() {
 
 }
 
-function setLayout(pos) {
+function normalizeLayout(pos) {
+
+  var shortLayouts = {
+    t: "top",
+    r: "right",
+    b: "bottom",
+    l: "left"
+  };
+
+  return shortLayouts[pos.toLowerCase()] || pos;
+
+}
+
+function setLayout(pos, updateUrl) {
+
+  pos = normalizeLayout(pos);
 
   var layoutClass = "grid--" + pos;
 
@@ -552,6 +741,19 @@ function setLayout(pos) {
   grid.classList.add(layoutClass);
 
   localStorage.setItem('gridLayout', pos);
+
+  if (updateUrl && hash) {
+    urlLayout = pos;
+    window.location.hash = hash +
+      "?" + getUrlMarker() +
+      "?" + encodeEditorData();
+  }
+
+}
+
+function setViewerOnly(hidden) {
+
+  grid.classList.toggle("viewer-only", hidden);
 
 }
 
@@ -598,19 +800,51 @@ function setFocus(pos) {
 
 getLayout();
 getFocus();
+setViewerOnly(urlHide);
+
+if (urlLayout || urlHide) {
+
+  if (urlLayout) {
+    setLayout(urlLayout);
+  }
+
+  window.addEventListener("load", function() {
+
+    setTimeout(function() {
+      scrollToViewer();
+    }, 500);
+
+  });
+
+}
 
 
-// ----------------------------------------
-// Open Cloud
-// ----------------------------------------
+function shareHash() {
 
-function openCloud() {
+  updateHashFromEditors();
 
-  window.open(
-    "http://git2358.github.io/urlpages/#" +
-    btoa(encodeURIComponent(viewer.srcdoc)),
-    "_blank"
-  );
+  var url = window.location.href;
+
+  function copyFallback() {
+
+    var input = document.createElement("textarea");
+    input.value = url;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    document.body.removeChild(input);
+
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+
+    navigator.clipboard.writeText(url).catch(copyFallback);
+
+  } else {
+
+    copyFallback();
+
+  }
 
 }
 
