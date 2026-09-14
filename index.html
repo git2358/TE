@@ -6,15 +6,44 @@
 <style>
 @import url(https://unpkg.com/tachyons/css/tachyons.min.css);
 
-.h-33 { height: 33.33% }
-.h-66 { height: 66.66% }
+:root {
+  --one-third-width: calc(100vw/3);
+  --two-thirds-width: calc(var(--one-third-width)*2);
+  --full-width: calc(var(--one-third-width)*3);
 
-.editor {
-  min-height: 111.111px;
-  min-width: 111.111px;
-  max-height: 100vh;
-  max-width: 66vw;
+  --one-third-height: calc(100vh/3);
+  --two-thirds-height: calc(var(--one-third-height)*2);
+  --full-height: calc(var(--one-third-height)*3);
 }
+
+.grid { display: grid; }
+.grid--top {
+  grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
+  grid-template-rows: var(--one-third-height) var(--two-thirds-height);
+  grid-template-areas: "html css js" "viewer viewer viewer";
+}
+.grid--right {
+  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
+  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-areas: "viewer html" "viewer css" "viewer js";
+}
+.grid--bottom {
+  display: grid;
+  grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
+  grid-template-rows: var(--two-thirds-height) var(--one-third-height);
+  grid-template-areas: "viewer viewer viewer" "html css js";
+}
+.grid--left {
+  grid-template-columns: var(--one-third-width) var(--two-thirds-width);
+  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-areas: "html viewer" "css viewer" "js viewer";
+}
+
+.html { grid-area: html; }
+.css { grid-area: css; }
+.js { grid-area: js; }
+.viewer { grid-area: viewer; }
+
 @media print{
   .print-hide { display: none }
 }
@@ -22,18 +51,15 @@
 </head>
 <body class="w-100 h-100 ma0">
 
-<div class="editors h-50">
-  <textarea class="html editor print-hide bg-dark-gray near-white w-third h-100 pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" 
-  placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+<div class="grid grid--top">
+  <textarea class="html editor print-hide bg-red near-white pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
 
-  <textarea class="css editor print-hide bg-dark-gray near-white w-third h-100 pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" 
-  placeholder=CSS wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+  <textarea class="css editor print-hide bg-green near-white pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
 
-  <textarea class="js editor print-hide bg-dark-gray near-white w-third h-100 pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" 
-  placeholder=JS wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+  <textarea class="js editor print-hide bg-blue near-white pa4 input-reset b--black-50 ba br0 outline-0 fl code f5" placeholder=HTML wrap=soft autocomplete=on autocorrect=off autocapitalize=off spellcheck=on data-gramm=false></textarea>
+
+  <iframe id="viewer" class="viewer bg-gold overflow-auto pre w-100 h-100 bn"></iframe>
 </div>
-
-<iframe id=viewer class="viewer w-100 min-vh-100 bn bg-white"></iframe>
 
 <div class="buttons">
   <button class="print-hide pointer absolute top-0 right-0 w2 h2 bg-dark-gray near-white b--black-50 ba br0 outline-0 pa2 dim" 
