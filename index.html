@@ -20,7 +20,7 @@
 
 <style type="text/css">
 
-@import url("https://unpkg.com/tachyons/css/tachyons.min.css");
+@import url("./css/tachyons.min.css");
 
 :root {
   --nav-horizontal-width: 100vw;
@@ -581,17 +581,24 @@ function updatePageTitle() {
 var rawHash = window.location.hash
   ? window.location.hash.substring(1)
   : "";
+
 var hashParts = rawHash.split("?");
-var hash = hashParts[0];
-var projectName = hash && hash !== "P"
+
+var hash = hashParts[0] || "P";
+
+var projectName = hash !== "P"
   ? decodeURIComponent(hash)
   : "";
+
 var urlMarker = (hashParts[1] || "").toUpperCase();
+
 var urlHide = urlMarker === "H";
+
 var urlLayout = /^(T|R|B|L)$/.test(urlMarker)
     ? urlMarker.toLowerCase()
-    : "";
-var hashPayload = urlHide || urlLayout
+    : "left";
+
+var hashPayload = urlHide || /^(T|R|B|L)$/.test(urlMarker)
   ? hashParts.slice(2).join("?")
   : hashParts.slice(1).join("?");
 
@@ -728,6 +735,7 @@ function encodeEditorData() {
 
 }
 
+
 function getLayoutMarker() {
 
   return normalizeLayout(urlLayout).charAt(0).toUpperCase();
@@ -737,10 +745,8 @@ function getLayoutMarker() {
 function getUrlMarker() {
 
   return urlHide
-    ? getLayoutMarker() + "H"
-    : urlLayout
-      ? getLayoutMarker()
-      : "H";
+    ? "H"
+    : getLayoutMarker();
 
 }
 
@@ -801,7 +807,7 @@ if (editorDataFromHash) {
 
     var CSSView =
       '<style>\n' +
-      '@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' +
+      '@import url("https://git2358.github.io/TE/css/tachyons.min.css");\n' +
       editorCSS.value +
       '\n<\/style>';
 
@@ -854,7 +860,7 @@ if (editorDataFromHash) {
 
     var CSSView =
       '<style>\n' +
-      '@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' +
+      '@import url("https://git2358.github.io/TE/css/tachyons.min.css");\n' +
       editorCSS.value +
       '\n<\/style>';
 
@@ -908,7 +914,7 @@ if (editorDataFromHash) {
 
     var CSSView =
       '<style>\n' +
-      '@import url("https://unpkg.com/tachyons/css/tachyons.min.css");\n' +
+      '@import url("https://git2358.github.io/TE/css/tachyons.min.css");\n' +
       editorCSS.value +
       '\n<\/style>';
 
@@ -935,6 +941,29 @@ if (editorDataFromHash) {
   updateViewer();
   resizeMobileEditors();
 }
+
+
+// ----------------------------------------
+// Normalize URL
+// ----------------------------------------
+
+function normalizeInitialURL() {
+
+  var marker = urlHide
+    ? "H"
+    : (urlLayout || "left").charAt(0).toUpperCase();
+
+  history.replaceState(
+    null,
+    "",
+    "#" + hash +
+    "?" + marker +
+    "?" + encodeEditorData()
+  );
+
+}
+
+normalizeInitialURL();
 
 
 // ----------------------------------------
@@ -1059,11 +1088,16 @@ function setLayout(pos, updateUrl) {
 
   localStorage.setItem('gridLayout', pos);
 
-  if (updateUrl && hash) {
+  if (updateUrl && hash && !urlHide) {
     urlLayout = pos;
-    history.replaceState(null, "", "#" + hash +
-      "?" + getUrlMarker() +
-      "?" + encodeEditorData());
+
+    history.replaceState(
+      null,
+      "",
+      "#" + hash +
+      "?" + getLayoutMarker() +
+      "?" + encodeEditorData()
+    );
   }
 
 }
@@ -1424,7 +1458,7 @@ function downloadZip() {
     {
       name: zipName + ".css",
       content: [
-        "@import url(\"https://unpkg.com/tachyons/css/tachyons.min.css\");",
+        "@import url(\"https://git2358.github.io/TE/css/tachyons.min.css\");",
         editorCSS.value
       ].join("\n")
     },
