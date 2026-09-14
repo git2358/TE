@@ -107,11 +107,11 @@ textarea::placeholder {
     <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
     onclick="openCloud()">C</button>
 
-    <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-    onclick="downloadAll()">E</button>
+    <!-- <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
+    onclick="downloadAll()">E</button> -->
 
     <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
-    onclick="downloadZip()">S</button>
+    onclick="downloadZip()">E</button>
 
     <button class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim" 
     onclick="document.getElementById('viewer').scrollIntoView(true);">V</button>
@@ -243,33 +243,33 @@ function stampDate() {
     return stamp = new Date().YYYYMMDDHHMMSS();
 }
 
-function downloadAll() {
-    downloadThis(editorHTML, "html");
-    downloadThis(editorCSS, "css");
-    downloadThis(editorJS, "js");
-}
+// function downloadAll() {
+//     downloadThis(editorHTML, "html");
+//     downloadThis(editorCSS, "css");
+//     downloadThis(editorJS, "js");
+// }
 
-function downloadThis(elem, ext) {
-    var text = elem.value;
-    var ext = ext;
+// function downloadThis(elem, ext) {
+//     var text = elem.value;
+//     var ext = ext;
 
-    // To retain the Line breaks.
-    text = text.replace(/\n/g, "\r\n");
+//     // To retain the Line breaks.
+//     text = text.replace(/\n/g, "\r\n");
 
-    var blob = new Blob([text], { type: "text/plain"});
+//     var blob = new Blob([text], { type: "text/plain"});
 
-    var anchor = document.createElement("a");
-    anchor.download = hash + "-" + stampDate() + "." + ext;
+//     var anchor = document.createElement("a");
+//     anchor.download = hash + "-" + stampDate() + "." + ext;
 
-    anchor.href = window.URL.createObjectURL(blob);
-    anchor.target ="_blank";
+//     anchor.href = window.URL.createObjectURL(blob);
+//     anchor.target ="_blank";
 
-    anchor.style.display = "none";
+//     anchor.style.display = "none";
 
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-}
+//     document.body.appendChild(anchor);
+//     anchor.click();
+//     document.body.removeChild(anchor);
+// }
 
 function downloadZip() {
   var zip = new JSZip();
