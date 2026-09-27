@@ -519,11 +519,6 @@ body.viewer-only-page {
   writing-mode: vertical-rl;
   text-orientation: upright;
 
-  /*
-   * Centre the vertical project name in the
-   * navigation column instead of aligning it
-   * against the outer/right edge.
-   */
   text-align: center;
 
   white-space: nowrap;
@@ -533,9 +528,22 @@ body.viewer-only-page {
   text-overflow: clip;
 }
 
+
+/*
+ * Vertical project names:
+ *
+ * - Keep the project name horizontally aligned
+ *   with the P button.
+ * - Remove the inherited horizontal padding
+ *   that shifts the text sideways.
+ * - Add a full line of vertical separation
+ *   before the project name begins.
+ */
 .grid--right .project-name.project-name--has-text,
 .grid--left .project-name.project-name--has-text {
   padding-top: 1.5em;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 
@@ -698,6 +706,10 @@ body.viewer-only-page {
   }
 
 
+  /*
+   * Mobile/horizontal project names retain
+   * the normal left-hand separation from P.
+   */
   .project-name.project-name--has-text,
   .grid--right .project-name.project-name--has-text,
   .grid--left .project-name.project-name--has-text {
