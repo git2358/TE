@@ -229,11 +229,6 @@ html {
   grid-area: viewer;
 }
 
-
-/* ----------------------------------------
-   Viewer-only / H mode
-   ---------------------------------------- */
-
 .grid.viewer-only {
   display: block;
   width: 100vw;
@@ -253,17 +248,6 @@ html {
   min-height: 0;
   overflow: hidden;
 }
-
-html.viewer-only-page,
-body.viewer-only-page {
-  height: auto !important;
-  min-height: 100%;
-}
-
-body.viewer-only-page {
-  overflow-x: hidden;
-}
-
 
 .mobile-nav {
   display: none;
@@ -387,20 +371,10 @@ body.viewer-only-page {
 
   .grid.viewer-only {
     display: block;
-    width: 100vw;
-    height: auto;
-    min-height: 0;
   }
 
   .grid.viewer-only .viewer {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    min-height: 0;
-    overflow: hidden;
-    position: relative;
-    top: 0;
-    z-index: 1;
+    min-height: 100vh;
   }
 
 }
@@ -607,277 +581,6 @@ function updatePageTitle() {
 }
 
 
-// ----------------------------------------
-// Viewer height + background for H mode
-// ----------------------------------------
-
-function buildViewerSrcdoc(HTMLView, CSSView, JSView) {
-
-  var viewerStateScript = [
-
-    '<script>',
-
-    '(function(){',
-
-    'var stateQueued = false;',
-
-    'function getBackgroundState(style){',
-
-    'return {',
-    'color: style.backgroundColor,',
-    'image: style.backgroundImage,',
-    'repeat: style.backgroundRepeat,',
-    'position: style.backgroundPosition,',
-    'size: style.backgroundSize,',
-    'attachment: style.backgroundAttachment',
-    '};',
-
-    '}',
-
-
-    'function sendViewerState(){',
-
-    'var body = document.body;',
-    'var html = document.documentElement;',
-
-    'var htmlStyle = getComputedStyle(html);',
-    'var bodyStyle = body ? getComputedStyle(body) : htmlStyle;',
-
-    'var height = Math.max(',
-
-    'body ? body.scrollHeight : 0,',
-    'body ? body.offsetHeight : 0,',
-    'html ? html.scrollHeight : 0,',
-    'html ? html.offsetHeight : 0,',
-    'window.innerHeight || 0',
-
-    ');',
-
-
-    'parent.postMessage({',
-
-    'type: "TE_VIEWER_STATE",',
-    'height: height,',
-
-    'htmlBackground: getBackgroundState(htmlStyle),',
-    'bodyBackground: getBackgroundState(bodyStyle)',
-
-    '}, "*");',
-
-    '}',
-
-
-    'function queueViewerState(){',
-
-    'if (stateQueued) return;',
-
-    'stateQueued = true;',
-
-    'requestAnimationFrame(function(){',
-
-    'stateQueued = false;',
-    'sendViewerState();',
-
-    '});',
-
-    '}',
-
-
-    'window.addEventListener("load", sendViewerState);',
-    'window.addEventListener("resize", queueViewerState);',
-
-
-    'if (window.ResizeObserver) {',
-
-    'var resizeObserver = new ResizeObserver(function(){',
-    'queueViewerState();',
-    '});',
-
-    'if (document.documentElement) {',
-    'resizeObserver.observe(document.documentElement);',
-    '}',
-
-    'if (document.body) {',
-    'resizeObserver.observe(document.body);',
-    '}',
-
-    '}',
-
-
-    'if (window.MutationObserver) {',
-
-    'var mutationObserver = new MutationObserver(function(){',
-    'queueViewerState();',
-    '});',
-
-    'mutationObserver.observe(document.documentElement, {',
-    'attributes: true,',
-    'childList: true,',
-    'subtree: true',
-    '});',
-
-    '}',
-
-
-    'if (document.fonts && document.fonts.ready) {',
-
-    'document.fonts.ready.then(sendViewerState);',
-
-    '}',
-
-
-    'setTimeout(sendViewerState, 0);',
-    'setTimeout(sendViewerState, 100);',
-    'setTimeout(sendViewerState, 500);',
-    'setTimeout(sendViewerState, 1000);',
-
-    '})();',
-
-    '<\/script>'
-
-  ].join('\n');
-
-  return HTMLView + CSSView + JSView + viewerStateScript;
-
-}
-
-
-var viewerBackgroundProperties = [
-  "background-color",
-  "background-image",
-  "background-repeat",
-  "background-position",
-  "background-size",
-  "background-attachment"
-];
-
-
-function applyViewerBackground(target, background) {
-
-  if (!target || !background) {
-    return;
-  }
-
-  target.style.setProperty(
-    "background-color",
-    background.color
-  );
-
-  target.style.setProperty(
-    "background-image",
-    background.image
-  );
-
-  target.style.setProperty(
-    "background-repeat",
-    background.repeat
-  );
-
-  target.style.setProperty(
-    "background-position",
-    background.position
-  );
-
-  target.style.setProperty(
-    "background-size",
-    background.size
-  );
-
-  target.style.setProperty(
-    "background-attachment",
-    background.attachment
-  );
-
-}
-
-
-function clearViewerBackground(target) {
-
-  if (!target) {
-    return;
-  }
-
-  viewerBackgroundProperties.forEach(function(property) {
-
-    target.style.removeProperty(property);
-
-  });
-
-}
-
-
-function resetViewerBackground() {
-
-  clearViewerBackground(document.documentElement);
-  clearViewerBackground(document.body);
-
-}
-
-
-function syncViewerBackground(data) {
-
-  if (!urlHide || !data) {
-    return;
-  }
-
-  /*
-   * Mirror iframe <html> background
-   * onto the real document <html>.
-   */
-  applyViewerBackground(
-    document.documentElement,
-    data.htmlBackground
-  );
-
-  /*
-   * Mirror iframe <body> background
-   * onto the real document <body>.
-   */
-  applyViewerBackground(
-    document.body,
-    data.bodyBackground
-  );
-
-}
-
-
-function enableViewerOnlyAutoHeight() {
-
-  window.addEventListener("message", function(event) {
-
-    if (event.source !== viewer.contentWindow) {
-      return;
-    }
-
-    if (
-      !event.data ||
-      event.data.type !== "TE_VIEWER_STATE"
-    ) {
-      return;
-    }
-
-    if (!urlHide) {
-      return;
-    }
-
-    var height = Math.max(
-      Number(event.data.height) || 0,
-      window.innerHeight || 0
-    );
-
-    viewer.style.setProperty(
-      "height",
-      height + "px",
-      "important"
-    );
-
-    syncViewerBackground(event.data);
-
-  });
-
-}
-
-
 // hash
 var rawHash = window.location.hash
   ? window.location.hash.substring(1)
@@ -960,6 +663,7 @@ projectNameInput.addEventListener("input", function() {
 updateProjectNameSize();
 updatePageTitle();
 
+
 // URL payload
 function loadEditorDataFromHash() {
 
@@ -1024,6 +728,7 @@ function loadEditorDataFromHash() {
 
 var editorDataFromHash = loadEditorDataFromHash();
 
+
 function encodeEditorData() {
 
   return btoa(
@@ -1043,6 +748,7 @@ function getLayoutMarker() {
 
 }
 
+
 function getUrlMarker() {
 
   return urlHide
@@ -1050,6 +756,7 @@ function getUrlMarker() {
     : getLayoutMarker();
 
 }
+
 
 function updateHashFromEditors() {
 
@@ -1061,20 +768,27 @@ function updateHashFromEditors() {
 
 }
 
+
 function resizeMobileEditor(editor) {
 
   if (window.innerWidth <= 600) {
+
     editor.style.setProperty("height", "auto", "important");
+
     editor.style.setProperty(
       "height",
       Math.max(editor.scrollHeight, window.innerHeight) + "px",
       "important"
     );
+
   } else {
+
     editor.style.removeProperty("height");
+
   }
 
 }
+
 
 function resizeMobileEditors() {
 
@@ -1083,6 +797,245 @@ function resizeMobileEditors() {
   resizeMobileEditor(editorJS);
 
 }
+
+
+// ----------------------------------------
+// Viewer height + background synchronisation
+// ----------------------------------------
+
+var viewerBackgroundProperties = [
+  "background-color",
+  "background-image",
+  "background-repeat",
+  "background-position",
+  "background-size",
+  "background-attachment"
+];
+
+
+function getViewerContentHeight() {
+
+  try {
+
+    if (!viewer.contentDocument) {
+      return 0;
+    }
+
+    var doc = viewer.contentDocument;
+    var body = doc.body;
+    var html = doc.documentElement;
+
+    return Math.max(
+      body ? body.scrollHeight : 0,
+      body ? body.offsetHeight : 0,
+      html ? html.scrollHeight : 0,
+      html ? html.offsetHeight : 0,
+      window.innerHeight || 0
+    );
+
+  } catch (error) {
+
+    return 0;
+
+  }
+
+}
+
+
+function getViewerBackground() {
+
+  try {
+
+    if (!viewer.contentDocument) {
+      return null;
+    }
+
+    var doc = viewer.contentDocument;
+    var html = doc.documentElement;
+    var body = doc.body;
+
+    if (!html || !body) {
+      return null;
+    }
+
+    var htmlStyle = window.getComputedStyle(html);
+    var bodyStyle = window.getComputedStyle(body);
+
+    var background = {};
+
+    viewerBackgroundProperties.forEach(function(property) {
+
+      var htmlValue = htmlStyle.getPropertyValue(property);
+      var bodyValue = bodyStyle.getPropertyValue(property);
+
+      /*
+       * The body background is normally what the user sees.
+       * If the body has no visible background, use html.
+       */
+      var value = bodyValue;
+
+      if (
+        !value ||
+        value === "transparent" ||
+        value === "rgba(0, 0, 0, 0)"
+      ) {
+        value = htmlValue;
+      }
+
+      background[property] = value;
+
+    });
+
+    return background;
+
+  } catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+function applyViewerBackground(background) {
+
+  if (!background) {
+    return;
+  }
+
+  viewerBackgroundProperties.forEach(function(property) {
+
+    var value = background[property];
+
+    if (
+      value !== undefined &&
+      value !== null &&
+      value !== ""
+    ) {
+
+      document.documentElement.style.setProperty(
+        property,
+        value
+      );
+
+      document.body.style.setProperty(
+        property,
+        value
+      );
+
+    }
+
+  });
+
+}
+
+
+function clearViewerBackground() {
+
+  viewerBackgroundProperties.forEach(function(property) {
+
+    document.documentElement.style.removeProperty(property);
+    document.body.style.removeProperty(property);
+
+  });
+
+}
+
+
+function updateViewerOnlyDisplay() {
+
+  if (!urlHide) {
+    return;
+  }
+
+  var height = getViewerContentHeight();
+
+  if (height > 0) {
+
+    viewer.style.setProperty(
+      "height",
+      height + "px",
+      "important"
+    );
+
+  }
+
+  var background = getViewerBackground();
+
+  if (background) {
+    applyViewerBackground(background);
+  }
+
+}
+
+
+function enableViewerOnlyAutoHeight() {
+
+  viewer.addEventListener("load", function() {
+
+    if (!urlHide) {
+      return;
+    }
+
+    updateViewerOnlyDisplay();
+
+    setTimeout(updateViewerOnlyDisplay, 50);
+    setTimeout(updateViewerOnlyDisplay, 200);
+    setTimeout(updateViewerOnlyDisplay, 500);
+    setTimeout(updateViewerOnlyDisplay, 1000);
+
+    try {
+
+      var doc = viewer.contentDocument;
+
+      if (!doc) {
+        return;
+      }
+
+      var body = doc.body;
+      var html = doc.documentElement;
+
+      if (window.ResizeObserver) {
+
+        if (body) {
+          new ResizeObserver(updateViewerOnlyDisplay).observe(body);
+        }
+
+        if (html) {
+          new ResizeObserver(updateViewerOnlyDisplay).observe(html);
+        }
+
+      }
+
+      if (window.MutationObserver) {
+
+        var observerTarget = html || body;
+
+        if (observerTarget) {
+
+          new MutationObserver(function() {
+            updateViewerOnlyDisplay();
+          }).observe(
+            observerTarget,
+            {
+              attributes: true,
+              childList: true,
+              subtree: true
+            }
+          );
+
+        }
+
+      }
+
+    } catch (error) {
+      // Ignore inaccessible iframe documents.
+    }
+
+  });
+
+}
+
 
 // ----------------------------------------
 // Load saved editor content
@@ -1117,11 +1070,7 @@ if (editorDataFromHash) {
       editorJS.value +
       '\n<\/script>';
 
-    viewer.srcdoc = buildViewerSrcdoc(
-      HTMLView,
-      CSSView,
-      JSView
-    );
+    viewer.srcdoc = HTMLView + CSSView + JSView;
 
     updateHashFromEditors();
     viewerIsEmpty();
@@ -1174,11 +1123,7 @@ if (editorDataFromHash) {
       editorJS.value +
       '\n<\/script>';
 
-    viewer.srcdoc = buildViewerSrcdoc(
-      HTMLView,
-      CSSView,
-      JSView
-    );
+    viewer.srcdoc = HTMLView + CSSView + JSView;
 
     updateHashFromEditors();
     viewerIsEmpty();
@@ -1232,11 +1177,7 @@ if (editorDataFromHash) {
       editorJS.value +
       '\n<\/script>';
 
-    viewer.srcdoc = buildViewerSrcdoc(
-      HTMLView,
-      CSSView,
-      JSView
-    );
+    viewer.srcdoc = HTMLView + CSSView + JSView;
 
     updateHashFromEditors();
     viewerIsEmpty();
@@ -1376,6 +1317,7 @@ function getLayout() {
 
 }
 
+
 function normalizeLayout(pos) {
 
   var shortLayouts = {
@@ -1388,6 +1330,7 @@ function normalizeLayout(pos) {
   return shortLayouts[pos.toLowerCase()] || pos;
 
 }
+
 
 function setLayout(pos, updateUrl) {
 
@@ -1402,6 +1345,7 @@ function setLayout(pos, updateUrl) {
   localStorage.setItem('gridLayout', pos);
 
   if (updateUrl && hash && !urlHide) {
+
     urlLayout = pos;
 
     history.replaceState(
@@ -1411,29 +1355,28 @@ function setLayout(pos, updateUrl) {
       "?" + getLayoutMarker() +
       "?" + encodeEditorData()
     );
+
   }
 
 }
+
 
 function setViewerOnly(hidden) {
 
   grid.classList.toggle("viewer-only", hidden);
 
-  document.documentElement.classList.toggle(
-    "viewer-only-page",
-    hidden
-  );
+  if (hidden) {
 
-  document.body.classList.toggle(
-    "viewer-only-page",
-    hidden
-  );
-
-  if (!hidden) {
-
+    /*
+     * Allow the iframe to determine its own document height.
+     * The iframe will be resized after it loads.
+     */
     viewer.style.removeProperty("height");
 
-    resetViewerBackground();
+  } else {
+
+    viewer.style.removeProperty("height");
+    clearViewerBackground();
 
   }
 
@@ -1461,6 +1404,7 @@ function getFocus() {
 
 }
 
+
 function setFocus(pos) {
 
   var focusClass = "focus--" + pos;
@@ -1483,7 +1427,6 @@ function setFocus(pos) {
 getLayout();
 getFocus();
 setViewerOnly(urlHide);
-
 enableViewerOnlyAutoHeight();
 
 if (urlLayout || urlHide) {
@@ -1556,6 +1499,7 @@ Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
 
 });
 
+
 function stampDate() {
 
   return new Date().YYYYMMDDHHMMSS();
@@ -1576,9 +1520,11 @@ function crc32(data) {
     var c = n;
 
     for (var k = 0; k < 8; k++) {
+
       c = (c & 1)
         ? 0xedb88320 ^ (c >>> 1)
         : c >>> 1;
+
     }
 
     table[n] = c >>> 0;
@@ -1647,6 +1593,7 @@ function createZip(files) {
 
     var crc = crc32(data);
 
+
     // ----------------------------------------
     // Local file header
     // ----------------------------------------
@@ -1672,6 +1619,7 @@ function createZip(files) {
       header: new Uint8Array(localHeader),
       data: data
     });
+
 
     // ----------------------------------------
     // Central directory header
@@ -1860,6 +1808,7 @@ function scrollToViewer() {
 
 }
 
+
 function smoothScrollTo(top) {
 
   window.scrollTo({
@@ -1869,11 +1818,13 @@ function smoothScrollTo(top) {
 
 }
 
+
 function scrollToSection(section) {
 
   var navOffset = window.innerWidth <= 600 && section !== viewer
     ? document.querySelector(".nav").offsetHeight
     : 0;
+
   var top = 0;
 
   if (window.innerWidth <= 600) {
@@ -1898,6 +1849,7 @@ function scrollToSection(section) {
   smoothScrollTo(top - navOffset);
 
 }
+
 
 function scrollToEditor(type) {
 
