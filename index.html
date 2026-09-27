@@ -519,7 +519,12 @@ body.viewer-only-page {
   writing-mode: vertical-rl;
   text-orientation: upright;
 
-  text-align: start;
+  /*
+   * Centre the vertical project name in the
+   * navigation column instead of aligning it
+   * against the outer/right edge.
+   */
+  text-align: center;
 
   white-space: nowrap;
 
@@ -1403,8 +1408,48 @@ function buildViewerSrcdoc(
 
 
 // ----------------------------------------
-// Viewer background in H mode
+// Viewer background helpers
 // ----------------------------------------
+
+function editorsHaveContent() {
+
+  return (
+    editorHTML.value !== "" ||
+    editorCSS.value !== "" ||
+    editorJS.value !== ""
+  );
+
+}
+
+
+function setDefaultViewerBackground() {
+
+  if (editorsHaveContent()) {
+
+    viewer.classList.remove(
+      "bg-gold"
+    );
+
+    viewer.style.setProperty(
+      "background-color",
+      "rgb(255, 255, 255)",
+      "important"
+    );
+
+  } else {
+
+    viewer.classList.add(
+      "bg-gold"
+    );
+
+    viewer.style.removeProperty(
+      "background-color"
+    );
+
+  }
+
+}
+
 
 function isTransparentBackgroundColor(color) {
 
@@ -1525,11 +1570,18 @@ function syncViewerBackground() {
           )
         : null;
 
+    /*
+     * Check BODY first because this is the usual
+     * location for a project background.
+     */
     var background =
       getBackgroundSource(
         bodyStyle
       );
 
+    /*
+     * Then check HTML.
+     */
     if (!background) {
 
       background =
@@ -1545,24 +1597,60 @@ function syncViewerBackground() {
     var pageBody =
       document.body;
 
+    /*
+     * No explicit HTML/BODY background:
+     *
+     * empty editors  -> yellow
+     * content exists -> white
+     */
     if (!background) {
 
-      pageHTML.style.backgroundImage =
-        "none";
+      if (editorsHaveContent()) {
 
-      pageHTML.style.backgroundColor =
-        "rgb(255, 255, 255)";
+        pageHTML.style.backgroundImage =
+          "none";
 
-      pageBody.style.backgroundImage =
-        "none";
+        pageHTML.style.backgroundColor =
+          "rgb(255, 255, 255)";
 
-      pageBody.style.backgroundColor =
-        "rgb(255, 255, 255)";
+        pageBody.style.backgroundImage =
+          "none";
+
+        pageBody.style.backgroundColor =
+          "rgb(255, 255, 255)";
+
+        viewer.classList.remove(
+          "bg-gold"
+        );
+
+      } else {
+
+        pageHTML.style.backgroundImage =
+          "none";
+
+        pageHTML.style.backgroundColor =
+          "rgb(255, 215, 0)";
+
+        pageBody.style.backgroundImage =
+          "none";
+
+        pageBody.style.backgroundColor =
+          "rgb(255, 215, 0)";
+
+        viewer.classList.add(
+          "bg-gold"
+        );
+
+      }
 
       return;
 
     }
 
+    /*
+     * An explicit HTML/BODY background exists.
+     * Copy it to the H-mode page.
+     */
     var color =
       background.color;
 
@@ -1608,6 +1696,10 @@ function syncViewerBackground() {
 
     pageBody.style.backgroundClip =
       background.clip;
+
+    viewer.classList.remove(
+      "bg-gold"
+    );
 
   } catch (error) {
 
@@ -3242,31 +3334,42 @@ function downloadZip() {
 
 function viewerIsEmpty() {
 
+  /*
+   * Always start with the normal preview fallback.
+   * Empty = yellow.
+   * Content = white.
+   *
+   * An explicit html/body background inside the
+   * iframe is rendered by the iframe itself and
+   * therefore remains visible over this fallback.
+   */
+  setDefaultViewerBackground();
+
   if (urlHide) {
 
+    /*
+     * H mode has its own background synchronisation.
+     * Do not let the iframe element's yellow fallback
+     * interfere with the copied html/body background.
+     */
     viewer.classList.remove(
       "bg-gold"
+    );
+
+    viewer.style.removeProperty(
+      "background-color"
+    );
+
+    setTimeout(
+      function() {
+
+        updateViewerOnlyPage();
+
+      },
+      0
     );
 
     return;
-
-  }
-
-  if (
-    editorHTML.value !== "" ||
-    editorCSS.value !== "" ||
-    editorJS.value !== ""
-  ) {
-
-    viewer.classList.remove(
-      "bg-gold"
-    );
-
-  } else {
-
-    viewer.classList.add(
-      "bg-gold"
-    );
 
   }
 
