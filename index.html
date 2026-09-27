@@ -65,13 +65,26 @@ body.viewer-only-page {
   overflow-x: hidden;
 }
 
+
+/* ----------------------------------------
+   Grid layouts
+   ---------------------------------------- */
+
 .grid {
   display: grid;
 }
 
 .grid--top {
-  grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
-  grid-template-rows: var(--nav-horizontal-height) var(--two-thirds-height) var(--full-height);
+  grid-template-columns:
+    var(--one-third-width)
+    var(--one-third-width)
+    var(--one-third-width);
+
+  grid-template-rows:
+    var(--nav-horizontal-height)
+    var(--two-thirds-height)
+    var(--full-height);
+
   grid-template-areas:
     "nav nav nav"
     "html css js"
@@ -79,8 +92,16 @@ body.viewer-only-page {
 }
 
 .grid--top.focus--html {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--nav-horizontal-height) var(--one-third-height) var(--one-third-height) var(--full-height);
+  grid-template-columns:
+    var(--two-thirds-width)
+    var(--one-third-width);
+
+  grid-template-rows:
+    var(--nav-horizontal-height)
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--full-height);
+
   grid-template-areas:
     "nav nav"
     "html css"
@@ -89,8 +110,16 @@ body.viewer-only-page {
 }
 
 .grid--top.focus--css {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--nav-horizontal-height) var(--one-third-height) var(--one-third-height) var(--full-height);
+  grid-template-columns:
+    var(--two-thirds-width)
+    var(--one-third-width);
+
+  grid-template-rows:
+    var(--nav-horizontal-height)
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--full-height);
+
   grid-template-areas:
     "nav nav"
     "css html"
@@ -99,8 +128,16 @@ body.viewer-only-page {
 }
 
 .grid--top.focus--js {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--nav-horizontal-height) var(--one-third-height) var(--one-third-height) var(--full-height);
+  grid-template-columns:
+    var(--two-thirds-width)
+    var(--one-third-width);
+
+  grid-template-rows:
+    var(--nav-horizontal-height)
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--full-height);
+
   grid-template-areas:
     "nav nav"
     "js html"
@@ -108,9 +145,18 @@ body.viewer-only-page {
     "viewer viewer";
 }
 
+
 .grid--right {
-  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--one-third-width) var(--nav-vertical-width);
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-columns:
+    calc((var(--two-thirds-width)) - (var(--nav-vertical-width)))
+    var(--one-third-width)
+    var(--nav-vertical-width);
+
+  grid-template-rows:
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--one-third-height);
+
   grid-template-areas:
     "viewer html nav"
     "viewer css nav"
@@ -118,8 +164,17 @@ body.viewer-only-page {
 }
 
 .grid--right.focus--html {
-  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--half-third-width) var(--half-third-width) var(--nav-vertical-width);
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-columns:
+    calc((var(--two-thirds-width)) - (var(--nav-vertical-width)))
+    var(--half-third-width)
+    var(--half-third-width)
+    var(--nav-vertical-width);
+
+  grid-template-rows:
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--one-third-height);
+
   grid-template-areas:
     "viewer html html nav"
     "viewer html html nav"
@@ -127,8 +182,17 @@ body.viewer-only-page {
 }
 
 .grid--right.focus--css {
-  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--half-third-width) var(--half-third-width) var(--nav-vertical-width);
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-columns:
+    calc((var(--two-thirds-width)) - (var(--nav-vertical-width)))
+    var(--half-third-width)
+    var(--half-third-width)
+    var(--nav-vertical-width);
+
+  grid-template-rows:
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--one-third-height);
+
   grid-template-areas:
     "viewer css css nav"
     "viewer css css nav"
@@ -136,17 +200,35 @@ body.viewer-only-page {
 }
 
 .grid--right.focus--js {
-  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--half-third-width) var(--half-third-width) var(--nav-vertical-width);
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-columns:
+    calc((var(--two-thirds-width)) - (var(--nav-vertical-width)))
+    var(--half-third-width)
+    var(--half-third-width)
+    var(--nav-vertical-width);
+
+  grid-template-rows:
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--one-third-height);
+
   grid-template-areas:
     "viewer js js nav"
     "viewer js js nav"
     "viewer html css nav";
 }
 
+
 .grid--bottom {
-  grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--two-thirds-height) var(--nav-horizontal-height);
+  grid-template-columns:
+    var(--one-third-width)
+    var(--one-third-width)
+    var(--one-third-width);
+
+  grid-template-rows:
+    var(--full-height)
+    var(--two-thirds-height)
+    var(--nav-horizontal-height);
+
   grid-template-areas:
     "viewer viewer viewer"
     "html css js"
@@ -154,8 +236,16 @@ body.viewer-only-page {
 }
 
 .grid--bottom.focus--html {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--one-third-height) var(--one-third-height) var(--nav-horizontal-height);
+  grid-template-columns:
+    var(--two-thirds-width)
+    var(--one-third-width);
+
+  grid-template-rows:
+    var(--full-height)
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--nav-horizontal-height);
+
   grid-template-areas:
     "viewer viewer"
     "html css"
@@ -164,8 +254,16 @@ body.viewer-only-page {
 }
 
 .grid--bottom.focus--css {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--one-third-height) var(--one-third-height) var(--nav-horizontal-height);
+  grid-template-columns:
+    var(--two-thirds-width)
+    var(--one-third-width);
+
+  grid-template-rows:
+    var(--full-height)
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--nav-horizontal-height);
+
   grid-template-areas:
     "viewer viewer"
     "css html"
@@ -174,8 +272,16 @@ body.viewer-only-page {
 }
 
 .grid--bottom.focus--js {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--one-third-height) var(--one-third-height) var(--nav-horizontal-height);
+  grid-template-columns:
+    var(--two-thirds-width)
+    var(--one-third-width);
+
+  grid-template-rows:
+    var(--full-height)
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--nav-horizontal-height);
+
   grid-template-areas:
     "viewer viewer"
     "js html"
@@ -183,9 +289,18 @@ body.viewer-only-page {
     "nav nav";
 }
 
+
 .grid--left {
-  grid-template-columns: var(--nav-vertical-width) var(--one-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-columns:
+    var(--nav-vertical-width)
+    var(--one-third-width)
+    calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
+
+  grid-template-rows:
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--one-third-height);
+
   grid-template-areas:
     "nav html viewer"
     "nav css viewer"
@@ -193,8 +308,17 @@ body.viewer-only-page {
 }
 
 .grid--left.focus--html {
-  grid-template-columns: var(--nav-vertical-width) var(--half-third-width) var(--half-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-columns:
+    var(--nav-vertical-width)
+    var(--half-third-width)
+    var(--half-third-width)
+    calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
+
+  grid-template-rows:
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--one-third-height);
+
   grid-template-areas:
     "nav html html viewer"
     "nav html html viewer"
@@ -202,8 +326,17 @@ body.viewer-only-page {
 }
 
 .grid--left.focus--css {
-  grid-template-columns: var(--nav-vertical-width) var(--half-third-width) var(--half-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-columns:
+    var(--nav-vertical-width)
+    var(--half-third-width)
+    var(--half-third-width)
+    calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
+
+  grid-template-rows:
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--one-third-height);
+
   grid-template-areas:
     "nav css css viewer"
     "nav css css viewer"
@@ -211,8 +344,17 @@ body.viewer-only-page {
 }
 
 .grid--left.focus--js {
-  grid-template-columns: var(--nav-vertical-width) var(--half-third-width) var(--half-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
+  grid-template-columns:
+    var(--nav-vertical-width)
+    var(--half-third-width)
+    var(--half-third-width)
+    calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
+
+  grid-template-rows:
+    var(--one-third-height)
+    var(--one-third-height)
+    var(--one-third-height);
+
   grid-template-areas:
     "nav js js viewer"
     "nav js js viewer"
@@ -361,10 +503,6 @@ body.viewer-only-page {
   max-height: none;
 
   overflow: hidden;
-
-  position: relative;
-
-  display: block;
 }
 
 .grid--right .project-name,
@@ -388,23 +526,11 @@ body.viewer-only-page {
   overflow: hidden;
 
   text-overflow: clip;
-
-  padding: 0.5em 0 0.5em 0;
-
-  line-height: 1;
-
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-
-  transform: none;
 }
 
 .grid--right .project-name.project-name--has-text,
 .grid--left .project-name.project-name--has-text {
   padding-top: 1.5em;
-  padding-left: 0;
 }
 
 
@@ -430,7 +556,7 @@ body.viewer-only-page {
 
 
 /* ----------------------------------------
-   Viewer only
+   Viewer only / H mode
    ---------------------------------------- */
 
 .grid.viewer-only {
@@ -452,6 +578,11 @@ body.viewer-only-page {
   min-height: 0;
   overflow: hidden;
 }
+
+
+/* ----------------------------------------
+   Mobile navigation
+   ---------------------------------------- */
 
 .mobile-nav {
   display: none;
@@ -496,6 +627,15 @@ body.viewer-only-page {
   }
 
 
+  /*
+   * H / viewer-only mode must override
+   * the mobile navigation display rule above.
+   */
+  .grid.viewer-only .nav {
+    display: none !important;
+  }
+
+
   .layouts {
     display: none !important;
   }
@@ -523,10 +663,6 @@ body.viewer-only-page {
     flex: 1 1 auto !important;
 
     overflow: hidden !important;
-
-    position: relative !important;
-
-    display: block !important;
   }
 
 
@@ -554,17 +690,6 @@ body.viewer-only-page {
     overflow: hidden !important;
 
     text-overflow: clip !important;
-
-    padding: 0.5em !important;
-
-    line-height: normal;
-
-    top: 0 !important;
-    right: 0 !important;
-    bottom: auto !important;
-    left: 0 !important;
-
-    transform: none !important;
   }
 
 
@@ -650,6 +775,10 @@ body.viewer-only-page {
   }
 
 
+  /*
+   * In H mode the viewer must behave as
+   * the only page element on mobile.
+   */
   .grid.viewer-only {
     display: block;
 
@@ -662,6 +791,12 @@ body.viewer-only-page {
 
 
   .grid.viewer-only .viewer {
+    display: block;
+
+    position: static;
+
+    width: 100vw;
+
     min-height: 100vh;
     height: 100vh;
   }
@@ -818,6 +953,7 @@ textarea::placeholder {
 
   </div>
 
+
   <textarea
     class="html editor print-hide bg-red near-white pa4 lh-title input-reset bn outline-0 fl code f5"
     placeholder="HTML"
@@ -828,6 +964,7 @@ textarea::placeholder {
     spellcheck="on"
     data-gramm="false"
     onclick="setFocus('html')"></textarea>
+
 
   <textarea
     class="css editor print-hide bg-green near-white pa4 lh-title input-reset bn outline-0 fl code f5"
@@ -840,6 +977,7 @@ textarea::placeholder {
     data-gramm="false"
     onclick="setFocus('css')"></textarea>
 
+
   <textarea
     class="js editor print-hide bg-blue near-white pa4 lh-title input-reset bn outline-0 fl code f5"
     placeholder="JS"
@@ -850,6 +988,7 @@ textarea::placeholder {
     spellcheck="on"
     data-gramm="false"
     onclick="setFocus('js')"></textarea>
+
 
   <iframe
     id="viewer"
@@ -862,15 +1001,29 @@ textarea::placeholder {
 <script type="text/javascript">
 
 // elements
-var grid = document.querySelector('.grid');
-var editorHTML = document.querySelector('.html');
-var editorCSS = document.querySelector('.css');
-var editorJS = document.querySelector('.js');
-var viewer = document.querySelector('.viewer');
-var projectNameInput = document.querySelector('.project-name');
-var projectNameWrap = document.querySelector('.project-name-wrap');
+var grid =
+  document.querySelector('.grid');
 
-var defaultPageTitle = "[ 2358 | TE ]";
+var editorHTML =
+  document.querySelector('.html');
+
+var editorCSS =
+  document.querySelector('.css');
+
+var editorJS =
+  document.querySelector('.js');
+
+var viewer =
+  document.querySelector('.viewer');
+
+var projectNameInput =
+  document.querySelector('.project-name');
+
+var projectNameWrap =
+  document.querySelector('.project-name-wrap');
+
+var defaultPageTitle =
+  "[ 2358 | TE ]";
 
 
 // ----------------------------------------
@@ -915,17 +1068,19 @@ function updateProjectNameURL() {
       null,
       "",
       "#P" +
-      ((urlLayout || urlHide)
-        ? "?" + getUrlMarker()
-        : "") +
-      "?" + encodeEditorData()
+      (
+        (urlLayout || urlHide)
+          ? "?" + getUrlMarker()
+          : ""
+      ) +
+      "?" +
+      encodeEditorData()
     );
 
     updatePageTitle();
     updateProjectNameDisplay();
 
     return;
-
   }
 
   projectName =
@@ -937,11 +1092,15 @@ function updateProjectNameURL() {
   history.replaceState(
     null,
     "",
-    "#" + hash +
-    ((urlLayout || urlHide)
-      ? "?" + getUrlMarker()
-      : "") +
-      "?" + encodeEditorData()
+    "#" +
+    hash +
+    (
+      (urlLayout || urlHide)
+        ? "?" + getUrlMarker()
+        : ""
+    ) +
+    "?" +
+    encodeEditorData()
   );
 
   updateProjectNameDisplay();
@@ -995,7 +1154,7 @@ window.addEventListener(
 
 
 // ----------------------------------------
-// hash
+// Hash
 // ----------------------------------------
 
 var rawHash =
@@ -1030,6 +1189,7 @@ var hashPayload =
   /^(T|R|B|L)$/.test(urlMarker)
     ? hashParts.slice(2).join("?")
     : hashParts.slice(1).join("?");
+
 
 projectNameInput.value =
   projectName;
@@ -1078,11 +1238,12 @@ function loadEditorDataFromHash() {
               function(character) {
 
                 return "%" +
-                  ("00" +
+                  (
+                    "00" +
                     character
                       .charCodeAt(0)
-                      .toString(16))
-                    .slice(-2);
+                      .toString(16)
+                  ).slice(-2);
 
               }
             )
@@ -1169,11 +1330,15 @@ function updateHashFromEditors() {
     history.replaceState(
       null,
       "",
-      "#" + hash +
-      ((urlLayout || urlHide)
-        ? "?" + getUrlMarker()
-        : "") +
-      "?" + encodeEditorData()
+      "#" +
+      hash +
+      (
+        (urlLayout || urlHide)
+          ? "?" + getUrlMarker()
+          : ""
+      ) +
+      "?" +
+      encodeEditorData()
     );
 
   }
@@ -1922,16 +2087,19 @@ function normalizeInitialURL() {
   var marker =
     urlHide
       ? "H"
-      : (urlLayout || "left")
-          .charAt(0)
-          .toUpperCase();
+      : (
+          urlLayout || "left"
+        ).charAt(0).toUpperCase();
 
   history.replaceState(
     null,
     "",
-    "#" + hash +
-    "?" + marker +
-    "?" + encodeEditorData()
+    "#" +
+    hash +
+    "?" +
+    marker +
+    "?" +
+    encodeEditorData()
   );
 
 }
@@ -2171,9 +2339,12 @@ function setLayout(
     history.replaceState(
       null,
       "",
-      "#" + hash +
-      "?" + getLayoutMarker() +
-      "?" + encodeEditorData()
+      "#" +
+      hash +
+      "?" +
+      getLayoutMarker() +
+      "?" +
+      encodeEditorData()
     );
 
   }
@@ -2382,6 +2553,10 @@ if (
 
 }
 
+
+// ----------------------------------------
+// Share
+// ----------------------------------------
 
 function shareHash() {
 
@@ -3218,7 +3393,10 @@ window.addEventListener(
 );
 
 
+// ----------------------------------------
 // Initial project-name display
+// ----------------------------------------
+
 updateProjectNameDisplay();
 
 </script>
