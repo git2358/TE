@@ -1,385 +1,126 @@
-<!doctype html>
-<html lang="en-us">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>[ 2358 | TE ]</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TE</title>
 
-<meta charset="utf-8" />
-<meta http-equiv="x-ua-compatible" content="ie=edge" />
+<style>
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
 
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-<meta name="mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="[ TE ]">
-<meta name="application-name" content="[ TE ]">
-<meta name="theme-color" content="#ffffff">
+  * {
+    box-sizing: border-box;
+  }
 
-<meta name="author" content="2358, https://git2358.github.io/" />
-<meta name="description" content="[ TE ]" />
+  textarea {
+    resize: none;
+  }
 
-<style type="text/css">
+  .grid {
+    display: grid;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
 
-@import url("./css/tachyons.min.css");
+  .grid--top {
+    grid-template-columns: 100%;
+    grid-template-rows: 32px 1fr 1fr 1fr;
+  }
 
-:root {
-  --nav-horizontal-width: 100vw;
-  --nav-horizontal-height: 2em;
+  .grid--right {
+    grid-template-columns: 1fr 32px;
+    grid-template-rows: 1fr 1fr 1fr;
+  }
 
-  --nav-vertical-width: 2em;
-  --nav-vertical-height: 100vh;
+  .grid--bottom {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr 32px;
+  }
 
-  --one-third-width: calc(100vw/3);
-  --two-thirds-width: calc(var(--one-third-width)*2);
-  --half-width: calc((var(--one-third-width)*3)/2);
-  --half-third-width: calc(var(--one-third-width)/2);
-  --full-width: calc(var(--one-third-width)*3);
-  --full-width-bleed: calc(var(--one-third-width)*4);
-
-  --one-third-height: calc(100vh/3);
-  --two-thirds-height: calc(var(--one-third-height)*2);
-  --half-height: calc((var(--one-third-height)*3)/2);
-  --half-third-height: calc(var(--one-third-height)/2);
-  --full-height: calc(var(--one-third-height)*3);
-  --full-height-bleed: calc(var(--one-third-width)*4);
-}
-
-::-webkit-scrollbar {
-  width: 0;
-  display: none;
-}
-
-html {
-  -ms-overflow-style: none;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-}
-
-.grid {
-  display: grid;
-}
-
-.grid--top {
-  grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
-  grid-template-rows: var(--nav-horizontal-height) var(--two-thirds-height) var(--full-height);
-  grid-template-areas:
-    "nav nav nav"
-    "html css js"
-    "viewer viewer viewer";
-}
-
-.grid--top.focus--html {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--nav-horizontal-height) var(--one-third-height) var(--one-third-height) var(--full-height);
-  grid-template-areas:
-    "nav nav"
-    "html css"
-    "html js"
-    "viewer viewer";
-}
-
-.grid--top.focus--css {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--nav-horizontal-height) var(--one-third-height) var(--one-third-height) var(--full-height);
-  grid-template-areas:
-    "nav nav"
-    "css html"
-    "css js"
-    "viewer viewer";
-}
-
-.grid--top.focus--js {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--nav-horizontal-height) var(--one-third-height) var(--one-third-height) var(--full-height);
-  grid-template-areas:
-    "nav nav"
-    "js html"
-    "js css"
-    "viewer viewer";
-}
-
-.grid--right {
-  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--one-third-width) var(--nav-vertical-width);
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas:
-    "viewer html nav"
-    "viewer css nav"
-    "viewer js nav";
-}
-
-.grid--right.focus--html {
-  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--half-third-width) var(--half-third-width) var(--nav-vertical-width);
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas:
-    "viewer html html nav"
-    "viewer html html nav"
-    "viewer css js nav";
-}
-
-.grid--right.focus--css {
-  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--half-third-width) var(--half-third-width) var(--nav-vertical-width);
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas:
-    "viewer css css nav"
-    "viewer css css nav"
-    "viewer html js nav";
-}
-
-.grid--right.focus--js {
-  grid-template-columns: calc((var(--two-thirds-width)) - (var(--nav-vertical-width))) var(--half-third-width) var(--half-third-width) var(--nav-vertical-width);
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas:
-    "viewer js js nav"
-    "viewer js js nav"
-    "viewer html css nav";
-}
-
-.grid--bottom {
-  grid-template-columns: var(--one-third-width) var(--one-third-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--two-thirds-height) var(--nav-horizontal-height);
-  grid-template-areas:
-    "viewer viewer viewer"
-    "html css js"
-    "nav nav nav";
-}
-
-.grid--bottom.focus--html {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--one-third-height) var(--one-third-height) var(--nav-horizontal-height);
-  grid-template-areas:
-    "viewer viewer"
-    "html css"
-    "html js"
-    "nav nav";
-}
-
-.grid--bottom.focus--css {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--one-third-height) var(--one-third-height) var(--nav-horizontal-height);
-  grid-template-areas:
-    "viewer viewer"
-    "css html"
-    "css js"
-    "nav nav";
-}
-
-.grid--bottom.focus--js {
-  grid-template-columns: var(--two-thirds-width) var(--one-third-width);
-  grid-template-rows: var(--full-height) var(--one-third-height) var(--one-third-height) var(--nav-horizontal-height);
-  grid-template-areas:
-    "viewer viewer"
-    "js html"
-    "js css"
-    "nav nav";
-}
-
-.grid--left {
-  grid-template-columns: var(--nav-vertical-width) var(--one-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas:
-    "nav html viewer"
-    "nav css viewer"
-    "nav js viewer";
-}
-
-.grid--left.focus--html {
-  grid-template-columns: var(--nav-vertical-width) var(--half-third-width) var(--half-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas:
-    "nav html html viewer"
-    "nav html html viewer"
-    "nav css js viewer";
-}
-
-.grid--left.focus--css {
-  grid-template-columns: var(--nav-vertical-width) var(--half-third-width) var(--half-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas:
-    "nav css css viewer"
-    "nav css css viewer"
-    "nav html js viewer";
-}
-
-.grid--left.focus--js {
-  grid-template-columns: var(--nav-vertical-width) var(--half-third-width) var(--half-third-width) calc((var(--two-thirds-width)) - (var(--nav-vertical-width)));
-  grid-template-rows: var(--one-third-height) var(--one-third-height) var(--one-third-height);
-  grid-template-areas:
-    "nav js js viewer"
-    "nav js js viewer"
-    "nav html css viewer";
-}
-
-.nav {
-  grid-area: nav;
-}
-
-.html {
-  grid-area: html;
-}
-
-.css {
-  grid-area: css;
-}
-
-.js {
-  grid-area: js;
-}
-
-.viewer {
-  grid-area: viewer;
-}
-
-
-/* ----------------------------------------
-   Viewer-only / H mode
-   ---------------------------------------- */
-
-.grid.viewer-only {
-  display: block;
-  width: 100vw;
-  height: auto;
-  min-height: 0;
-}
-
-.grid.viewer-only .nav,
-.grid.viewer-only .editor {
-  display: none;
-}
-
-.grid.viewer-only .viewer {
-  display: block;
-  width: 100vw;
-  height: 100vh;
-  min-height: 0;
-  overflow: hidden;
-}
-
-
-.mobile-nav {
-  display: none;
-}
-
-.project-name {
-  box-sizing: border-box;
-  display: block;
-  width: calc(var(--project-name-length, 1) * 2rem);
-  height: 2rem;
-  min-width: 2rem;
-  background: #333;
-  color: #fff;
-  border: 0;
-  border-radius: 0;
-  outline: 0;
-  padding: 0.5em;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 1em;
-}
-
-.grid--right .project-name,
-.grid--left .project-name {
-  width: 2rem;
-  height: calc(var(--project-name-length, 1) * 2rem);
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-}
-
-.project-name::placeholder {
-  color: #fff;
-  opacity: 1;
-}
-
-@media screen and (max-width: 600px) {
-
-  .grid[class*="grid--"] {
-    display: flex;
-    flex-direction: column;
+  .grid--left {
+    grid-template-columns: 32px 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
   }
 
   .nav {
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    grid-area: nav;
+    z-index: 10;
   }
 
-  .layouts {
-    display: none;
-  }
-
-  .mobile-nav {
-    display: block;
-  }
-
-  .project-name {
-    width: calc(var(--project-name-length, 1) * 2rem) !important;
-    height: 2rem !important;
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-  }
-
-  .nav button[onclick="setFocus('')"] {
-    display: none;
-  }
-
-  .html,
-  .css,
-  .js,
-  .viewer {
-    min-width: 0;
-    min-height: 100vh;
-    width: 100%;
-  }
-
-  .html,
-  .css,
-  .js {
-    height: auto !important;
-    min-height: calc(100vh - 32px);
-    max-height: calc(100vh - 32px);
-    overflow-y: auto;
-    touch-action: pan-y;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: auto;
-  }
-
-  .viewer {
-    position: relative;
-    z-index: 2;
-  }
-
-  .html,
-  .css,
-  .js,
-  .viewer {
-    position: sticky;
-    top: 32px;
-    align-self: start;
-    flex: 0 0 auto;
+  .editor {
+    z-index: 5;
+    overflow: hidden;
   }
 
   .html {
-    z-index: 1;
+    grid-area: html;
   }
 
   .css {
-    z-index: 2;
+    grid-area: css;
   }
 
   .js {
-    z-index: 3;
+    grid-area: js;
   }
 
   .viewer {
+    grid-area: viewer;
     z-index: 4;
-    top: 0;
-    min-height: calc(100vh + 32px);
+    border: 0;
+    overflow: auto;
   }
+
+  .grid--top {
+    grid-template-areas:
+      "nav"
+      "html"
+      "css"
+      "js";
+  }
+
+  .grid--right {
+    grid-template-areas:
+      "html nav"
+      "css viewer"
+      "js viewer";
+  }
+
+  .grid--bottom {
+    grid-template-areas:
+      "html"
+      "css"
+      "js"
+      "nav";
+  }
+
+  .grid--left {
+    grid-template-areas:
+      "nav html"
+      "viewer css"
+      "viewer js";
+  }
+
+  /* =========================================================
+     VIEWER-ONLY / ?H MODE
+     ========================================================= */
 
   .grid.viewer-only {
     display: block;
     width: 100vw;
     height: auto;
     min-height: 0;
+    overflow: visible;
+  }
+
+  .grid.viewer-only .nav,
+  .grid.viewer-only .editor {
+    display: none;
   }
 
   .grid.viewer-only .viewer {
@@ -387,319 +128,191 @@ html {
     width: 100vw;
     height: 100vh;
     min-height: 0;
+    border: 0;
     overflow: hidden;
-    position: relative;
-    top: 0;
-    z-index: 1;
   }
 
-}
-
-textarea {
-  resize: none;
-  -webkit-border-radius: 0;
-  border-radius: 0;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  -ms-appearance: none;
-  appearance: none;
-}
-
-textarea::placeholder {
-  color: #fff;
-  mix-blend-mode: difference;
-}
-
-::selection {
-  background: #fff;
-  color: #333;
-  mix-blend-mode: difference;
-}
-
-::-moz-selection {
-  background: #fff;
-  color: #333;
-  mix-blend-mode: difference;
-}
-
-@media print {
-  .print-hide {
-    display: none;
+  html.viewer-only-page,
+  body.viewer-only-page {
+    height: auto !important;
+    min-height: 100%;
   }
-}
 
+  body.viewer-only-page {
+    overflow-x: hidden;
+  }
+
+  /* =========================================================
+     BASIC CLASSES USED BY TE
+     ========================================================= */
+
+  .w-100 {
+    width: 100%;
+  }
+
+  .h-100 {
+    height: 100%;
+  }
+
+  .ma0 {
+    margin: 0;
+  }
+
+  .pa0 {
+    padding: 0;
+  }
+
+  .bn {
+    border: 0;
+  }
+
+  .bg-gold {
+    background-color: #ffdf00;
+  }
+
+  .overflow-auto {
+    overflow: auto;
+  }
+
+  .pre {
+    white-space: pre;
+  }
+
+  /* =========================================================
+     MOBILE
+     ========================================================= */
+
+  @media screen and (max-width: 600px) {
+    .grid {
+      display: block;
+      width: 100vw;
+      height: auto;
+      min-height: 100vh;
+      overflow: visible;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 32px;
+    }
+
+    .editor {
+      width: 100%;
+      height: 33vh;
+      min-height: 240px;
+    }
+
+    .viewer {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: calc(100vh + 32px);
+      z-index: 4;
+      top: 0;
+    }
+
+    .grid.viewer-only {
+      display: block;
+      width: 100vw;
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .grid.viewer-only .viewer {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+      top: 0;
+      z-index: 1;
+    }
+  }
 </style>
 </head>
 
 <body class="w-100 h-100 ma0">
 
-<div class="grid">
+<div id="grid" class="grid grid--left">
 
-  <div class="nav buttons bg-hot-pink code f7">
-
-    <button
-      class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-      onclick="shareHash()"
-      title="Share Named Project URL">
-      S
-    </button>
-
-    <button
-      class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-      onclick="downloadZip()"
-      title="Download Project ZIP">
-      D
-    </button>
-
-    <button
-      class="mobile-nav print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-      onclick="scrollToEditor('html')"
-      title="Jump to HTML">
-      H
-    </button>
-
-    <button
-      class="mobile-nav print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-      onclick="scrollToEditor('css')"
-      title="Jump to CSS">
-      C
-    </button>
-
-    <button
-      class="mobile-nav print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-      onclick="scrollToEditor('js')"
-      title="Jump to JS">
-      J
-    </button>
-
-    <div class="layouts">
-
-      <button
-        class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-        onclick="setLayout('top', true)"
-        title="Set Layout Top">
-        T
-      </button>
-
-      <button
-        class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-        onclick="setLayout('right', true)"
-        title="Set Layout Right">
-        R
-      </button>
-
-      <button
-        class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-        onclick="setLayout('bottom', true)"
-        title="Set Layout Bottom">
-        B
-      </button>
-
-      <button
-        class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-        onclick="setLayout('left', true)"
-        title="Set Layout Left">
-        L
-      </button>
-
-    </div>
-
-    <button
-      class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-      onclick="scrollToViewer()"
-      title="Jump to Viewer">
-      V
-    </button>
-
-    <button
-      class="print-hide pointer w2 h2 bg-dark-gray near-white bn outline-0 pa2 fl ma0 dim"
-      onclick="setFocus('')"
-      title="Reset Layout Focus">
-      X
-    </button>
-
-    <input
-      class="project-name pointer bg-dark-gray near-white bn outline-0 pa2 fl ma0 code f7"
-      type="text"
-      placeholder="P"
-      maxlength="32"
-      aria-label="Project name"
-      title="Project Name"
-      autocomplete="off"
-      autocapitalize="off"
-      spellcheck="false">
-
+  <div class="nav">
+    <!-- Your existing navigation can remain here -->
   </div>
 
   <textarea
-    class="html editor print-hide bg-red near-white pa4 lh-title input-reset bn outline-0 fl code f5"
+    id="editorHTML"
+    class="editor html"
+    spellcheck="false"
     placeholder="HTML"
-    wrap="soft"
-    autocomplete="on"
-    autocorrect="off"
-    autocapitalize="off"
-    spellcheck="on"
-    data-gramm="false"
-    onclick="setFocus('html')"></textarea>
+  ></textarea>
 
   <textarea
-    class="css editor print-hide bg-green near-white pa4 lh-title input-reset bn outline-0 fl code f5"
+    id="editorCSS"
+    class="editor css"
+    spellcheck="false"
     placeholder="CSS"
-    wrap="soft"
-    autocomplete="on"
-    autocorrect="off"
-    autocapitalize="off"
-    spellcheck="on"
-    data-gramm="false"
-    onclick="setFocus('css')"></textarea>
+  ></textarea>
 
   <textarea
-    class="js editor print-hide bg-blue near-white pa4 lh-title input-reset bn outline-0 fl code f5"
+    id="editorJS"
+    class="editor js"
+    spellcheck="false"
     placeholder="JS"
-    wrap="soft"
-    autocomplete="on"
-    autocorrect="off"
-    autocapitalize="off"
-    spellcheck="on"
-    data-gramm="false"
-    onclick="setFocus('js')"></textarea>
+  ></textarea>
 
   <iframe
     id="viewer"
-    class="viewer bg-gold overflow-auto pre w-100 h-100 bn">
-  </iframe>
+    class="viewer bg-gold overflow-auto pre w-100 h-100 bn"
+  ></iframe>
 
 </div>
 
+<script>
 
-<script type="text/javascript">
+/* =========================================================
+   DATE STAMP
+   ========================================================= */
 
-// elements
-var grid = document.querySelector('.grid');
-var editorHTML = document.querySelector('.html');
-var editorCSS = document.querySelector('.css');
-var editorJS = document.querySelector('.js');
-var viewer = document.querySelector('.viewer');
-var projectNameInput = document.querySelector('.project-name');
+Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
+  value: function() {
+    function pad2(n) {
+      return (n < 10 ? '0' : '') + n;
+    }
 
-var defaultPageTitle = "[ 2358 | TE ]";
+    return this.getFullYear() +
+      pad2(this.getMonth() + 1) +
+      pad2(this.getDate()) +
+      pad2(this.getHours()) +
+      pad2(this.getMinutes()) +
+      pad2(this.getSeconds());
+  }
+});
 
-function updatePageTitle() {
-
-  var name = projectNameInput.value.trim();
-
-  document.title = name
-    ? "[ " + name + " ]"
-    : defaultPageTitle;
-
+function stampDate() {
+  return new Date().YYYYMMDDHHMMSS();
 }
 
 
-// ----------------------------------------
-// Viewer height for H mode
-// ----------------------------------------
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
 
-function buildViewerSrcdoc(HTMLView, CSSView, JSView) {
+var grid = document.getElementById("grid");
+var viewer = document.getElementById("viewer");
 
-  var viewerHeightScript = [
-
-    '<script>',
-
-    '(function(){',
-
-    'function sendViewerHeight(){',
-
-    'var body = document.body;',
-    'var html = document.documentElement;',
-
-    'var height = Math.max(',
-
-    'body ? body.scrollHeight : 0,',
-    'body ? body.offsetHeight : 0,',
-    'html ? html.scrollHeight : 0,',
-    'html ? html.offsetHeight : 0,',
-    'window.innerHeight || 0',
-
-    ');',
-
-    'parent.postMessage({',
-    'type: "TE_VIEWER_HEIGHT",',
-    'height: height',
-    '}, "*");',
-
-    '}',
-
-    'window.addEventListener("load", sendViewerHeight);',
-    'window.addEventListener("resize", sendViewerHeight);',
-
-    'if (window.ResizeObserver) {',
-
-    'new ResizeObserver(function(){',
-    'sendViewerHeight();',
-    '}).observe(document.documentElement);',
-
-    '}',
-
-    'if (document.fonts && document.fonts.ready) {',
-
-    'document.fonts.ready.then(sendViewerHeight);',
-
-    '}',
-
-    'setTimeout(sendViewerHeight, 0);',
-    'setTimeout(sendViewerHeight, 100);',
-    'setTimeout(sendViewerHeight, 500);',
-    'setTimeout(sendViewerHeight, 1000);',
-
-    '})();',
-
-    '<\/script>'
-
-  ].join('\n');
-
-  return HTMLView + CSSView + JSView + viewerHeightScript;
-
-}
+var editorHTML = document.getElementById("editorHTML");
+var editorCSS = document.getElementById("editorCSS");
+var editorJS = document.getElementById("editorJS");
 
 
-function enableViewerOnlyAutoHeight() {
+/* =========================================================
+   URL / HASH
+   ========================================================= */
 
-  window.addEventListener("message", function(event) {
-
-    if (event.source !== viewer.contentWindow) {
-      return;
-    }
-
-    if (
-      !event.data ||
-      event.data.type !== "TE_VIEWER_HEIGHT"
-    ) {
-      return;
-    }
-
-    if (!urlHide) {
-      return;
-    }
-
-    var height = Math.max(
-      Number(event.data.height) || 0,
-      window.innerHeight || 0
-    );
-
-    viewer.style.setProperty(
-      "height",
-      height + "px",
-      "important"
-    );
-
-  });
-
-}
-
-
-// hash
 var rawHash = window.location.hash
   ? window.location.hash.substring(1)
   : "";
@@ -717,1011 +330,570 @@ var urlMarker = (hashParts[1] || "").toUpperCase();
 var urlHide = urlMarker === "H";
 
 var urlLayout = /^(T|R|B|L)$/.test(urlMarker)
-    ? urlMarker.toLowerCase()
-    : "left";
+  ? urlMarker.toLowerCase()
+  : "left";
 
-var hashPayload = urlHide || /^(T|R|B|L)$/.test(urlMarker)
-  ? hashParts.slice(2).join("?")
-  : hashParts.slice(1).join("?");
+var hashPayload =
+  urlHide || /^(T|R|B|L)$/.test(urlMarker)
+    ? hashParts.slice(2).join("?")
+    : hashParts.slice(1).join("?");
 
-projectNameInput.value = projectName;
 
-function updateProjectNameSize() {
-
-  var length = Math.max(projectNameInput.value.length, 1);
-  projectNameInput.style.setProperty("--project-name-length", length);
-
-}
-
-function updateProjectNameURL() {
-
-  var name = projectNameInput.value.trim();
-
-  if (!name) {
-
-    projectName = "";
-    hash = "P";
-
-    history.replaceState(
-      null,
-      "",
-      "#P" +
-      ((urlLayout || urlHide) ? "?" + getUrlMarker() : "") +
-      "?" + encodeEditorData()
-    );
-
-    updateProjectNameSize();
-    updatePageTitle();
-
-    return;
-
-  }
-
-  projectName = name;
-  hash = encodeURIComponent(name);
-
-  history.replaceState(
-    null,
-    "",
-    "#" + hash +
-    ((urlLayout || urlHide) ? "?" + getUrlMarker() : "") +
-    "?" + encodeEditorData()
-  );
-
-  updateProjectNameSize();
-
-}
-
-projectNameInput.addEventListener("input", function() {
-  updateProjectNameSize();
-  updateProjectNameURL();
-  updatePageTitle();
-});
-
-updateProjectNameSize();
-updatePageTitle();
-
-// URL payload
-function loadEditorDataFromHash() {
-
-  if (!hashPayload) {
-    return false;
-  }
-
-  try {
-
-    var base64 = hashPayload
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
-
-    while (base64.length % 4) {
-      base64 += "=";
-    }
-
-    var binary = atob(base64);
-    var decoded;
-
-    try {
-
-      decoded = decodeURIComponent(binary);
-
-    } catch (error) {
-
-      decoded = decodeURIComponent(
-        binary
-          .split("")
-          .map(function(character) {
-            return "%" + ("00" + character.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-
-    }
-
-    var data = JSON.parse(decoded);
-
-    if (
-      !data ||
-      typeof data.html !== "string" ||
-      typeof data.css !== "string" ||
-      typeof data.js !== "string"
-    ) {
-      return false;
-    }
-
-    editorHTML.value = data.html;
-    editorCSS.value = data.css;
-    editorJS.value = data.js;
-
-    return true;
-
-  } catch (error) {
-
-    return false;
-
-  }
-
-}
-
-var editorDataFromHash = loadEditorDataFromHash();
-
-function encodeEditorData() {
-
-  return btoa(
-    encodeURIComponent(JSON.stringify({
-      html: editorHTML.value,
-      css: editorCSS.value,
-      js: editorJS.value
-    }))
-  );
-
-}
-
-
-function getLayoutMarker() {
-
-  return normalizeLayout(urlLayout).charAt(0).toUpperCase();
-
-}
-
-function getUrlMarker() {
-
-  return urlHide
-    ? "H"
-    : getLayoutMarker();
-
-}
-
-function updateHashFromEditors() {
-
-  if (hash) {
-    history.replaceState(null, "", "#" + hash +
-      ((urlLayout || urlHide) ? "?" + getUrlMarker() : "") +
-      "?" + encodeEditorData());
-  }
-
-}
-
-function resizeMobileEditor(editor) {
-
-  if (window.innerWidth <= 600) {
-    editor.style.setProperty("height", "auto", "important");
-    editor.style.setProperty(
-      "height",
-      Math.max(editor.scrollHeight, window.innerHeight) + "px",
-      "important"
-    );
-  } else {
-    editor.style.removeProperty("height");
-  }
-
-}
-
-function resizeMobileEditors() {
-
-  resizeMobileEditor(editorHTML);
-  resizeMobileEditor(editorCSS);
-  resizeMobileEditor(editorJS);
-
-}
-
-// ----------------------------------------
-// Load saved editor content
-// ----------------------------------------
-
-if (editorDataFromHash) {
-
-  function saveHTMLDataHashPayload() {
-    localStorage.setItem('HTMLcontent' + hash, editorHTML.value);
-  }
-
-  function saveCSSDataHashPayload() {
-    localStorage.setItem('CSScontent' + hash, editorCSS.value);
-  }
-
-  function saveJSDataHashPayload() {
-    localStorage.setItem('JScontent' + hash, editorJS.value);
-  }
-
-  function updateViewerHashPayload() {
-
-    var HTMLView = editorHTML.value;
-
-    var CSSView =
-      '<style>\n' +
-      '@import url("https://git2358.github.io/TE/css/tachyons.min.css");\n' +
-      editorCSS.value +
-      '\n<\/style>';
-
-    var JSView =
-      '<script>\n' +
-      editorJS.value +
-      '\n<\/script>';
-
-    viewer.srcdoc = buildViewerSrcdoc(
-      HTMLView,
-      CSSView,
-      JSView
-    );
-
-    updateHashFromEditors();
-    viewerIsEmpty();
-  }
-
-  window.addEventListener("input", updateViewerHashPayload);
-  window.addEventListener("input", resizeMobileEditors);
-  window.addEventListener("resize", resizeMobileEditors);
-
-  editorHTML.addEventListener("keyup", saveHTMLDataHashPayload);
-  editorCSS.addEventListener("keyup", saveCSSDataHashPayload);
-  editorJS.addEventListener("keyup", saveJSDataHashPayload);
-
-  updateViewerHashPayload();
-  resizeMobileEditors();
-
-} else if (window.location.hash) {
-
-  // populate editors from hash
-  editorHTML.value = localStorage.getItem('HTMLcontent' + hash) || '';
-  editorCSS.value = localStorage.getItem('CSScontent' + hash) || '';
-  editorJS.value = localStorage.getItem('JScontent' + hash) || '';
-
-  // save data for each editor
-  function saveHTMLDataHash() {
-    localStorage.setItem('HTMLcontent' + hash, editorHTML.value);
-  }
-
-  function saveCSSDataHash() {
-    localStorage.setItem('CSScontent' + hash, editorCSS.value);
-  }
-
-  function saveJSDataHash() {
-    localStorage.setItem('JScontent' + hash, editorJS.value);
-  }
-
-  // update viewer
-  function updateViewerHash() {
-
-    var HTMLView = editorHTML.value;
-
-    var CSSView =
-      '<style>\n' +
-      '@import url("https://git2358.github.io/TE/css/tachyons.min.css");\n' +
-      editorCSS.value +
-      '\n<\/style>';
-
-    var JSView =
-      '<script>\n' +
-      editorJS.value +
-      '\n<\/script>';
-
-    viewer.srcdoc = buildViewerSrcdoc(
-      HTMLView,
-      CSSView,
-      JSView
-    );
-
-    updateHashFromEditors();
-    viewerIsEmpty();
-  }
-
-  // listen and fire
-  window.addEventListener("input", updateViewerHash);
-  window.addEventListener("input", resizeMobileEditors);
-  window.addEventListener("resize", resizeMobileEditors);
-
-  editorHTML.addEventListener("keyup", saveHTMLDataHash);
-  editorCSS.addEventListener("keyup", saveCSSDataHash);
-  editorJS.addEventListener("keyup", saveJSDataHash);
-
-  updateViewerHash();
-  resizeMobileEditors();
-
-} else {
-
-  // populate editors from local storage
-  editorHTML.value = localStorage.getItem('HTMLcontent') || '';
-  editorCSS.value = localStorage.getItem('CSScontent') || '';
-  editorJS.value = localStorage.getItem('JScontent') || '';
-
-  // save data for each editor
-  function saveHTMLData() {
-    localStorage.setItem('HTMLcontent', editorHTML.value);
-  }
-
-  function saveCSSData() {
-    localStorage.setItem('CSScontent', editorCSS.value);
-  }
-
-  function saveJSData() {
-    localStorage.setItem('JScontent', editorJS.value);
-  }
-
-  // update viewer
-  function updateViewer() {
-
-    var HTMLView = editorHTML.value;
-
-    var CSSView =
-      '<style>\n' +
-      '@import url("https://git2358.github.io/TE/css/tachyons.min.css");\n' +
-      editorCSS.value +
-      '\n<\/style>';
-
-    var JSView =
-      '<script>\n' +
-      editorJS.value +
-      '\n<\/script>';
-
-    viewer.srcdoc = buildViewerSrcdoc(
-      HTMLView,
-      CSSView,
-      JSView
-    );
-
-    updateHashFromEditors();
-    viewerIsEmpty();
-  }
-
-  // listen and fire
-  window.addEventListener("input", updateViewer);
-  window.addEventListener("input", resizeMobileEditors);
-  window.addEventListener("resize", resizeMobileEditors);
-
-  editorHTML.addEventListener("keyup", saveHTMLData);
-  editorCSS.addEventListener("keyup", saveCSSData);
-  editorJS.addEventListener("keyup", saveJSData);
-
-  updateViewer();
-  resizeMobileEditors();
-}
-
-
-// ----------------------------------------
-// Normalize URL
-// ----------------------------------------
-
-function normalizeInitialURL() {
-
-  var marker = urlHide
-    ? "H"
-    : (urlLayout || "left").charAt(0).toUpperCase();
-
-  history.replaceState(
-    null,
-    "",
-    "#" + hash +
-    "?" + marker +
-    "?" + encodeEditorData()
-  );
-
-}
-
-normalizeInitialURL();
-
-
-// ----------------------------------------
-// Editor undo and redo
-// ----------------------------------------
-
-function enableEditorHistory(editor) {
-
-  var history = {
-    undo: [],
-    redo: [],
-    value: editor.value,
-    restoring: false
-  };
-
-  editor.addEventListener("input", function() {
-
-    if (!history.restoring && editor.value !== history.value) {
-      history.undo.push(history.value);
-      history.redo = [];
-      history.value = editor.value;
-    }
-
-  });
-
-  editor.addEventListener("keydown", function(event) {
-
-    var modifier = event.metaKey || event.ctrlKey;
-    var undo = modifier && !event.shiftKey && event.key.toLowerCase() === "z";
-    var redo = modifier && event.shiftKey && event.key.toLowerCase() === "z";
-
-    if (!undo && !redo) {
-      return;
-    }
-
-    event.preventDefault();
-
-    var source = undo ? history.undo : history.redo;
-    var target = undo ? history.redo : history.undo;
-
-    if (!source.length) {
-      return;
-    }
-
-    target.push(editor.value);
-    editor.value = source.pop();
-    history.value = editor.value;
-    history.restoring = true;
-    editor.dispatchEvent(new Event("input", { bubbles: true }));
-    history.restoring = false;
-    editor.dispatchEvent(new Event("keyup", { bubbles: true }));
-
-  });
-
-}
-
-enableEditorHistory(editorHTML);
-enableEditorHistory(editorCSS);
-enableEditorHistory(editorJS);
-
-
-// ----------------------------------------
-// Class utilities
-// ----------------------------------------
-
-function removeClassesByPrefix(el, prefix) {
-
-  for (var i = el.classList.length - 1; i >= 0; i--) {
-
-    if (el.classList[i].startsWith(prefix)) {
-      el.classList.remove(el.classList[i]);
-    }
-
-  }
-
-}
-
-
-// ----------------------------------------
-// Layout
-// ----------------------------------------
+/* =========================================================
+   LAYOUT
+   ========================================================= */
 
 function getLayout() {
+  grid.classList.remove(
+    "grid--top",
+    "grid--right",
+    "grid--bottom",
+    "grid--left"
+  );
 
-  var gridLayout = localStorage.getItem('gridLayout');
-
-  if (gridLayout) {
-
-    setLayout(gridLayout);
-
-  } else {
-
-    localStorage.setItem('gridLayout', 'left');
-    getLayout();
-
-  }
-
+  grid.classList.add("grid--" + urlLayout);
 }
 
-function normalizeLayout(pos) {
 
-  var shortLayouts = {
-    t: "top",
-    r: "right",
-    b: "bottom",
-    l: "left"
-  };
-
-  return shortLayouts[pos.toLowerCase()] || pos;
-
-}
-
-function setLayout(pos, updateUrl) {
-
-  pos = normalizeLayout(pos);
-
-  var layoutClass = "grid--" + pos;
-
-  removeClassesByPrefix(grid, "grid--");
-
-  grid.classList.add(layoutClass);
-
-  localStorage.setItem('gridLayout', pos);
-
-  if (updateUrl && hash && !urlHide) {
-    urlLayout = pos;
-
-    history.replaceState(
-      null,
-      "",
-      "#" + hash +
-      "?" + getLayoutMarker() +
-      "?" + encodeEditorData()
-    );
-  }
-
-}
+/* =========================================================
+   VIEWER-ONLY MODE
+   ========================================================= */
 
 function setViewerOnly(hidden) {
 
   grid.classList.toggle("viewer-only", hidden);
 
-}
-
-
-// ----------------------------------------
-// Focus
-// ----------------------------------------
-
-function getFocus() {
-
-  var editorFocus = localStorage.getItem('editorFocus');
-
-  if (editorFocus) {
-
-    setFocus(editorFocus);
-
-  } else {
-
-    localStorage.setItem('editorFocus', '');
-    getLayout();
-
-  }
-
-}
-
-function setFocus(pos) {
-
-  var focusClass = "focus--" + pos;
-
-  removeClassesByPrefix(grid, "focus--");
-
-  if (pos) {
-    grid.classList.add(focusClass);
-  }
-
-  localStorage.setItem('editorFocus', pos);
-
-}
-
-
-// ----------------------------------------
-// Initialize layout
-// ----------------------------------------
-
-getLayout();
-getFocus();
-setViewerOnly(urlHide);
-
-enableViewerOnlyAutoHeight();
-
-if (urlLayout || urlHide) {
-
-  if (urlLayout) {
-    setLayout(urlLayout);
-  }
-
-  window.addEventListener("load", function() {
-
-    setTimeout(function() {
-      scrollToViewer();
-    }, 500);
-
-  });
-
-}
-
-
-function shareHash() {
-
-  updateHashFromEditors();
-
-  var url = window.location.href;
-
-  function copyFallback() {
-
-    var input = document.createElement("textarea");
-    input.value = url;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand("copy");
-    document.body.removeChild(input);
-
-  }
-
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-
-    navigator.clipboard.writeText(url).catch(copyFallback);
-
-  } else {
-
-    copyFallback();
-
-  }
-
-}
-
-
-// ----------------------------------------
-// Date stamp
-// ----------------------------------------
-
-Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
-
-  value: function() {
-
-    function pad2(n) {
-      return (n < 10 ? '0' : '') + n;
-    }
-
-    return this.getFullYear() +
-      pad2(this.getMonth() + 1) +
-      pad2(this.getDate()) +
-      pad2(this.getHours()) +
-      pad2(this.getMinutes()) +
-      pad2(this.getSeconds());
-
-  }
-
-});
-
-function stampDate() {
-
-  return new Date().YYYYMMDDHHMMSS;
-
-}
-
-
-// ----------------------------------------
-// ZIP creation
-// ----------------------------------------
-
-function crc32(data) {
-
-  var table = [];
-
-  for (var n = 0; n < 256; n++) {
-
-    var c = n;
-
-    for (var k = 0; k < 8; k++) {
-      c = (c & 1)
-        ? 0xedb88320 ^ (c >>> 1)
-        : c >>> 1;
-    }
-
-    table[n] = c >>> 0;
-
-  }
-
-  var crc = 0xffffffff;
-
-  for (var i = 0; i < data.length; i++) {
-    crc = table[(crc ^ data[i]) & 0xff] ^ (crc >>> 8);
-  }
-
-  return (crc ^ 0xffffffff) >>> 0;
-
-}
-
-
-function writeUint16(view, offset, value) {
-
-  view.setUint16(offset, value, true);
-
-}
-
-
-function writeUint32(view, offset, value) {
-
-  view.setUint32(offset, value >>> 0, true);
-
-}
-
-
-function createZip(files) {
-
-  var encoder = new TextEncoder();
-
-  var localHeaders = [];
-  var centralHeaders = [];
-
-  var offset = 0;
-
-  var now = new Date();
-
-  var year = Math.max(now.getFullYear(), 1980);
-  var month = now.getMonth() + 1;
-  var day = now.getDate();
-
-  var hours = now.getHours();
-  var minutes = now.getMinutes();
-  var seconds = Math.floor(now.getSeconds() / 2);
-
-  var dosTime =
-    (hours << 11) |
-    (minutes << 5) |
-    seconds;
-
-  var dosDate =
-    ((year - 1980) << 9) |
-    (month << 5) |
-    day;
-
-
-  files.forEach(function(file) {
-
-    var name = encoder.encode(file.name);
-    var data = encoder.encode(file.content);
-
-    var crc = crc32(data);
-
-    // ----------------------------------------
-    // Local file header
-    // ----------------------------------------
-
-    var localHeader = new ArrayBuffer(30 + name.length);
-    var localView = new DataView(localHeader);
-
-    writeUint32(localView, 0, 0x04034b50);
-    writeUint16(localView, 4, 20);
-    writeUint16(localView, 6, 0x0800);
-    writeUint16(localView, 8, 0);
-    writeUint16(localView, 10, dosTime);
-    writeUint16(localView, 12, dosDate);
-    writeUint32(localView, 14, crc);
-    writeUint32(localView, 18, data.length);
-    writeUint32(localView, 22, data.length);
-    writeUint16(localView, 26, name.length);
-    writeUint16(localView, 28, 0);
-
-    new Uint8Array(localHeader, 30).set(name);
-
-    localHeaders.push({
-      header: new Uint8Array(localHeader),
-      data: data
-    });
-
-    // ----------------------------------------
-    // Central directory header
-    // ----------------------------------------
-
-    var centralHeader = new ArrayBuffer(46 + name.length);
-    var centralView = new DataView(centralHeader);
-
-    writeUint32(centralView, 0, 0x02014b50);
-    writeUint16(centralView, 4, 20);
-    writeUint16(centralView, 6, 20);
-    writeUint16(centralView, 8, 0x0800);
-    writeUint16(centralView, 10, 0);
-    writeUint16(centralView, 12, dosTime);
-    writeUint16(centralView, 14, dosDate);
-    writeUint32(centralView, 16, crc);
-    writeUint32(centralView, 20, data.length);
-    writeUint32(centralView, 24, data.length);
-    writeUint16(centralView, 28, name.length);
-    writeUint16(centralView, 30, 0);
-    writeUint16(centralView, 32, 0);
-    writeUint16(centralView, 34, 0);
-    writeUint16(centralView, 36, 0);
-    writeUint32(centralView, 38, 0);
-    writeUint32(centralView, 42, offset);
-
-    new Uint8Array(centralHeader, 46).set(name);
-
-    centralHeaders.push(new Uint8Array(centralHeader));
-
-    offset += localHeader.byteLength + data.length;
-
-  });
-
-
-  // ----------------------------------------
-  // Calculate central directory size
-  // ----------------------------------------
-
-  var centralDirectorySize = centralHeaders.reduce(
-    function(total, header) {
-      return total + header.length;
-    },
-    0
+  document.documentElement.classList.toggle(
+    "viewer-only-page",
+    hidden
   );
 
+  document.body.classList.toggle(
+    "viewer-only-page",
+    hidden
+  );
 
-  // ----------------------------------------
-  // End of central directory
-  // ----------------------------------------
-
-  var endHeader = new ArrayBuffer(22);
-  var endView = new DataView(endHeader);
-
-  writeUint32(endView, 0, 0x06054b50);
-  writeUint16(endView, 4, 0);
-  writeUint16(endView, 6, 0);
-  writeUint16(endView, 8, files.length);
-  writeUint16(endView, 10, files.length);
-  writeUint32(endView, 12, centralDirectorySize);
-  writeUint32(endView, 16, offset);
-  writeUint16(endView, 20, 0);
-
-
-  // ----------------------------------------
-  // Combine everything
-  // ----------------------------------------
-
-  var parts = [];
-
-  localHeaders.forEach(function(file) {
-    parts.push(file.header);
-    parts.push(file.data);
-  });
-
-  centralHeaders.forEach(function(header) {
-    parts.push(header);
-  });
-
-  parts.push(new Uint8Array(endHeader));
-
-
-  return new Blob(parts, {
-    type: "application/zip"
-  });
-
+  if (!hidden) {
+    clearViewerBackground();
+    viewer.style.removeProperty("height");
+  }
 }
 
 
-// ----------------------------------------
-// Download ZIP
-// ----------------------------------------
+/* =========================================================
+   VIEWER CONTENT
+   ========================================================= */
 
-function downloadZip() {
+function buildViewerSrcdoc(HTMLView, CSSView, JSView) {
 
-  var zipName = projectName.trim() || "P";
+  var viewerStateScript = [
+    "<script>",
+    "(function(){",
 
-  var zip = createZip([
-    {
-      name: zipName + ".html",
-      content: [
-        "<!doctype html>",
-        "<html lang=\"en\">",
-        "<head>",
-        "<meta charset=\"UTF-8\">",
-        "<title>" + zipName + "</title>",
-        "<link rel=\"stylesheet\" href=\"./" + zipName + ".css\">",
-        "</head>",
-        "<body>",
-        editorHTML.value,
-        "<script src=\"./" + zipName + ".js\"><\/script>",
-        "</body>",
-        "</html>"
-      ].join("\n")
-    },
+    "var frameStateQueued = false;",
 
-    {
-      name: zipName + ".css",
-      content: [
-        "@import url(\"https://git2358.github.io/TE/css/tachyons.min.css\");",
-        editorCSS.value
-      ].join("\n")
-    },
+    "function getBackgroundState(style) {",
+    "return {",
+    "color: style.backgroundColor,",
+    "image: style.backgroundImage,",
+    "repeat: style.backgroundRepeat,",
+    "position: style.backgroundPosition,",
+    "size: style.backgroundSize,",
+    "attachment: style.backgroundAttachment",
+    "};",
+    "}",
 
-    {
-      name: zipName + ".js",
-      content: editorJS.value
+    "function sendViewerState() {",
+
+    "var body = document.body;",
+    "var html = document.documentElement;",
+
+    "var htmlStyle = getComputedStyle(html);",
+    "var bodyStyle = body ? getComputedStyle(body) : htmlStyle;",
+
+    "var height = Math.max(",
+    "body ? body.scrollHeight : 0,",
+    "body ? body.offsetHeight : 0,",
+    "html ? html.scrollHeight : 0,",
+    "html ? html.offsetHeight : 0,",
+    "window.innerHeight || 0",
+    ");",
+
+    "parent.postMessage({",
+    "type: 'TE_VIEWER_STATE',",
+    "height: height,",
+    "htmlBackground: getBackgroundState(htmlStyle),",
+    "bodyBackground: getBackgroundState(bodyStyle)",
+    "}, '*');",
+
+    "}",
+
+    "function queueViewerState() {",
+
+    "if (frameStateQueued) return;",
+
+    "frameStateQueued = true;",
+
+    "requestAnimationFrame(function(){",
+    "frameStateQueued = false;",
+    "sendViewerState();",
+    "});",
+
+    "}",
+
+    "window.addEventListener('load', sendViewerState);",
+    "window.addEventListener('resize', queueViewerState);",
+
+    "if (window.ResizeObserver) {",
+
+    "var resizeObserver = new ResizeObserver(function(){",
+    "queueViewerState();",
+    "});",
+
+    "if (document.documentElement) {",
+    "resizeObserver.observe(document.documentElement);",
+    "}",
+
+    "if (document.body) {",
+    "resizeObserver.observe(document.body);",
+    "}",
+
+    "}",
+
+    "if (window.MutationObserver) {",
+
+    "var mutationObserver = new MutationObserver(function(){",
+    "queueViewerState();",
+    "});",
+
+    "mutationObserver.observe(document.documentElement, {",
+    "attributes: true,",
+    "childList: true,",
+    "subtree: true"
+    + "});",
+
+    "}",
+
+    "if (document.fonts && document.fonts.ready) {",
+    "document.fonts.ready.then(sendViewerState);",
+    "}",
+
+    "setTimeout(sendViewerState, 0);",
+    "setTimeout(sendViewerState, 100);",
+    "setTimeout(sendViewerState, 500);",
+    "setTimeout(sendViewerState, 1000);",
+
+    "})();",
+    "<\/script>"
+  ].join("\n");
+
+  return HTMLView + CSSView + JSView + viewerStateScript;
+}
+
+
+/* =========================================================
+   BACKGROUND INHERITANCE
+   ========================================================= */
+
+var backgroundProperties = [
+  "background-color",
+  "background-image",
+  "background-repeat",
+  "background-position",
+  "background-size",
+  "background-attachment"
+];
+
+
+function applyBackground(target, background) {
+
+  if (!target || !background) {
+    return;
+  }
+
+  target.style.setProperty(
+    "background-color",
+    background.color
+  );
+
+  target.style.setProperty(
+    "background-image",
+    background.image
+  );
+
+  target.style.setProperty(
+    "background-repeat",
+    background.repeat
+  );
+
+  target.style.setProperty(
+    "background-position",
+    background.position
+  );
+
+  target.style.setProperty(
+    "background-size",
+    background.size
+  );
+
+  target.style.setProperty(
+    "background-attachment",
+    background.attachment
+  );
+}
+
+
+function clearBackground(target) {
+
+  if (!target) {
+    return;
+  }
+
+  backgroundProperties.forEach(function(property) {
+    target.style.removeProperty(property);
+  });
+}
+
+
+function clearViewerBackground() {
+
+  clearBackground(document.documentElement);
+  clearBackground(document.body);
+}
+
+
+function applyViewerBackground(data) {
+
+  if (!urlHide || !data) {
+    return;
+  }
+
+  /*
+   * Copy the iframe's <html> background
+   * to the real page's <html>.
+   */
+  applyBackground(
+    document.documentElement,
+    data.htmlBackground
+  );
+
+  /*
+   * Copy the iframe's <body> background
+   * to the real page's <body>.
+   *
+   * This preserves transparent body backgrounds,
+   * background images, gradients, etc.
+   */
+  applyBackground(
+    document.body,
+    data.bodyBackground
+  );
+}
+
+
+/* =========================================================
+   VIEWER AUTO HEIGHT + BACKGROUND
+   ========================================================= */
+
+function enableViewerOnlyAutoHeight() {
+
+  window.addEventListener("message", function(event) {
+
+    if (event.source !== viewer.contentWindow) {
+      return;
     }
-  ]);
 
-  var url = URL.createObjectURL(zip);
-  var link = document.createElement("a");
+    if (!event.data) {
+      return;
+    }
 
-  link.href = url;
-  link.download = zipName + "-" + stampDate() + ".zip";
+    if (event.data.type !== "TE_VIEWER_STATE") {
+      return;
+    }
 
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    if (!urlHide) {
+      return;
+    }
 
-  setTimeout(function() {
-    URL.revokeObjectURL(url);
-  }, 1000);
+    /*
+     * Keep the iframe at least viewport height,
+     * but allow it to grow with its actual content.
+     */
+    var height = Math.max(
+      Number(event.data.height) || 0,
+      window.innerHeight || 0
+    );
+
+    viewer.style.setProperty(
+      "height",
+      height + "px",
+      "important"
+    );
+
+    /*
+     * Make the outer page use the same background
+     * as the iframe preview.
+     */
+    applyViewerBackground(event.data);
+
+  });
 
 }
 
 
-// ----------------------------------------
-// Viewer empty state
-// ----------------------------------------
+/* =========================================================
+   HASH UPDATES
+   ========================================================= */
+
+function getCurrentHashPayload() {
+
+  return encodeURIComponent(editorHTML.value) +
+    "?" +
+    encodeURIComponent(editorCSS.value) +
+    "?" +
+    encodeURIComponent(editorJS.value);
+}
+
+
+function updateHashFromEditors() {
+
+  /*
+   * Keep the existing URL structure.
+   */
+  var marker = "";
+
+  if (urlHide) {
+    marker = "?H";
+  } else if (/^(T|R|B|L)$/.test(urlMarker)) {
+    marker = "?" + urlMarker;
+  }
+
+  var payload =
+    editorHTML.value +
+    "?" +
+    editorCSS.value +
+    "?" +
+    editorJS.value;
+
+  var newHash =
+    (projectName
+      ? encodeURIComponent(projectName)
+      : "P") +
+    marker +
+    (marker ? "?" : "?") +
+    payload;
+
+  history.replaceState(
+    null,
+    "",
+    "#" + newHash
+  );
+}
+
+
+/* =========================================================
+   VIEWER UPDATES
+   ========================================================= */
+
+function updateViewerHashPayload() {
+
+  var HTMLView = editorHTML.value;
+
+  var CSSView =
+    "<style>\n" +
+    '@import url("https://git2358.github.io/TE/css/tachyons.min.css");\n' +
+    editorCSS.value +
+    "\n<\/style>";
+
+  var JSView =
+    "<script>\n" +
+    editorJS.value +
+    "\n<\/script>";
+
+  viewer.srcdoc = buildViewerSrcdoc(
+    HTMLView,
+    CSSView,
+    JSView
+  );
+
+  updateHashFromEditors();
+}
+
+
+function updateViewerHash() {
+
+  var HTMLView = editorHTML.value;
+
+  var CSSView =
+    "<style>\n" +
+    '@import url("https://git2358.github.io/TE/css/tachyons.min.css");\n' +
+    editorCSS.value +
+    "\n<\/style>";
+
+  var JSView =
+    "<script>\n" +
+    editorJS.value +
+    "\n<\/script>";
+
+  viewer.srcdoc = buildViewerSrcdoc(
+    HTMLView,
+    CSSView,
+    JSView
+  );
+
+  updateHashFromEditors();
+}
+
+
+function updateViewer() {
+
+  var HTMLView = editorHTML.value;
+
+  var CSSView =
+    "<style>\n" +
+    '@import url("https://git2358.github.io/TE/css/tachyons.min.css");\n' +
+    editorCSS.value +
+    "\n<\/style>";
+
+  var JSView =
+    "<script>\n" +
+    editorJS.value +
+    "\n<\/script>";
+
+  viewer.srcdoc = buildViewerSrcdoc(
+    HTMLView,
+    CSSView,
+    JSView
+  );
+
+  updateHashFromEditors();
+}
+
+
+/* =========================================================
+   EMPTY VIEWER
+   ========================================================= */
 
 function viewerIsEmpty() {
 
   if (
-    editorHTML.value !== "" ||
-    editorCSS.value !== "" ||
-    editorJS.value !== ""
+    !editorHTML.value &&
+    !editorCSS.value &&
+    !editorJS.value
   ) {
-
-    viewer.classList.remove("bg-gold");
-
-  } else {
-
-    viewer.classList.add("bg-gold");
-
+    viewer.srcdoc = "";
   }
-
 }
 
 
-// ----------------------------------------
-// Smooth scroll to viewer
-// ----------------------------------------
+/* =========================================================
+   FOCUS
+   ========================================================= */
 
-function scrollToViewer() {
+function getFocus() {
 
-  if (
-    editorHTML.value === "" &&
-    editorCSS.value === "" &&
-    editorJS.value === ""
-  ) {
+  if (editorHTML.value) {
     return;
   }
 
-  scrollToSection(document.getElementById("viewer"));
-
+  editorHTML.focus();
 }
 
-function smoothScrollTo(top) {
 
-  window.scrollTo({
-    top: top,
-    behavior: "smooth"
-  });
+/* =========================================================
+   SCROLL TO VIEWER
+   ========================================================= */
 
-}
+function scrollToSection(element) {
 
-function scrollToSection(section) {
-
-  var navOffset = window.innerWidth <= 600 && section !== viewer
-    ? document.querySelector(".nav").offsetHeight
-    : 0;
-  var top = 0;
-
-  if (window.innerWidth <= 600) {
-
-    Array.from(grid.children).some(function(child) {
-
-      if (child === section) {
-        return true;
-      }
-
-      top += child.offsetHeight;
-      return false;
-
-    });
-
-  } else {
-
-    top = section.offsetTop;
-
+  if (!element) {
+    return;
   }
 
-  smoothScrollTo(top - navOffset);
-
-}
-
-function scrollToEditor(type) {
-
-  scrollToSection(document.querySelector("." + type));
-
+  element.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
 
-// ----------------------------------------
-// Scroll to viewer once on page load
-// ----------------------------------------
+function scrollToViewer() {
 
-window.addEventListener("load", function() {
+  scrollToSection(
+    document.getElementById("viewer")
+  );
+
+}
+
+
+/* =========================================================
+   LOAD PROJECT FROM HASH
+   ========================================================= */
+
+function loadFromHash() {
+
+  if (!hashPayload) {
+    return;
+  }
+
+  var parts = hashPayload.split("?");
+
+  editorHTML.value = parts[0] || "";
+  editorCSS.value = parts[1] || "";
+  editorJS.value = parts.slice(2).join("?") || "";
+}
+
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+editorHTML.addEventListener(
+  "input",
+  updateViewer
+);
+
+editorCSS.addEventListener(
+  "input",
+  updateViewer
+);
+
+editorJS.addEventListener(
+  "input",
+  updateViewer
+);
+
+
+/* =========================================================
+   INITIALISE
+   ========================================================= */
+
+getLayout();
+
+loadFromHash();
+
+getFocus();
+
+setViewerOnly(urlHide);
+
+enableViewerOnlyAutoHeight();
+
+updateViewer();
+
+viewerIsEmpty();
+
+
+/* =========================================================
+   VIEWER SCROLL
+   ========================================================= */
+
+if (!urlHide) {
 
   setTimeout(function() {
-
     scrollToViewer();
-
   }, 500);
 
-});
+}
 
 </script>
 
