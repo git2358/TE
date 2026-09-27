@@ -230,7 +230,6 @@ body.viewer-only-page {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-
   align-items: flex-start;
 
   overflow: hidden;
@@ -329,57 +328,6 @@ body.viewer-only-page {
 }
 
 
-/*
- * Three individual bullets used when the
- * project name is too long to fit.
- */
-
-.project-name-dots {
-  box-sizing: border-box;
-
-  display: none;
-
-  position: absolute;
-
-  color: #fff;
-  background: #333;
-
-  pointer-events: none;
-
-  z-index: 3;
-
-  white-space: nowrap;
-
-  line-height: 1;
-}
-
-
-/* ----------------------------------------
-   Horizontal overflow indicator
-   ---------------------------------------- */
-
-.project-name-dots.horizontal {
-  top: 0;
-  right: 0;
-
-  width: 3.5em;
-  height: 2rem;
-
-  padding: 0;
-
-  display: none;
-
-  align-items: center;
-  justify-content: flex-start;
-
-  text-align: left;
-
-  letter-spacing: 0.35em;
-
-  line-height: 1;
-}
-
-
 /* ----------------------------------------
    Vertical desktop navigation
    ---------------------------------------- */
@@ -432,39 +380,6 @@ body.viewer-only-page {
   overflow: hidden;
 
   text-overflow: clip;
-}
-
-
-/*
- * Vertical overflow indicator.
- *
- * The bullets are regular horizontal text
- * arranged in a vertical flex column.
- *
- * This keeps each bullet horizontally
- * centred in the 2rem navigation column.
- */
-
-.project-name-dots.vertical {
-  right: 0;
-  bottom: 0;
-
-  width: 2rem;
-  height: 3.5em;
-
-  padding: 0;
-
-  display: none;
-
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-
-  text-align: center;
-
-  letter-spacing: 0;
-
-  line-height: 1;
 }
 
 
@@ -620,16 +535,6 @@ body.viewer-only-page {
     overflow: hidden !important;
 
     text-overflow: clip !important;
-  }
-
-
-  .project-name-dots.horizontal {
-    display: none;
-  }
-
-
-  .project-name-dots.vertical {
-    display: none;
   }
 
 
@@ -871,14 +776,6 @@ textarea::placeholder {
         autocapitalize="off"
         spellcheck="false">
 
-      <span
-        class="project-name-dots horizontal"
-        aria-hidden="true">•••</span>
-
-      <span
-        class="project-name-dots vertical"
-        aria-hidden="true">•••</span>
-
     </div>
 
   </div>
@@ -934,8 +831,6 @@ var editorJS = document.querySelector('.js');
 var viewer = document.querySelector('.viewer');
 var projectNameInput = document.querySelector('.project-name');
 var projectNameWrap = document.querySelector('.project-name-wrap');
-var projectNameDotsHorizontal = document.querySelector('.project-name-dots.horizontal');
-var projectNameDotsVertical = document.querySelector('.project-name-dots.vertical');
 
 var defaultPageTitle = "[ 2358 | TE ]";
 
@@ -957,178 +852,22 @@ function projectNameIsVertical() {
 }
 
 
-function projectNameFitsHorizontal() {
-
-  if (!projectNameInput) {
-    return true;
-  }
-
-  return (
-    projectNameInput.scrollWidth <=
-    projectNameInput.clientWidth + 1
-  );
-
-}
-
-
-function projectNameFitsVertical() {
-
-  if (!projectNameInput) {
-    return true;
-  }
-
-  var name =
-    projectNameInput.value.trim();
-
-  if (!name) {
-    return true;
-  }
-
-  var style =
-    window.getComputedStyle(
-      projectNameInput
-    );
-
-  var font =
-    style.font;
-
-  var letterSpacing =
-    parseFloat(
-      style.letterSpacing
-    ) || 0;
-
-  var lineHeight =
-    parseFloat(
-      style.lineHeight
-    );
-
-  if (!isFinite(lineHeight) || lineHeight <= 0) {
-    lineHeight =
-      parseFloat(style.fontSize) || 16;
-  }
-
-  var canvas =
-    document.createElement("canvas");
-
-  var context =
-    canvas.getContext("2d");
-
-  if (!context) {
-    return true;
-  }
-
-  context.font =
-    font;
-
-  var totalHeight =
-    0;
-
-  var characters =
-    Array.from(name);
-
-  characters.forEach(
-    function(character) {
-
-      var width =
-        context.measureText(
-          character
-        ).width;
-
-      totalHeight +=
-        Math.max(
-          lineHeight,
-          width
-        );
-
-      totalHeight +=
-        letterSpacing;
-
-    }
-  );
-
-  var paddingTop =
-    parseFloat(style.paddingTop) || 0;
-
-  var paddingBottom =
-    parseFloat(style.paddingBottom) || 0;
-
-  var available =
-    projectNameWrap.clientHeight -
-    paddingTop -
-    paddingBottom;
-
-  return totalHeight <= available + 1;
-
-}
-
-
 function updateProjectNameDisplay() {
 
-  if (
-    !projectNameInput ||
-    !projectNameWrap
-  ) {
+  if (!projectNameInput) {
     return;
   }
 
   /*
-   * Always hide both indicators first.
+   * The project name is displayed directly in
+   * the input and simply clipped when it exceeds
+   * the available space.
+   *
+   * No dots or ellipsis are added.
    */
-
-  if (projectNameDotsHorizontal) {
-    projectNameDotsHorizontal.style.display = "none";
-  }
-
-  if (projectNameDotsVertical) {
-    projectNameDotsVertical.style.display = "none";
-  }
 
   projectNameInput.style.paddingRight = "";
   projectNameInput.style.paddingBottom = "";
-
-  var name =
-    projectNameInput.value.trim();
-
-  if (!name) {
-    return;
-  }
-
-  var vertical =
-    projectNameIsVertical();
-
-  if (vertical) {
-
-    if (!projectNameFitsVertical()) {
-
-      if (projectNameDotsVertical) {
-
-        projectNameDotsVertical.style.display =
-          "flex";
-
-      }
-
-      projectNameInput.style.paddingBottom =
-        "3.5em";
-
-    }
-
-  } else {
-
-    if (!projectNameFitsHorizontal()) {
-
-      if (projectNameDotsHorizontal) {
-
-        projectNameDotsHorizontal.style.display =
-          "flex";
-
-      }
-
-      projectNameInput.style.paddingRight =
-        "3.5em";
-
-    }
-
-  }
 
 }
 
@@ -1212,19 +951,6 @@ projectNameInput.addEventListener(
 projectNameInput.addEventListener(
   "focus",
   function() {
-
-    updateProjectNameDisplay();
-
-  }
-);
-
-
-projectNameInput.addEventListener(
-  "blur",
-  function() {
-
-    projectNameInput.scrollLeft = 0;
-    projectNameInput.scrollTop = 0;
 
     updateProjectNameDisplay();
 
