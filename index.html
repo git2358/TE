@@ -280,6 +280,9 @@ body.viewer-only-page {
 
   display: block;
 
+  position: absolute;
+  inset: 0;
+
   width: 100%;
   height: 2rem;
 
@@ -289,10 +292,8 @@ body.viewer-only-page {
   max-width: 100%;
   max-height: 100%;
 
-  flex: 1 1 auto;
-
   background: #333;
-  color: #fff;
+  color: transparent;
 
   border: 0;
   border-radius: 0;
@@ -307,18 +308,65 @@ body.viewer-only-page {
   white-space: nowrap;
 
   overflow: hidden;
-  text-overflow: ellipsis;
+
+  caret-color: #fff;
 
   -ms-overflow-style: none;
   scrollbar-width: none;
 
   float: none !important;
+
+  z-index: 2;
 }
 
 .project-name::-webkit-scrollbar {
   width: 0;
   height: 0;
   display: none;
+}
+
+
+/*
+ * The visible project-name display.
+ *
+ * This is separate from the actual input value.
+ * The input keeps the real project name while
+ * this element can add three individual dots
+ * when the name is too long.
+ */
+
+.project-name-display {
+  box-sizing: border-box;
+
+  position: absolute;
+  inset: 0;
+
+  display: block;
+
+  width: 100%;
+  height: 2rem;
+
+  padding: 0.5em;
+
+  color: #fff;
+  background: #333;
+
+  font: inherit;
+  font-size: inherit;
+  line-height: inherit;
+
+  text-align: left;
+  text-transform: uppercase;
+
+  letter-spacing: 1em;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  z-index: 1;
 }
 
 
@@ -372,7 +420,32 @@ body.viewer-only-page {
   white-space: nowrap;
 
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+
+/*
+ * Vertical visible project name.
+ */
+
+.grid--right .project-name-display,
+.grid--left .project-name-display {
+  width: 2rem;
+  height: 100%;
+
+  min-width: 2rem;
+  min-height: 0;
+
+  max-width: 2rem;
+  max-height: 100%;
+
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+
+  text-align: start;
+
+  white-space: nowrap;
+
+  overflow: hidden;
 }
 
 
@@ -423,11 +496,6 @@ body.viewer-only-page {
 
 .mobile-nav {
   display: none;
-}
-
-.project-name::placeholder {
-  color: #fff;
-  opacity: 1;
 }
 
 
@@ -531,7 +599,31 @@ body.viewer-only-page {
     white-space: nowrap;
 
     overflow: hidden !important;
-    text-overflow: ellipsis;
+  }
+
+
+  .project-name-display,
+  .grid--right .project-name-display,
+  .grid--left .project-name-display {
+    box-sizing: border-box;
+
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+
+    width: 100% !important;
+    height: 2rem !important;
+
+    min-width: 0 !important;
+    min-height: 2rem !important;
+
+    max-width: 100% !important;
+    max-height: 2rem !important;
+
+    text-align: left !important;
+
+    white-space: nowrap;
+
+    overflow: hidden !important;
   }
 
 
@@ -761,6 +853,7 @@ textarea::placeholder {
     </button>
 
     <div class="project-name-wrap">
+
       <input
         class="project-name pointer bg-dark-gray near-white bn outline-0 pa2 fl ma0 code f7"
         type="text"
@@ -771,6 +864,12 @@ textarea::placeholder {
         autocomplete="off"
         autocapitalize="off"
         spellcheck="false">
+
+      <span
+        class="project-name-display"
+        aria-hidden="true">
+      </span>
+
     </div>
 
   </div>
@@ -825,8 +924,254 @@ var editorCSS = document.querySelector('.css');
 var editorJS = document.querySelector('.js');
 var viewer = document.querySelector('.viewer');
 var projectNameInput = document.querySelector('.project-name');
+var projectNameDisplay = document.querySelector('.project-name-display');
+var projectNameWrap = document.querySelector('.project-name-wrap');
 
 var defaultPageTitle = "[ 2358 | TE ]";
+
+
+// ----------------------------------------
+// Project name display
+// ----------------------------------------
+
+function projectNameIsVertical() {
+
+  return (
+    window.innerWidth > 600 &&
+    (
+      grid.classList.contains("grid--right") ||
+      grid.classList.contains("grid--left")
+    )
+  );
+
+}
+
+
+function updateProjectNameDisplay() {
+
+  if (!projectNameDisplay) {
+    return;
+  }
+
+  var name =
+    projectNameInput.value.trim();
+
+  if (!name) {
+
+    projectNameDisplay.textContent =
+      projectNameInput.placeholder || "";
+
+    return;
+
+  }
+
+
+  /*
+   * The display uses the actual characters
+   * from the project name.
+   *
+   * If the complete name does not fit,
+   * three real "." characters are appended.
+   */
+
+  var vertical =
+    projectNameIsVertical();
+
+  var availableWidth =
+    projectNameWrap.clientWidth;
+
+  var availableHeight =
+    projectNameWrap.clientHeight;
+
+
+  /*
+   * Start by testing the complete name.
+   */
+
+  projectNameDisplay.textContent =
+    name;
+
+
+  if (
+    (
+      !vertical &&
+      projectNameDisplay.scrollWidth <= availableWidth
+    ) ||
+    (
+      vertical &&
+      projectNameDisplay.scrollHeight <= availableHeight
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+   * The name is too long.
+   *
+   * Find the longest part of the name
+   * that fits together with three actual
+   * period characters.
+   */
+
+  var characters =
+    Array.from(name);
+
+  var dots =
+    "...";
+
+  var visible =
+    "";
+
+
+  for (
+    var i = 0;
+    i < characters.length;
+    i++
+  ) {
+
+    var candidate =
+      visible +
+      characters[i] +
+      dots;
+
+    projectNameDisplay.textContent =
+      candidate;
+
+
+    var fits =
+      vertical
+        ? projectNameDisplay.scrollHeight <= availableHeight
+        : projectNameDisplay.scrollWidth <= availableWidth;
+
+
+    if (!fits) {
+      break;
+    }
+
+    visible +=
+      characters[i];
+
+  }
+
+
+  /*
+   * If even one character plus three dots
+   * is too large, show only the dots.
+   */
+
+  if (!visible) {
+
+    projectNameDisplay.textContent =
+      dots;
+
+  } else {
+
+    projectNameDisplay.textContent =
+      visible +
+      dots;
+
+  }
+
+}
+
+
+function updateProjectNameURL() {
+
+  var name =
+    projectNameInput.value.trim();
+
+  if (!name) {
+
+    projectName =
+      "";
+
+    hash =
+      "P";
+
+    history.replaceState(
+      null,
+      "",
+      "#P" +
+      ((urlLayout || urlHide)
+        ? "?" + getUrlMarker()
+        : "") +
+      "?" + encodeEditorData()
+    );
+
+    updatePageTitle();
+    updateProjectNameDisplay();
+
+    return;
+
+  }
+
+  projectName =
+    name;
+
+  hash =
+    encodeURIComponent(name);
+
+  history.replaceState(
+    null,
+    "",
+    "#" + hash +
+    ((urlLayout || urlHide)
+      ? "?" + getUrlMarker()
+      : "") +
+      "?" + encodeEditorData()
+  );
+
+  updateProjectNameDisplay();
+
+}
+
+
+function updatePageTitle() {
+
+  var name =
+    projectNameInput.value.trim();
+
+  document.title =
+    name
+      ? "[ " + name + " ]"
+      : defaultPageTitle;
+
+}
+
+
+projectNameInput.addEventListener(
+  "input",
+  function() {
+
+    updateProjectNameURL();
+    updatePageTitle();
+    updateProjectNameDisplay();
+
+  }
+);
+
+
+projectNameInput.addEventListener(
+  "focus",
+  function() {
+
+    updateProjectNameDisplay();
+
+  }
+);
+
+
+window.addEventListener(
+  "resize",
+  function() {
+
+    updateProjectNameDisplay();
+
+  }
+);
 
 
 // ----------------------------------------
@@ -869,74 +1214,7 @@ var hashPayload =
 projectNameInput.value =
   projectName;
 
-
-function updateProjectNameURL() {
-
-  var name =
-    projectNameInput.value.trim();
-
-  if (!name) {
-
-    projectName = "";
-    hash = "P";
-
-    history.replaceState(
-      null,
-      "",
-      "#P" +
-      ((urlLayout || urlHide)
-        ? "?" + getUrlMarker()
-        : "") +
-      "?" + encodeEditorData()
-    );
-
-    updatePageTitle();
-
-    return;
-
-  }
-
-  projectName =
-    name;
-
-  hash =
-    encodeURIComponent(name);
-
-  history.replaceState(
-    null,
-    "",
-    "#" + hash +
-    ((urlLayout || urlHide)
-      ? "?" + getUrlMarker()
-      : "") +
-      "?" + encodeEditorData()
-  );
-
-}
-
-
-function updatePageTitle() {
-
-  var name =
-    projectNameInput.value.trim();
-
-  document.title =
-    name
-      ? "[ " + name + " ]"
-      : defaultPageTitle;
-
-}
-
-
-projectNameInput.addEventListener(
-  "input",
-  function() {
-
-    updateProjectNameURL();
-    updatePageTitle();
-
-  }
-);
+updatePageTitle();
 
 
 // ----------------------------------------
@@ -1227,7 +1505,6 @@ function getBackgroundSource(style) {
 
 function syncViewerBackground() {
 
-  // Background inheritance is ONLY used in H mode.
   if (!urlHide) {
     return;
   }
@@ -1348,8 +1625,6 @@ function syncViewerBackground() {
       background.clip;
 
   } catch (error) {
-
-    // Ignore inaccessible or not-yet-loaded iframe states.
 
   }
 
@@ -1597,8 +1872,6 @@ if (editorDataFromHash) {
 
 } else if (window.location.hash) {
 
-  // populate editors from hash
-
   editorHTML.value =
     localStorage.getItem(
       'HTMLcontent' + hash
@@ -1614,8 +1887,6 @@ if (editorDataFromHash) {
       'JScontent' + hash
     ) || '';
 
-
-  // save data for each editor
 
   function saveHTMLDataHash() {
 
@@ -1645,8 +1916,6 @@ if (editorDataFromHash) {
   }
 
 
-  // update viewer
-
   function updateViewerHash() {
 
     var HTMLView =
@@ -1675,8 +1944,6 @@ if (editorDataFromHash) {
 
   }
 
-
-  // listen and fire
 
   window.addEventListener(
     "input",
@@ -1715,8 +1982,6 @@ if (editorDataFromHash) {
 
 } else {
 
-  // populate editors from local storage
-
   editorHTML.value =
     localStorage.getItem(
       'HTMLcontent'
@@ -1732,8 +1997,6 @@ if (editorDataFromHash) {
       'JScontent'
     ) || '';
 
-
-  // save data for each editor
 
   function saveHTMLData() {
 
@@ -1763,8 +2026,6 @@ if (editorDataFromHash) {
   }
 
 
-  // update viewer
-
   function updateViewer() {
 
     var HTMLView =
@@ -1793,8 +2054,6 @@ if (editorDataFromHash) {
 
   }
 
-
-  // listen and fire
 
   window.addEventListener(
     "input",
@@ -2098,6 +2357,8 @@ function setLayout(
     );
 
   }
+
+  updateProjectNameDisplay();
 
 }
 
@@ -2552,10 +2813,6 @@ function createZip(files) {
         crc32(data);
 
 
-      // ----------------------------------------
-      // Local file header
-      // ----------------------------------------
-
       var localHeader =
         new ArrayBuffer(
           30 + name.length
@@ -2646,10 +2903,6 @@ function createZip(files) {
           data
       });
 
-
-      // ----------------------------------------
-      // Central directory header
-      // ----------------------------------------
 
       var centralHeader =
         new ArrayBuffer(
@@ -2782,10 +3035,6 @@ function createZip(files) {
   );
 
 
-  // ----------------------------------------
-  // Calculate central directory size
-  // ----------------------------------------
-
   var centralDirectorySize =
     centralHeaders.reduce(
       function(total, header) {
@@ -2797,10 +3046,6 @@ function createZip(files) {
       0
     );
 
-
-  // ----------------------------------------
-  // End of central directory
-  // ----------------------------------------
 
   var endHeader =
     new ArrayBuffer(22);
@@ -2858,10 +3103,6 @@ function createZip(files) {
     0
   );
 
-
-  // ----------------------------------------
-  // Combine everything
-  // ----------------------------------------
 
   var parts = [];
 
@@ -3006,12 +3247,6 @@ function downloadZip() {
 
 function viewerIsEmpty() {
 
-  /*
-   * H mode is a normal webpage preview.
-   * The yellow bg-gold state is ONLY for
-   * the normal editor interface.
-   */
-
   if (urlHide) {
 
     viewer.classList.remove(
@@ -3021,17 +3256,6 @@ function viewerIsEmpty() {
     return;
 
   }
-
-
-  /*
-   * Normal edit mode:
-   *
-   * Empty editors = yellow placeholder.
-   *
-   * Any content = normal white iframe
-   * unless the user's HTML/CSS specifies
-   * another background.
-   */
 
   if (
     editorHTML.value !== "" ||
@@ -3155,6 +3379,8 @@ window.addEventListener(
   "load",
   function() {
 
+    updateProjectNameDisplay();
+
     setTimeout(
       function() {
 
@@ -3170,6 +3396,10 @@ window.addEventListener(
 
   }
 );
+
+
+// Initial project-name display
+updateProjectNameDisplay();
 
 </script>
 
