@@ -800,7 +800,7 @@ function resizeMobileEditors() {
 
 
 // ----------------------------------------
-// Viewer height + background synchronisation
+// Viewer height + H-mode background
 // ----------------------------------------
 
 var viewerBackgroundProperties = [
@@ -814,6 +814,10 @@ var viewerBackgroundProperties = [
 
 
 function getViewerContentHeight() {
+
+  if (!urlHide) {
+    return 0;
+  }
 
   try {
 
@@ -844,6 +848,10 @@ function getViewerContentHeight() {
 
 function getViewerBackground() {
 
+  if (!urlHide) {
+    return null;
+  }
+
   try {
 
     if (!viewer.contentDocument) {
@@ -868,10 +876,6 @@ function getViewerBackground() {
       var htmlValue = htmlStyle.getPropertyValue(property);
       var bodyValue = bodyStyle.getPropertyValue(property);
 
-      /*
-       * The body background is normally what the user sees.
-       * If the body has no visible background, use html.
-       */
       var value = bodyValue;
 
       if (
@@ -899,7 +903,7 @@ function getViewerBackground() {
 
 function applyViewerBackground(background) {
 
-  if (!background) {
+  if (!urlHide || !background) {
     return;
   }
 
@@ -1029,7 +1033,7 @@ function enableViewerOnlyAutoHeight() {
       }
 
     } catch (error) {
-      // Ignore inaccessible iframe documents.
+      // Ignore iframe observer errors.
     }
 
   });
@@ -1367,15 +1371,12 @@ function setViewerOnly(hidden) {
 
   if (hidden) {
 
-    /*
-     * Allow the iframe to determine its own document height.
-     * The iframe will be resized after it loads.
-     */
     viewer.style.removeProperty("height");
 
   } else {
 
     viewer.style.removeProperty("height");
+
     clearViewerBackground();
 
   }
@@ -1773,17 +1774,37 @@ function downloadZip() {
 
 function viewerIsEmpty() {
 
+  /*
+   * H mode:
+   * The preview's actual background is allowed to control
+   * the parent page, so do not force the yellow/white
+   * editor-mode background here.
+   */
+  if (urlHide) {
+    return;
+  }
+
   if (
     editorHTML.value !== "" ||
     editorCSS.value !== "" ||
     editorJS.value !== ""
   ) {
 
+    /*
+     * Once anything is entered, the normal preview is
+     * white unless the user's own HTML/CSS specifies
+     * another background.
+     */
     viewer.classList.remove("bg-gold");
+    viewer.style.backgroundColor = "#fff";
 
   } else {
 
+    /*
+     * Empty editor = TE's normal yellow preview.
+     */
     viewer.classList.add("bg-gold");
+    viewer.style.removeProperty("background-color");
 
   }
 
