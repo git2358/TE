@@ -12,6 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <meta name="mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="[ TE ]">
+<meta name="mobile-web-app-title" content="[ TE ]">
 <meta name="application-name" content="[ TE ]">
 <meta name="theme-color" content="#ffffff">
 
@@ -266,6 +267,7 @@ body.viewer-only-page {
   box-sizing: border-box;
   display: block;
   width: calc(var(--project-name-length, 1) * 2rem);
+  max-width: calc(100vw - 18rem);
   height: 2rem;
   min-width: 2rem;
   background: #333;
@@ -277,12 +279,16 @@ body.viewer-only-page {
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 1em;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .grid--right .project-name,
 .grid--left .project-name {
   width: 2rem;
+  max-width: 2rem;
   height: calc(var(--project-name-length, 1) * 2rem);
+  max-height: calc(100vh - 2rem);
   writing-mode: vertical-rl;
   text-orientation: upright;
 }
@@ -315,6 +321,7 @@ body.viewer-only-page {
 
   .project-name {
     width: calc(var(--project-name-length, 1) * 2rem) !important;
+    max-width: calc(100vw - 10rem) !important;
     height: 2rem !important;
     writing-mode: horizontal-tb !important;
     text-orientation: mixed !important;
@@ -583,6 +590,130 @@ var projectNameInput = document.querySelector('.project-name');
 
 var defaultPageTitle = "[ 2358 | TE ]";
 
+
+// ----------------------------------------
+// Project name ticker
+// ----------------------------------------
+
+var projectNameTickerFrame = null;
+var projectNameTickerDirection = 1;
+var projectNameTickerPauseUntil = 0;
+
+
+function stopProjectNameTicker(reset) {
+
+  if (projectNameTickerFrame !== null) {
+    cancelAnimationFrame(projectNameTickerFrame);
+    projectNameTickerFrame = null;
+  }
+
+  if (reset) {
+    projectNameInput.scrollLeft = 0;
+  }
+
+}
+
+
+function projectNameNeedsTicker() {
+
+  if (urlHide) {
+    return false;
+  }
+
+  if (document.activeElement === projectNameInput) {
+    return false;
+  }
+
+  return projectNameInput.scrollWidth >
+    projectNameInput.clientWidth + 2;
+
+}
+
+
+function startProjectNameTicker() {
+
+  stopProjectNameTicker(false);
+
+  if (!projectNameNeedsTicker()) {
+    projectNameInput.scrollLeft = 0;
+    return;
+  }
+
+  projectNameTickerDirection = 1;
+  projectNameTickerPauseUntil = performance.now() + 1000;
+
+
+  function tick(now) {
+
+    if (
+      urlHide ||
+      document.activeElement === projectNameInput
+    ) {
+      projectNameTickerFrame = null;
+      return;
+    }
+
+    if (!projectNameNeedsTicker()) {
+      projectNameInput.scrollLeft = 0;
+      projectNameTickerFrame = null;
+      return;
+    }
+
+    var maxScroll =
+      projectNameInput.scrollWidth -
+      projectNameInput.clientWidth;
+
+
+    if (now >= projectNameTickerPauseUntil) {
+
+      projectNameInput.scrollLeft +=
+        0.35 * projectNameTickerDirection;
+
+
+      if (projectNameInput.scrollLeft >= maxScroll) {
+
+        projectNameInput.scrollLeft = maxScroll;
+        projectNameTickerDirection = -1;
+        projectNameTickerPauseUntil = now + 1200;
+
+      } else if (projectNameInput.scrollLeft <= 0) {
+
+        projectNameInput.scrollLeft = 0;
+        projectNameTickerDirection = 1;
+        projectNameTickerPauseUntil = now + 1200;
+
+      }
+
+    }
+
+
+    projectNameTickerFrame =
+      requestAnimationFrame(tick);
+
+  }
+
+
+  projectNameTickerFrame =
+    requestAnimationFrame(tick);
+
+}
+
+
+function updateProjectNameTicker() {
+
+  stopProjectNameTicker(true);
+
+  requestAnimationFrame(function() {
+
+    if (!urlHide) {
+      startProjectNameTicker();
+    }
+
+  });
+
+}
+
+
 function updatePageTitle() {
 
   var name = projectNameInput.value.trim();
@@ -674,13 +805,39 @@ function updateProjectNameURL() {
 
 
 projectNameInput.addEventListener("input", function() {
+
   updateProjectNameSize();
   updateProjectNameURL();
   updatePageTitle();
+  updateProjectNameTicker();
+
 });
+
+
+projectNameInput.addEventListener("focus", function() {
+
+  stopProjectNameTicker(true);
+
+});
+
+
+projectNameInput.addEventListener("blur", function() {
+
+  updateProjectNameTicker();
+
+});
+
+
+window.addEventListener("resize", function() {
+
+  updateProjectNameTicker();
+
+});
+
 
 updateProjectNameSize();
 updatePageTitle();
+updateProjectNameTicker();
 
 
 // ----------------------------------------
@@ -1609,7 +1766,7 @@ Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
 
 function stampDate() {
 
-  return new Date().YYYYMMDDHHMMSS();
+  return new Date().YYYYMMDDHHMMSS;
 
 }
 
