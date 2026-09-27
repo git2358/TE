@@ -226,9 +226,23 @@ body.viewer-only-page {
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: flex-start;
+
   overflow: hidden;
   min-width: 0;
   min-height: 0;
+
+  white-space: nowrap;
+}
+
+.nav .layouts {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
+}
+
+.nav > button {
+  flex: 0 0 2rem;
 }
 
 .html {
@@ -245,12 +259,6 @@ body.viewer-only-page {
 
 .viewer {
   grid-area: viewer;
-}
-
-.grid--right .nav,
-.grid--left .nav {
-  flex-direction: column;
-  flex-wrap: nowrap;
 }
 
 .grid.viewer-only {
@@ -284,10 +292,10 @@ body.viewer-only-page {
   width: calc(var(--project-name-length, 1) * 2rem);
   max-width: calc(100vw - 18rem);
   min-width: 2rem;
-
   height: 2rem;
 
-  flex: 0 1 auto;
+  flex: 1 1 auto;
+  min-width: 0;
 
   background: #333;
   color: #fff;
@@ -301,9 +309,29 @@ body.viewer-only-page {
   letter-spacing: 1em;
 
   white-space: nowrap;
-  overflow: hidden;
 
-  flex-shrink: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.project-name::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.grid--right .nav,
+.grid--left .nav {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.grid--right .nav .layouts,
+.grid--left .nav .layouts {
+  flex-direction: column;
 }
 
 .grid--right .project-name,
@@ -315,14 +343,26 @@ body.viewer-only-page {
   height: calc(var(--project-name-length, 1) * 2rem);
   max-height: calc(100vh - 2rem);
 
-  flex: 0 1 auto;
-  flex-shrink: 1;
+  flex: 1 1 auto;
+  min-height: 0;
 
   writing-mode: vertical-rl;
   text-orientation: upright;
 
   white-space: nowrap;
-  overflow: hidden;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.grid--right .project-name::-webkit-scrollbar,
+.grid--left .project-name::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .project-name::placeholder {
@@ -341,13 +381,6 @@ body.viewer-only-page {
     position: sticky;
     top: 0;
     z-index: 1;
-
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    width: 100%;
-    min-width: 0;
   }
 
   .layouts {
@@ -361,17 +394,9 @@ body.viewer-only-page {
   .project-name {
     width: calc(var(--project-name-length, 1) * 2rem) !important;
     max-width: calc(100vw - 10rem) !important;
-    min-width: 2rem !important;
-
     height: 2rem !important;
-
-    flex: 0 1 auto !important;
-
     writing-mode: horizontal-tb !important;
     text-orientation: mixed !important;
-
-    white-space: nowrap !important;
-    overflow: hidden !important;
   }
 
   .nav button[onclick="setFocus('')"] {
@@ -675,6 +700,27 @@ function projectNameIsVertical() {
 }
 
 
+function projectNameGetOverflow() {
+
+  if (projectNameIsVertical()) {
+
+    return Math.max(
+      0,
+      projectNameInput.scrollHeight -
+      projectNameInput.clientHeight
+    );
+
+  }
+
+  return Math.max(
+    0,
+    projectNameInput.scrollWidth -
+    projectNameInput.clientWidth
+  );
+
+}
+
+
 function projectNameNeedsTicker() {
 
   if (urlHide) {
@@ -685,15 +731,7 @@ function projectNameNeedsTicker() {
     return false;
   }
 
-  if (projectNameIsVertical()) {
-
-    return projectNameInput.scrollHeight >
-      projectNameInput.clientHeight + 2;
-
-  }
-
-  return projectNameInput.scrollWidth >
-    projectNameInput.clientWidth + 2;
+  return projectNameGetOverflow() > 2;
 
 }
 
@@ -703,13 +741,16 @@ function startProjectNameTicker() {
   stopProjectNameTicker(false);
 
   if (!projectNameNeedsTicker()) {
+
     projectNameInput.scrollLeft = 0;
     projectNameInput.scrollTop = 0;
+
     return;
   }
 
   projectNameTickerDirection = 1;
-  projectNameTickerPauseUntil = performance.now() + 1000;
+  projectNameTickerPauseUntil =
+    performance.now() + 1000;
 
 
   function tick(now) {
@@ -718,71 +759,91 @@ function startProjectNameTicker() {
       urlHide ||
       document.activeElement === projectNameInput
     ) {
+
       projectNameTickerFrame = null;
       return;
+
     }
 
-    if (!projectNameNeedsTicker()) {
+
+    var overflow = projectNameGetOverflow();
+
+    if (overflow <= 2) {
+
       projectNameInput.scrollLeft = 0;
       projectNameInput.scrollTop = 0;
+
       projectNameTickerFrame = null;
       return;
+
     }
 
 
-    if (projectNameIsVertical()) {
+    if (now >= projectNameTickerPauseUntil) {
 
-      var maxScrollTop =
-        projectNameInput.scrollHeight -
-        projectNameInput.clientHeight;
+      if (projectNameIsVertical()) {
 
+        var currentTop =
+          projectNameInput.scrollTop;
 
-      if (now >= projectNameTickerPauseUntil) {
+        var nextTop =
+          currentTop +
+          (0.35 * projectNameTickerDirection);
 
-        projectNameInput.scrollTop +=
-          0.35 * projectNameTickerDirection;
+        if (nextTop >= overflow) {
 
+          projectNameInput.scrollTop = overflow;
 
-        if (projectNameInput.scrollTop >= maxScrollTop) {
-
-          projectNameInput.scrollTop = maxScrollTop;
           projectNameTickerDirection = -1;
-          projectNameTickerPauseUntil = now + 1200;
 
-        } else if (projectNameInput.scrollTop <= 0) {
+          projectNameTickerPauseUntil =
+            now + 1200;
+
+        } else if (nextTop <= 0) {
 
           projectNameInput.scrollTop = 0;
+
           projectNameTickerDirection = 1;
-          projectNameTickerPauseUntil = now + 1200;
+
+          projectNameTickerPauseUntil =
+            now + 1200;
+
+        } else {
+
+          projectNameInput.scrollTop = nextTop;
 
         }
 
-      }
+      } else {
 
-    } else {
+        var currentLeft =
+          projectNameInput.scrollLeft;
 
-      var maxScrollLeft =
-        projectNameInput.scrollWidth -
-        projectNameInput.clientWidth;
+        var nextLeft =
+          currentLeft +
+          (0.35 * projectNameTickerDirection);
 
+        if (nextLeft >= overflow) {
 
-      if (now >= projectNameTickerPauseUntil) {
+          projectNameInput.scrollLeft = overflow;
 
-        projectNameInput.scrollLeft +=
-          0.35 * projectNameTickerDirection;
-
-
-        if (projectNameInput.scrollLeft >= maxScrollLeft) {
-
-          projectNameInput.scrollLeft = maxScrollLeft;
           projectNameTickerDirection = -1;
-          projectNameTickerPauseUntil = now + 1200;
 
-        } else if (projectNameInput.scrollLeft <= 0) {
+          projectNameTickerPauseUntil =
+            now + 1200;
+
+        } else if (nextLeft <= 0) {
 
           projectNameInput.scrollLeft = 0;
+
           projectNameTickerDirection = 1;
-          projectNameTickerPauseUntil = now + 1200;
+
+          projectNameTickerPauseUntil =
+            now + 1200;
+
+        } else {
+
+          projectNameInput.scrollLeft = nextLeft;
 
         }
 
@@ -981,7 +1042,10 @@ function loadEditorDataFromHash() {
         binary
           .split("")
           .map(function(character) {
-            return "%" + ("00" + character.charCodeAt(0).toString(16)).slice(-2);
+            return "%" +
+              ("00" +
+              character.charCodeAt(0).toString(16))
+              .slice(-2);
           })
           .join("")
       );
@@ -1048,9 +1112,15 @@ function getUrlMarker() {
 function updateHashFromEditors() {
 
   if (hash) {
-    history.replaceState(null, "", "#" + hash +
+
+    history.replaceState(
+      null,
+      "",
+      "#" + hash +
       ((urlLayout || urlHide) ? "?" + getUrlMarker() : "") +
-      "?" + encodeEditorData());
+      "?" + encodeEditorData()
+    );
+
   }
 
 }
@@ -1060,11 +1130,18 @@ function resizeMobileEditor(editor) {
 
   if (window.innerWidth <= 600) {
 
-    editor.style.setProperty("height", "auto", "important");
+    editor.style.setProperty(
+      "height",
+      "auto",
+      "important"
+    );
 
     editor.style.setProperty(
       "height",
-      Math.max(editor.scrollHeight, window.innerHeight) + "px",
+      Math.max(
+        editor.scrollHeight,
+        window.innerHeight
+      ) + "px",
       "important"
     );
 
@@ -1115,8 +1192,13 @@ function isTransparentBackgroundColor(color) {
     /^rgba?\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*(?:,\s*([\d.]+)\s*)?\)$/
   );
 
-  if (match && match[1] !== undefined) {
+  if (
+    match &&
+    match[1] !== undefined
+  ) {
+
     return parseFloat(match[1]) === 0;
+
   }
 
   return false;
@@ -1169,6 +1251,7 @@ function getBackgroundSource(style) {
 
 function syncViewerBackground() {
 
+  // Background inheritance is ONLY used in H mode.
   if (!urlHide) {
     return;
   }
@@ -1188,27 +1271,40 @@ function syncViewerBackground() {
       return;
     }
 
-    var htmlStyle = window.getComputedStyle(frameHTML);
+    var htmlStyle =
+      window.getComputedStyle(frameHTML);
+
     var bodyStyle = frameBody
       ? window.getComputedStyle(frameBody)
       : null;
 
-    var background = getBackgroundSource(bodyStyle);
+    var background =
+      getBackgroundSource(bodyStyle);
 
     if (!background) {
-      background = getBackgroundSource(htmlStyle);
+      background =
+        getBackgroundSource(htmlStyle);
     }
 
-    var pageHTML = document.documentElement;
-    var pageBody = document.body;
+    var pageHTML =
+      document.documentElement;
+
+    var pageBody =
+      document.body;
 
     if (!background) {
 
-      pageHTML.style.backgroundImage = "none";
-      pageHTML.style.backgroundColor = "rgb(255, 255, 255)";
+      pageHTML.style.backgroundImage =
+        "none";
 
-      pageBody.style.backgroundImage = "none";
-      pageBody.style.backgroundColor = "rgb(255, 255, 255)";
+      pageHTML.style.backgroundColor =
+        "rgb(255, 255, 255)";
+
+      pageBody.style.backgroundImage =
+        "none";
+
+      pageBody.style.backgroundColor =
+        "rgb(255, 255, 255)";
 
       return;
 
@@ -1221,22 +1317,45 @@ function syncViewerBackground() {
       color === "transparent" ||
       isTransparentBackgroundColor(color)
     ) {
-      color = "rgb(255, 255, 255)";
+
+      color =
+        "rgb(255, 255, 255)";
+
     }
 
-    pageHTML.style.backgroundImage = "none";
-    pageHTML.style.backgroundColor = color;
+    pageHTML.style.backgroundImage =
+      "none";
 
-    pageBody.style.backgroundImage = background.image;
-    pageBody.style.backgroundColor = color;
-    pageBody.style.backgroundRepeat = background.repeat;
-    pageBody.style.backgroundPosition = background.position;
-    pageBody.style.backgroundSize = background.size;
-    pageBody.style.backgroundAttachment = background.attachment;
-    pageBody.style.backgroundOrigin = background.origin;
-    pageBody.style.backgroundClip = background.clip;
+    pageHTML.style.backgroundColor =
+      color;
+
+    pageBody.style.backgroundImage =
+      background.image;
+
+    pageBody.style.backgroundColor =
+      color;
+
+    pageBody.style.backgroundRepeat =
+      background.repeat;
+
+    pageBody.style.backgroundPosition =
+      background.position;
+
+    pageBody.style.backgroundSize =
+      background.size;
+
+    pageBody.style.backgroundAttachment =
+      background.attachment;
+
+    pageBody.style.backgroundOrigin =
+      background.origin;
+
+    pageBody.style.backgroundClip =
+      background.clip;
 
   } catch (error) {
+
+    // Ignore inaccessible or not-yet-loaded iframe states.
 
   }
 
@@ -1255,14 +1374,18 @@ function resizeViewerToContent() {
 
   try {
 
-    var frameDocument = viewer.contentDocument;
+    var frameDocument =
+      viewer.contentDocument;
 
     if (!frameDocument) {
       return;
     }
 
-    var frameHTML = frameDocument.documentElement;
-    var frameBody = frameDocument.body;
+    var frameHTML =
+      frameDocument.documentElement;
+
+    var frameBody =
+      frameDocument.body;
 
     if (!frameHTML) {
       return;
@@ -1272,9 +1395,15 @@ function resizeViewerToContent() {
       frameHTML.scrollHeight || 0,
       frameHTML.offsetHeight || 0,
       frameHTML.clientHeight || 0,
-      frameBody ? frameBody.scrollHeight || 0 : 0,
-      frameBody ? frameBody.offsetHeight || 0 : 0,
-      frameBody ? frameBody.clientHeight || 0 : 0,
+      frameBody
+        ? frameBody.scrollHeight || 0
+        : 0,
+      frameBody
+        ? frameBody.offsetHeight || 0
+        : 0,
+      frameBody
+        ? frameBody.clientHeight || 0
+        : 0,
       window.innerHeight
     );
 
@@ -1345,6 +1474,7 @@ viewer.addEventListener("load", function() {
 
 });
 
+
 window.addEventListener("resize", function() {
 
   if (urlHide) {
@@ -1361,20 +1491,36 @@ window.addEventListener("resize", function() {
 if (editorDataFromHash) {
 
   function saveHTMLDataHashPayload() {
-    localStorage.setItem('HTMLcontent' + hash, editorHTML.value);
+
+    localStorage.setItem(
+      'HTMLcontent' + hash,
+      editorHTML.value
+    );
+
   }
 
   function saveCSSDataHashPayload() {
-    localStorage.setItem('CSScontent' + hash, editorCSS.value);
+
+    localStorage.setItem(
+      'CSScontent' + hash,
+      editorCSS.value
+    );
+
   }
 
   function saveJSDataHashPayload() {
-    localStorage.setItem('JScontent' + hash, editorJS.value);
+
+    localStorage.setItem(
+      'JScontent' + hash,
+      editorJS.value
+    );
+
   }
 
   function updateViewerHashPayload() {
 
-    var HTMLView = editorHTML.value;
+    var HTMLView =
+      editorHTML.value;
 
     var CSSView =
       '<style>\n' +
@@ -1387,49 +1533,104 @@ if (editorDataFromHash) {
       editorJS.value +
       '\n<\/script>';
 
-    viewer.srcdoc = buildViewerSrcdoc(
-      HTMLView,
-      CSSView,
-      JSView
-    );
+    viewer.srcdoc =
+      buildViewerSrcdoc(
+        HTMLView,
+        CSSView,
+        JSView
+      );
 
     updateHashFromEditors();
     viewerIsEmpty();
 
   }
 
-  window.addEventListener("input", updateViewerHashPayload);
-  window.addEventListener("input", resizeMobileEditors);
-  window.addEventListener("resize", resizeMobileEditors);
+  window.addEventListener(
+    "input",
+    updateViewerHashPayload
+  );
 
-  editorHTML.addEventListener("keyup", saveHTMLDataHashPayload);
-  editorCSS.addEventListener("keyup", saveCSSDataHashPayload);
-  editorJS.addEventListener("keyup", saveJSDataHashPayload);
+  window.addEventListener(
+    "input",
+    resizeMobileEditors
+  );
+
+  window.addEventListener(
+    "resize",
+    resizeMobileEditors
+  );
+
+  editorHTML.addEventListener(
+    "keyup",
+    saveHTMLDataHashPayload
+  );
+
+  editorCSS.addEventListener(
+    "keyup",
+    saveCSSDataHashPayload
+  );
+
+  editorJS.addEventListener(
+    "keyup",
+    saveJSDataHashPayload
+  );
 
   updateViewerHashPayload();
   resizeMobileEditors();
 
 } else if (window.location.hash) {
 
-  editorHTML.value = localStorage.getItem('HTMLcontent' + hash) || '';
-  editorCSS.value = localStorage.getItem('CSScontent' + hash) || '';
-  editorJS.value = localStorage.getItem('JScontent' + hash) || '';
+  // populate editors from hash
+  editorHTML.value =
+    localStorage.getItem(
+      'HTMLcontent' + hash
+    ) || '';
 
+  editorCSS.value =
+    localStorage.getItem(
+      'CSScontent' + hash
+    ) || '';
+
+  editorJS.value =
+    localStorage.getItem(
+      'JScontent' + hash
+    ) || '';
+
+
+  // save data for each editor
   function saveHTMLDataHash() {
-    localStorage.setItem('HTMLcontent' + hash, editorHTML.value);
+
+    localStorage.setItem(
+      'HTMLcontent' + hash,
+      editorHTML.value
+    );
+
   }
 
   function saveCSSDataHash() {
-    localStorage.setItem('CSScontent' + hash, editorCSS.value);
+
+    localStorage.setItem(
+      'CSScontent' + hash,
+      editorCSS.value
+    );
+
   }
 
   function saveJSDataHash() {
-    localStorage.setItem('JScontent' + hash, editorJS.value);
+
+    localStorage.setItem(
+      'JScontent' + hash,
+      editorJS.value
+    );
+
   }
 
+
+  // update viewer
   function updateViewerHash() {
 
-    var HTMLView = editorHTML.value;
+    var HTMLView =
+      editorHTML.value;
 
     var CSSView =
       '<style>\n' +
@@ -1442,49 +1643,100 @@ if (editorDataFromHash) {
       editorJS.value +
       '\n<\/script>';
 
-    viewer.srcdoc = buildViewerSrcdoc(
-      HTMLView,
-      CSSView,
-      JSView
-    );
+    viewer.srcdoc =
+      buildViewerSrcdoc(
+        HTMLView,
+        CSSView,
+        JSView
+      );
 
     updateHashFromEditors();
     viewerIsEmpty();
 
   }
 
-  window.addEventListener("input", updateViewerHash);
-  window.addEventListener("input", resizeMobileEditors);
-  window.addEventListener("resize", resizeMobileEditors);
 
-  editorHTML.addEventListener("keyup", saveHTMLDataHash);
-  editorCSS.addEventListener("keyup", saveCSSDataHash);
-  editorJS.addEventListener("keyup", saveJSDataHash);
+  // listen and fire
+  window.addEventListener(
+    "input",
+    updateViewerHash
+  );
+
+  window.addEventListener(
+    "input",
+    resizeMobileEditors
+  );
+
+  window.addEventListener(
+    "resize",
+    resizeMobileEditors
+  );
+
+  editorHTML.addEventListener(
+    "keyup",
+    saveHTMLDataHash
+  );
+
+  editorCSS.addEventListener(
+    "keyup",
+    saveCSSDataHash
+  );
+
+  editorJS.addEventListener(
+    "keyup",
+    saveJSDataHash
+  );
 
   updateViewerHash();
   resizeMobileEditors();
 
 } else {
 
-  editorHTML.value = localStorage.getItem('HTMLcontent') || '';
-  editorCSS.value = localStorage.getItem('CSScontent') || '';
-  editorJS.value = localStorage.getItem('JScontent') || '';
+  // populate editors from local storage
+  editorHTML.value =
+    localStorage.getItem('HTMLcontent') || '';
 
+  editorCSS.value =
+    localStorage.getItem('CSScontent') || '';
+
+  editorJS.value =
+    localStorage.getItem('JScontent') || '';
+
+
+  // save data for each editor
   function saveHTMLData() {
-    localStorage.setItem('HTMLcontent', editorHTML.value);
+
+    localStorage.setItem(
+      'HTMLcontent',
+      editorHTML.value
+    );
+
   }
 
   function saveCSSData() {
-    localStorage.setItem('CSScontent', editorCSS.value);
+
+    localStorage.setItem(
+      'CSScontent',
+      editorCSS.value
+    );
+
   }
 
   function saveJSData() {
-    localStorage.setItem('JScontent', editorJS.value);
+
+    localStorage.setItem(
+      'JScontent',
+      editorJS.value
+    );
+
   }
 
+
+  // update viewer
   function updateViewer() {
 
-    var HTMLView = editorHTML.value;
+    var HTMLView =
+      editorHTML.value;
 
     var CSSView =
       '<style>\n' +
@@ -1497,24 +1749,49 @@ if (editorDataFromHash) {
       editorJS.value +
       '\n<\/script>';
 
-    viewer.srcdoc = buildViewerSrcdoc(
-      HTMLView,
-      CSSView,
-      JSView
-    );
+    viewer.srcdoc =
+      buildViewerSrcdoc(
+        HTMLView,
+        CSSView,
+        JSView
+      );
 
     updateHashFromEditors();
     viewerIsEmpty();
 
   }
 
-  window.addEventListener("input", updateViewer);
-  window.addEventListener("input", resizeMobileEditors);
-  window.addEventListener("resize", resizeMobileEditors);
 
-  editorHTML.addEventListener("keyup", saveHTMLData);
-  editorCSS.addEventListener("keyup", saveCSSData);
-  editorJS.addEventListener("keyup", saveJSData);
+  // listen and fire
+  window.addEventListener(
+    "input",
+    updateViewer
+  );
+
+  window.addEventListener(
+    "input",
+    resizeMobileEditors
+  );
+
+  window.addEventListener(
+    "resize",
+    resizeMobileEditors
+  );
+
+  editorHTML.addEventListener(
+    "keyup",
+    saveHTMLData
+  );
+
+  editorCSS.addEventListener(
+    "keyup",
+    saveCSSData
+  );
+
+  editorJS.addEventListener(
+    "keyup",
+    saveJSData
+  );
 
   updateViewer();
   resizeMobileEditors();
@@ -1528,9 +1805,12 @@ if (editorDataFromHash) {
 
 function normalizeInitialURL() {
 
-  var marker = urlHide
-    ? "H"
-    : (urlLayout || "left").charAt(0).toUpperCase();
+  var marker =
+    urlHide
+      ? "H"
+      : (urlLayout || "left")
+          .charAt(0)
+          .toUpperCase();
 
   history.replaceState(
     null,
@@ -1558,46 +1838,99 @@ function enableEditorHistory(editor) {
     restoring: false
   };
 
-  editor.addEventListener("input", function() {
 
-    if (!history.restoring && editor.value !== history.value) {
-      history.undo.push(history.value);
-      history.redo = [];
-      history.value = editor.value;
+  editor.addEventListener(
+    "input",
+    function() {
+
+      if (
+        !history.restoring &&
+        editor.value !== history.value
+      ) {
+
+        history.undo.push(
+          history.value
+        );
+
+        history.redo = [];
+        history.value =
+          editor.value;
+
+      }
+
     }
+  );
 
-  });
 
-  editor.addEventListener("keydown", function(event) {
+  editor.addEventListener(
+    "keydown",
+    function(event) {
 
-    var modifier = event.metaKey || event.ctrlKey;
-    var undo = modifier && !event.shiftKey && event.key.toLowerCase() === "z";
-    var redo = modifier && event.shiftKey && event.key.toLowerCase() === "z";
+      var modifier =
+        event.metaKey ||
+        event.ctrlKey;
 
-    if (!undo && !redo) {
-      return;
+      var undo =
+        modifier &&
+        !event.shiftKey &&
+        event.key.toLowerCase() === "z";
+
+      var redo =
+        modifier &&
+        event.shiftKey &&
+        event.key.toLowerCase() === "z";
+
+      if (!undo && !redo) {
+        return;
+      }
+
+      event.preventDefault();
+
+      var source =
+        undo
+          ? history.undo
+          : history.redo;
+
+      var target =
+        undo
+          ? history.redo
+          : history.undo;
+
+      if (!source.length) {
+        return;
+      }
+
+      target.push(editor.value);
+
+      editor.value =
+        source.pop();
+
+      history.value =
+        editor.value;
+
+      history.restoring = true;
+
+      editor.dispatchEvent(
+        new Event(
+          "input",
+          { bubbles: true }
+        )
+      );
+
+      history.restoring = false;
+
+      editor.dispatchEvent(
+        new Event(
+          "keyup",
+          { bubbles: true }
+        )
+      );
+
     }
-
-    event.preventDefault();
-
-    var source = undo ? history.undo : history.redo;
-    var target = undo ? history.redo : history.undo;
-
-    if (!source.length) {
-      return;
-    }
-
-    target.push(editor.value);
-    editor.value = source.pop();
-    history.value = editor.value;
-    history.restoring = true;
-    editor.dispatchEvent(new Event("input", { bubbles: true }));
-    history.restoring = false;
-    editor.dispatchEvent(new Event("keyup", { bubbles: true }));
-
-  });
+  );
 
 }
+
 
 enableEditorHistory(editorHTML);
 enableEditorHistory(editorCSS);
@@ -1610,10 +1943,20 @@ enableEditorHistory(editorJS);
 
 function removeClassesByPrefix(el, prefix) {
 
-  for (var i = el.classList.length - 1; i >= 0; i--) {
+  for (
+    var i = el.classList.length - 1;
+    i >= 0;
+    i--
+  ) {
 
-    if (el.classList[i].startsWith(prefix)) {
-      el.classList.remove(el.classList[i]);
+    if (
+      el.classList[i].startsWith(prefix)
+    ) {
+
+      el.classList.remove(
+        el.classList[i]
+      );
+
     }
 
   }
@@ -1627,7 +1970,10 @@ function removeClassesByPrefix(el, prefix) {
 
 function getLayout() {
 
-  var gridLayout = localStorage.getItem('gridLayout');
+  var gridLayout =
+    localStorage.getItem(
+      'gridLayout'
+    );
 
   if (gridLayout) {
 
@@ -1635,7 +1981,11 @@ function getLayout() {
 
   } else {
 
-    localStorage.setItem('gridLayout', 'left');
+    localStorage.setItem(
+      'gridLayout',
+      'left'
+    );
+
     getLayout();
 
   }
@@ -1652,24 +2002,40 @@ function normalizeLayout(pos) {
     l: "left"
   };
 
-  return shortLayouts[pos.toLowerCase()] || pos;
+  return shortLayouts[
+    pos.toLowerCase()
+  ] || pos;
 
 }
 
 
 function setLayout(pos, updateUrl) {
 
-  pos = normalizeLayout(pos);
+  pos =
+    normalizeLayout(pos);
 
-  var layoutClass = "grid--" + pos;
+  var layoutClass =
+    "grid--" + pos;
 
-  removeClassesByPrefix(grid, "grid--");
+  removeClassesByPrefix(
+    grid,
+    "grid--"
+  );
 
-  grid.classList.add(layoutClass);
+  grid.classList.add(
+    layoutClass
+  );
 
-  localStorage.setItem('gridLayout', pos);
+  localStorage.setItem(
+    'gridLayout',
+    pos
+  );
 
-  if (updateUrl && hash && !urlHide) {
+  if (
+    updateUrl &&
+    hash &&
+    !urlHide
+  ) {
 
     urlLayout = pos;
 
@@ -1690,7 +2056,10 @@ function setLayout(pos, updateUrl) {
 
 function setViewerOnly(hidden) {
 
-  grid.classList.toggle("viewer-only", hidden);
+  grid.classList.toggle(
+    "viewer-only",
+    hidden
+  );
 
   document.documentElement.classList.toggle(
     "viewer-only-page",
@@ -1702,9 +2071,12 @@ function setViewerOnly(hidden) {
     hidden
   );
 
+
   if (hidden) {
 
-    viewer.classList.remove("bg-gold");
+    viewer.classList.remove(
+      "bg-gold"
+    );
 
     viewer.style.setProperty(
       "height",
@@ -1719,27 +2091,64 @@ function setViewerOnly(hidden) {
     );
 
     setTimeout(function() {
+
       updateViewerOnlyPage();
+
     }, 0);
 
   } else {
 
-    viewer.style.removeProperty("height");
-    viewer.style.removeProperty("min-height");
+    viewer.style.removeProperty(
+      "height"
+    );
 
-    document.documentElement.style.removeProperty("background-image");
-    document.documentElement.style.removeProperty("background-color");
+    viewer.style.removeProperty(
+      "min-height"
+    );
 
-    document.body.style.removeProperty("background-image");
-    document.body.style.removeProperty("background-color");
-    document.body.style.removeProperty("background-repeat");
-    document.body.style.removeProperty("background-position");
-    document.body.style.removeProperty("background-size");
-    document.body.style.removeProperty("background-attachment");
-    document.body.style.removeProperty("background-origin");
-    document.body.style.removeProperty("background-clip");
+    document.documentElement.style.removeProperty(
+      "background-image"
+    );
+
+    document.documentElement.style.removeProperty(
+      "background-color"
+    );
+
+    document.body.style.removeProperty(
+      "background-image"
+    );
+
+    document.body.style.removeProperty(
+      "background-color"
+    );
+
+    document.body.style.removeProperty(
+      "background-repeat"
+    );
+
+    document.body.style.removeProperty(
+      "background-position"
+    );
+
+    document.body.style.removeProperty(
+      "background-size"
+    );
+
+    document.body.style.removeProperty(
+      "background-attachment"
+    );
+
+    document.body.style.removeProperty(
+      "background-origin"
+    );
+
+    document.body.style.removeProperty(
+      "background-clip"
+    );
 
     viewerIsEmpty();
+
+    updateProjectNameTicker();
 
   }
 
@@ -1752,7 +2161,10 @@ function setViewerOnly(hidden) {
 
 function getFocus() {
 
-  var editorFocus = localStorage.getItem('editorFocus');
+  var editorFocus =
+    localStorage.getItem(
+      'editorFocus'
+    );
 
   if (editorFocus) {
 
@@ -1760,7 +2172,11 @@ function getFocus() {
 
   } else {
 
-    localStorage.setItem('editorFocus', '');
+    localStorage.setItem(
+      'editorFocus',
+      ''
+    );
+
     getLayout();
 
   }
@@ -1770,15 +2186,24 @@ function getFocus() {
 
 function setFocus(pos) {
 
-  var focusClass = "focus--" + pos;
+  var focusClass =
+    "focus--" + pos;
 
-  removeClassesByPrefix(grid, "focus--");
+  removeClassesByPrefix(
+    grid,
+    "focus--"
+  );
 
   if (pos) {
-    grid.classList.add(focusClass);
+    grid.classList.add(
+      focusClass
+    );
   }
 
-  localStorage.setItem('editorFocus', pos);
+  localStorage.setItem(
+    'editorFocus',
+    pos
+  );
 
 }
 
@@ -1797,13 +2222,18 @@ if (urlLayout || urlHide) {
     setLayout(urlLayout);
   }
 
-  window.addEventListener("load", function() {
+  window.addEventListener(
+    "load",
+    function() {
 
-    setTimeout(function() {
-      scrollToViewer();
-    }, 500);
+      setTimeout(function() {
 
-  });
+        scrollToViewer();
+
+      }, 500);
+
+    }
+  );
 
 }
 
@@ -1812,22 +2242,45 @@ function shareHash() {
 
   updateHashFromEditors();
 
-  var url = window.location.href;
+  var url =
+    window.location.href;
+
 
   function copyFallback() {
 
-    var input = document.createElement("textarea");
-    input.value = url;
-    document.body.appendChild(input);
+    var input =
+      document.createElement(
+        "textarea"
+      );
+
+    input.value =
+      url;
+
+    document.body.appendChild(
+      input
+    );
+
     input.select();
-    document.execCommand("copy");
-    document.body.removeChild(input);
+
+    document.execCommand(
+      "copy"
+    );
+
+    document.body.removeChild(
+      input
+    );
 
   }
 
-  if (navigator.clipboard && navigator.clipboard.writeText) {
 
-    navigator.clipboard.writeText(url).catch(copyFallback);
+  if (
+    navigator.clipboard &&
+    navigator.clipboard.writeText
+  ) {
+
+    navigator.clipboard
+      .writeText(url)
+      .catch(copyFallback);
 
   } else {
 
@@ -1842,24 +2295,34 @@ function shareHash() {
 // Date stamp
 // ----------------------------------------
 
-Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
+Object.defineProperty(
+  Date.prototype,
+  'YYYYMMDDHHMMSS',
+  {
 
-  value: function() {
+    value: function() {
 
-    function pad2(n) {
-      return (n < 10 ? '0' : '') + n;
+      function pad2(n) {
+
+        return (
+          n < 10
+            ? '0'
+            : ''
+        ) + n;
+
+      }
+
+      return this.getFullYear() +
+        pad2(this.getMonth() + 1) +
+        pad2(this.getDate()) +
+        pad2(this.getHours()) +
+        pad2(this.getMinutes()) +
+        pad2(this.getSeconds());
+
     }
 
-    return this.getFullYear() +
-      pad2(this.getMonth() + 1) +
-      pad2(this.getDate()) +
-      pad2(this.getHours()) +
-      pad2(this.getMinutes()) +
-      pad2(this.getSeconds());
-
   }
-
-});
+);
 
 
 function stampDate() {
@@ -1877,65 +2340,123 @@ function crc32(data) {
 
   var table = [];
 
-  for (var n = 0; n < 256; n++) {
+  for (
+    var n = 0;
+    n < 256;
+    n++
+  ) {
 
     var c = n;
 
-    for (var k = 0; k < 8; k++) {
+    for (
+      var k = 0;
+      k < 8;
+      k++
+    ) {
 
-      c = (c & 1)
-        ? 0xedb88320 ^ (c >>> 1)
-        : c >>> 1;
+      c =
+        (c & 1)
+          ? 0xedb88320 ^
+            (c >>> 1)
+          : c >>> 1;
 
     }
 
-    table[n] = c >>> 0;
+    table[n] =
+      c >>> 0;
 
   }
 
-  var crc = 0xffffffff;
+  var crc =
+    0xffffffff;
 
-  for (var i = 0; i < data.length; i++) {
-    crc = table[(crc ^ data[i]) & 0xff] ^ (crc >>> 8);
+  for (
+    var i = 0;
+    i < data.length;
+    i++
+  ) {
+
+    crc =
+      table[
+        (crc ^ data[i]) & 0xff
+      ] ^
+      (crc >>> 8);
+
   }
 
-  return (crc ^ 0xffffffff) >>> 0;
+  return (
+    crc ^
+    0xffffffff
+  ) >>> 0;
 
 }
 
 
-function writeUint16(view, offset, value) {
+function writeUint16(
+  view,
+  offset,
+  value
+) {
 
-  view.setUint16(offset, value, true);
+  view.setUint16(
+    offset,
+    value,
+    true
+  );
 
 }
 
 
-function writeUint32(view, offset, value) {
+function writeUint32(
+  view,
+  offset,
+  value
+) {
 
-  view.setUint32(offset, value >>> 0, true);
+  view.setUint32(
+    offset,
+    value >>> 0,
+    true
+  );
 
 }
 
 
 function createZip(files) {
 
-  var encoder = new TextEncoder();
+  var encoder =
+    new TextEncoder();
 
   var localHeaders = [];
   var centralHeaders = [];
 
   var offset = 0;
 
-  var now = new Date();
+  var now =
+    new Date();
 
-  var year = Math.max(now.getFullYear(), 1980);
-  var month = now.getMonth() + 1;
-  var day = now.getDate();
+  var year =
+    Math.max(
+      now.getFullYear(),
+      1980
+    );
 
-  var hours = now.getHours();
-  var minutes = now.getMinutes();
-  var seconds = Math.floor(now.getSeconds() / 2);
+  var month =
+    now.getMonth() + 1;
+
+  var day =
+    now.getDate();
+
+  var hours =
+    now.getHours();
+
+  var minutes =
+    now.getMinutes();
+
+  var seconds =
+    Math.floor(
+      now.getSeconds() / 2
+    );
 
   var dosTime =
     (hours << 11) |
@@ -1948,105 +2469,373 @@ function createZip(files) {
     day;
 
 
-  files.forEach(function(file) {
+  files.forEach(
+    function(file) {
 
-    var name = encoder.encode(file.name);
-    var data = encoder.encode(file.content);
+      var name =
+        encoder.encode(
+          file.name
+        );
 
-    var crc = crc32(data);
+      var data =
+        encoder.encode(
+          file.content
+        );
 
-
-    var localHeader = new ArrayBuffer(30 + name.length);
-    var localView = new DataView(localHeader);
-
-    writeUint32(localView, 0, 0x04034b50);
-    writeUint16(localView, 4, 20);
-    writeUint16(localView, 6, 0x0800);
-    writeUint16(localView, 8, 0);
-    writeUint16(localView, 10, dosTime);
-    writeUint16(localView, 12, dosDate);
-    writeUint32(localView, 14, crc);
-    writeUint32(localView, 18, data.length);
-    writeUint32(localView, 22, data.length);
-    writeUint16(localView, 26, name.length);
-    writeUint16(localView, 28, 0);
-
-    new Uint8Array(localHeader, 30).set(name);
-
-    localHeaders.push({
-      header: new Uint8Array(localHeader),
-      data: data
-    });
+      var crc =
+        crc32(data);
 
 
-    var centralHeader = new ArrayBuffer(46 + name.length);
-    var centralView = new DataView(centralHeader);
+      // ----------------------------------------
+      // Local file header
+      // ----------------------------------------
 
-    writeUint32(centralView, 0, 0x02014b50);
-    writeUint16(centralView, 4, 20);
-    writeUint16(centralView, 6, 20);
-    writeUint16(centralView, 8, 0x0800);
-    writeUint16(centralView, 10, 0);
-    writeUint16(centralView, 12, dosTime);
-    writeUint16(centralView, 14, dosDate);
-    writeUint32(centralView, 16, crc);
-    writeUint32(centralView, 20, data.length);
-    writeUint32(centralView, 24, data.length);
-    writeUint16(centralView, 28, name.length);
-    writeUint16(centralView, 30, 0);
-    writeUint16(centralView, 32, 0);
-    writeUint16(centralView, 34, 0);
-    writeUint16(centralView, 36, 0);
-    writeUint32(centralView, 38, 0);
-    writeUint32(centralView, 42, offset);
+      var localHeader =
+        new ArrayBuffer(
+          30 + name.length
+        );
 
-    new Uint8Array(centralHeader, 46).set(name);
+      var localView =
+        new DataView(
+          localHeader
+        );
 
-    centralHeaders.push(new Uint8Array(centralHeader));
+      writeUint32(
+        localView,
+        0,
+        0x04034b50
+      );
 
-    offset += localHeader.byteLength + data.length;
+      writeUint16(
+        localView,
+        4,
+        20
+      );
 
-  });
+      writeUint16(
+        localView,
+        6,
+        0x0800
+      );
+
+      writeUint16(
+        localView,
+        8,
+        0
+      );
+
+      writeUint16(
+        localView,
+        10,
+        dosTime
+      );
+
+      writeUint16(
+        localView,
+        12,
+        dosDate
+      );
+
+      writeUint32(
+        localView,
+        14,
+        crc
+      );
+
+      writeUint32(
+        localView,
+        18,
+        data.length
+      );
+
+      writeUint32(
+        localView,
+        22,
+        data.length
+      );
+
+      writeUint16(
+        localView,
+        26,
+        name.length
+      );
+
+      writeUint16(
+        localView,
+        28,
+        0
+      );
+
+      new Uint8Array(
+        localHeader,
+        30
+      ).set(name);
+
+      localHeaders.push({
+        header:
+          new Uint8Array(
+            localHeader
+          ),
+        data:
+          data
+      });
 
 
-  var centralDirectorySize = centralHeaders.reduce(
-    function(total, header) {
-      return total + header.length;
-    },
+      // ----------------------------------------
+      // Central directory header
+      // ----------------------------------------
+
+      var centralHeader =
+        new ArrayBuffer(
+          46 + name.length
+        );
+
+      var centralView =
+        new DataView(
+          centralHeader
+        );
+
+      writeUint32(
+        centralView,
+        0,
+        0x02014b50
+      );
+
+      writeUint16(
+        centralView,
+        4,
+        20
+      );
+
+      writeUint16(
+        centralView,
+        6,
+        20
+      );
+
+      writeUint16(
+        centralView,
+        8,
+        0x0800
+      );
+
+      writeUint16(
+        centralView,
+        10,
+        0
+      );
+
+      writeUint16(
+        centralView,
+        12,
+        dosTime
+      );
+
+      writeUint16(
+        centralView,
+        14,
+        dosDate
+      );
+
+      writeUint32(
+        centralView,
+        16,
+        crc
+      );
+
+      writeUint32(
+        centralView,
+        20,
+        data.length
+      );
+
+      writeUint32(
+        centralView,
+        24,
+        data.length
+      );
+
+      writeUint16(
+        centralView,
+        28,
+        name.length
+      );
+
+      writeUint16(
+        centralView,
+        30,
+        0
+      );
+
+      writeUint16(
+        centralView,
+        32,
+        0
+      );
+
+      writeUint16(
+        centralView,
+        34,
+        0
+      );
+
+      writeUint16(
+        centralView,
+        36,
+        0
+      );
+
+      writeUint32(
+        centralView,
+        38,
+        0
+      );
+
+      writeUint32(
+        centralView,
+        42,
+        offset
+      );
+
+      new Uint8Array(
+        centralHeader,
+        46
+      ).set(name);
+
+      centralHeaders.push(
+        new Uint8Array(
+          centralHeader
+        )
+      );
+
+      offset +=
+        localHeader.byteLength +
+        data.length;
+
+    }
+  );
+
+
+  // ----------------------------------------
+  // Calculate central directory size
+  // ----------------------------------------
+
+  var centralDirectorySize =
+    centralHeaders.reduce(
+      function(total, header) {
+
+        return total +
+          header.length;
+
+      },
+      0
+    );
+
+
+  // ----------------------------------------
+  // End of central directory
+  // ----------------------------------------
+
+  var endHeader =
+    new ArrayBuffer(22);
+
+  var endView =
+    new DataView(
+      endHeader
+    );
+
+  writeUint32(
+    endView,
+    0,
+    0x06054b50
+  );
+
+  writeUint16(
+    endView,
+    4,
+    0
+  );
+
+  writeUint16(
+    endView,
+    6,
+    0
+  );
+
+  writeUint16(
+    endView,
+    8,
+    files.length
+  );
+
+  writeUint16(
+    endView,
+    10,
+    files.length
+  );
+
+  writeUint32(
+    endView,
+    12,
+    centralDirectorySize
+  );
+
+  writeUint32(
+    endView,
+    16,
+    offset
+  );
+
+  writeUint16(
+    endView,
+    20,
     0
   );
 
 
-  var endHeader = new ArrayBuffer(22);
-  var endView = new DataView(endHeader);
-
-  writeUint32(endView, 0, 0x06054b50);
-  writeUint16(endView, 4, 0);
-  writeUint16(endView, 6, 0);
-  writeUint16(endView, 8, files.length);
-  writeUint16(endView, 10, files.length);
-  writeUint32(endView, 12, centralDirectorySize);
-  writeUint32(endView, 16, offset);
-  writeUint16(endView, 20, 0);
-
+  // ----------------------------------------
+  // Combine everything
+  // ----------------------------------------
 
   var parts = [];
 
-  localHeaders.forEach(function(file) {
-    parts.push(file.header);
-    parts.push(file.data);
-  });
+  localHeaders.forEach(
+    function(file) {
 
-  centralHeaders.forEach(function(header) {
-    parts.push(header);
-  });
+      parts.push(
+        file.header
+      );
 
-  parts.push(new Uint8Array(endHeader));
+      parts.push(
+        file.data
+      );
+
+    }
+  );
+
+  centralHeaders.forEach(
+    function(header) {
+
+      parts.push(
+        header
+      );
+
+    }
+  );
+
+  parts.push(
+    new Uint8Array(
+      endHeader
+    )
+  );
 
 
-  return new Blob(parts, {
-    type: "application/zip"
-  });
+  return new Blob(
+    parts,
+    {
+      type: "application/zip"
+    }
+  );
 
 }
 
@@ -2057,54 +2846,90 @@ function createZip(files) {
 
 function downloadZip() {
 
-  var zipName = projectName.trim() || "P";
+  var zipName =
+    projectName.trim() || "P";
 
-  var zip = createZip([
-    {
-      name: zipName + ".html",
-      content: [
-        "<!doctype html>",
-        "<html lang=\"en\">",
-        "<head>",
-        "<meta charset=\"UTF-8\">",
-        "<title>" + zipName + "</title>",
-        "<link rel=\"stylesheet\" href=\"./" + zipName + ".css\">",
-        "</head>",
-        "<body>",
-        editorHTML.value,
-        "<script src=\"./" + zipName + ".js\"><\/script>",
-        "</body>",
-        "</html>"
-      ].join("\n")
-    },
+  var zip =
+    createZip([
+      {
+        name:
+          zipName + ".html",
 
-    {
-      name: zipName + ".css",
-      content: [
-        "@import url(\"https://git2358.github.io/TE/css/tachyons.min.css\");",
-        editorCSS.value
-      ].join("\n")
-    },
+        content: [
+          "<!doctype html>",
+          "<html lang=\"en\">",
+          "<head>",
+          "<meta charset=\"UTF-8\">",
+          "<title>" + zipName + "</title>",
+          "<link rel=\"stylesheet\" href=\"./" +
+            zipName +
+            ".css\">",
+          "</head>",
+          "<body>",
+          editorHTML.value,
+          "<script src=\"./" +
+            zipName +
+            ".js\"><\/script>",
+          "</body>",
+          "</html>"
+        ].join("\n")
+      },
 
-    {
-      name: zipName + ".js",
-      content: editorJS.value
-    }
-  ]);
+      {
+        name:
+          zipName + ".css",
 
-  var url = URL.createObjectURL(zip);
-  var link = document.createElement("a");
+        content: [
+          "@import url(\"https://git2358.github.io/TE/css/tachyons.min.css\");",
+          editorCSS.value
+        ].join("\n")
+      },
 
-  link.href = url;
-  link.download = zipName + "-" + stampDate() + ".zip";
+      {
+        name:
+          zipName + ".js",
 
-  document.body.appendChild(link);
+        content:
+          editorJS.value
+      }
+    ]);
+
+
+  var url =
+    URL.createObjectURL(zip);
+
+  var link =
+    document.createElement("a");
+
+  link.href =
+    url;
+
+  link.download =
+    zipName +
+    "-" +
+    stampDate() +
+    ".zip";
+
+  document.body.appendChild(
+    link
+  );
+
   link.click();
-  document.body.removeChild(link);
 
-  setTimeout(function() {
-    URL.revokeObjectURL(url);
-  }, 1000);
+  document.body.removeChild(
+    link
+  );
+
+  setTimeout(
+    function() {
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    },
+    1000
+  );
 
 }
 
@@ -2115,25 +2940,46 @@ function downloadZip() {
 
 function viewerIsEmpty() {
 
+  /*
+   * H mode is a normal webpage preview.
+   * The yellow bg-gold state is ONLY for
+   * the normal editor interface.
+   */
   if (urlHide) {
 
-    viewer.classList.remove("bg-gold");
+    viewer.classList.remove(
+      "bg-gold"
+    );
 
     return;
 
   }
 
+
+  /*
+   * Normal edit mode:
+   *
+   * Empty editors = yellow placeholder.
+   *
+   * Any content = normal white iframe
+   * unless the user's HTML/CSS specifies
+   * another background.
+   */
   if (
     editorHTML.value !== "" ||
     editorCSS.value !== "" ||
     editorJS.value !== ""
   ) {
 
-    viewer.classList.remove("bg-gold");
+    viewer.classList.remove(
+      "bg-gold"
+    );
 
   } else {
 
-    viewer.classList.add("bg-gold");
+    viewer.classList.add(
+      "bg-gold"
+    );
 
   }
 
@@ -2151,10 +2997,14 @@ function scrollToViewer() {
     editorCSS.value === "" &&
     editorJS.value === ""
   ) {
+
     return;
+
   }
 
-  scrollToSection(document.getElementById("viewer"));
+  scrollToSection(
+    document.getElementById("viewer")
+  );
 
 }
 
@@ -2171,39 +3021,58 @@ function smoothScrollTo(top) {
 
 function scrollToSection(section) {
 
-  var navOffset = window.innerWidth <= 600 && section !== viewer
-    ? document.querySelector(".nav").offsetHeight
-    : 0;
+  var navOffset =
+    window.innerWidth <= 600 &&
+    section !== viewer
+      ? document.querySelector(
+          ".nav"
+        ).offsetHeight
+      : 0;
 
   var top = 0;
 
+
   if (window.innerWidth <= 600) {
 
-    Array.from(grid.children).some(function(child) {
+    Array.from(
+      grid.children
+    ).some(
+      function(child) {
 
-      if (child === section) {
-        return true;
+        if (child === section) {
+          return true;
+        }
+
+        top +=
+          child.offsetHeight;
+
+        return false;
+
       }
-
-      top += child.offsetHeight;
-      return false;
-
-    });
+    );
 
   } else {
 
-    top = section.offsetTop;
+    top =
+      section.offsetTop;
 
   }
 
-  smoothScrollTo(top - navOffset);
+
+  smoothScrollTo(
+    top - navOffset
+  );
 
 }
 
 
 function scrollToEditor(type) {
 
-  scrollToSection(document.querySelector("." + type));
+  scrollToSection(
+    document.querySelector(
+      "." + type
+    )
+  );
 
 }
 
@@ -2212,19 +3081,27 @@ function scrollToEditor(type) {
 // Scroll to viewer once on page load
 // ----------------------------------------
 
-window.addEventListener("load", function() {
+window.addEventListener(
+  "load",
+  function() {
 
-  setTimeout(function() {
+    setTimeout(
+      function() {
 
-    scrollToViewer();
+        scrollToViewer();
 
-    if (urlHide) {
-      updateViewerOnlyPage();
-    }
+        if (urlHide) {
+          updateViewerOnlyPage();
+        }
 
-  }, 500);
+        updateProjectNameTicker();
 
-});
+      },
+      500
+    );
+
+  }
+);
 
 </script>
 
