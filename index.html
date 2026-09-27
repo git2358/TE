@@ -219,6 +219,11 @@ body.viewer-only-page {
     "nav html css viewer";
 }
 
+
+/* ----------------------------------------
+   Navigation
+   ---------------------------------------- */
+
 .nav {
   grid-area: nav;
 
@@ -228,6 +233,7 @@ body.viewer-only-page {
   align-items: flex-start;
 
   overflow: hidden;
+
   min-width: 0;
   min-height: 0;
 
@@ -238,12 +244,142 @@ body.viewer-only-page {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+
   flex: 0 0 auto;
 }
 
 .nav > button {
   flex: 0 0 2rem;
 }
+
+
+/* ----------------------------------------
+   Project name wrapper
+   ---------------------------------------- */
+
+.project-name-wrap {
+  box-sizing: border-box;
+
+  flex: 0 1 auto;
+
+  min-width: 2rem;
+  min-height: 2rem;
+
+  overflow: hidden;
+
+  position: relative;
+
+  background: #333;
+}
+
+
+/* ----------------------------------------
+   Project name input
+   ---------------------------------------- */
+
+.project-name {
+  box-sizing: border-box;
+
+  display: block;
+
+  width: 2rem;
+  height: 2rem;
+
+  min-width: 2rem;
+  min-height: 2rem;
+
+  max-width: none;
+  max-height: none;
+
+  flex: none;
+
+  background: #333;
+  color: #fff;
+
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+
+  padding: 0.5em;
+
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 1em;
+
+  white-space: nowrap;
+
+  overflow: visible;
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  float: none !important;
+}
+
+.project-name::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+
+/* ----------------------------------------
+   Vertical desktop navigation
+   ---------------------------------------- */
+
+.grid--right .nav,
+.grid--left .nav {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.grid--right .nav .layouts,
+.grid--left .nav .layouts {
+  flex-direction: column;
+}
+
+.grid--right .project-name-wrap,
+.grid--left .project-name-wrap {
+  width: 2rem;
+
+  height: calc(var(--project-name-length, 1) * 2rem);
+
+  flex: 0 1 auto;
+
+  min-width: 2rem;
+  min-height: 2rem;
+
+  max-width: 2rem;
+
+  overflow: hidden;
+}
+
+.grid--right .project-name,
+.grid--left .project-name {
+  width: 2rem;
+
+  height: calc(var(--project-name-length, 1) * 2rem);
+
+  min-width: 2rem;
+  min-height: 2rem;
+
+  max-width: none;
+  max-height: none;
+
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+
+  text-align: left;
+
+  white-space: nowrap;
+
+  overflow: visible;
+}
+
+
+/* ----------------------------------------
+   Other grid elements
+   ---------------------------------------- */
 
 .html {
   grid-area: html;
@@ -260,6 +396,11 @@ body.viewer-only-page {
 .viewer {
   grid-area: viewer;
 }
+
+
+/* ----------------------------------------
+   Viewer only
+   ---------------------------------------- */
 
 .grid.viewer-only {
   display: block;
@@ -285,90 +426,15 @@ body.viewer-only-page {
   display: none;
 }
 
-.project-name {
-  box-sizing: border-box;
-  display: block;
-
-  width: calc(var(--project-name-length, 1) * 2rem);
-  max-width: calc(100vw - 18rem);
-  min-width: 2rem;
-  height: 2rem;
-
-  flex: 1 1 auto;
-  min-width: 0;
-
-  background: #333;
-  color: #fff;
-  border: 0;
-  border-radius: 0;
-  outline: 0;
-  padding: 0.5em;
-
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 1em;
-
-  white-space: nowrap;
-
-  overflow-x: auto;
-  overflow-y: hidden;
-
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.project-name::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none;
-}
-
-.grid--right .nav,
-.grid--left .nav {
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
-
-.grid--right .nav .layouts,
-.grid--left .nav .layouts {
-  flex-direction: column;
-}
-
-.grid--right .project-name,
-.grid--left .project-name {
-  width: 2rem;
-  max-width: 2rem;
-  min-width: 2rem;
-
-  height: calc(var(--project-name-length, 1) * 2rem);
-  max-height: calc(100vh - 2rem);
-
-  flex: 1 1 auto;
-  min-height: 0;
-
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-
-  white-space: nowrap;
-
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.grid--right .project-name::-webkit-scrollbar,
-.grid--left .project-name::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none;
-}
-
 .project-name::placeholder {
   color: #fff;
   opacity: 1;
 }
+
+
+/* ----------------------------------------
+   Mobile
+   ---------------------------------------- */
 
 @media screen and (max-width: 600px) {
 
@@ -377,31 +443,87 @@ body.viewer-only-page {
     flex-direction: column;
   }
 
+
+  /*
+   * Mobile navigation is ALWAYS horizontal,
+   * regardless of T/R/B/L desktop layout.
+   */
+
   .nav {
     position: sticky;
     top: 0;
     z-index: 1;
+
+    display: flex !important;
+
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+
+    align-items: flex-start;
+
+    width: 100%;
+    height: 2rem;
+
+    min-width: 0;
+    min-height: 2rem;
+
+    overflow: hidden;
   }
 
+
   .layouts {
-    display: none;
+    display: none !important;
   }
+
 
   .mobile-nav {
     display: block;
   }
 
-  .project-name {
-    width: calc(var(--project-name-length, 1) * 2rem) !important;
-    max-width: calc(100vw - 10rem) !important;
+
+  /*
+   * Mobile project name is always horizontal.
+   */
+
+  .project-name-wrap {
+    width: auto !important;
     height: 2rem !important;
+
+    min-width: 2rem !important;
+    min-height: 2rem !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    flex: 0 1 auto !important;
+
+    overflow: hidden;
+  }
+
+
+  .project-name {
     writing-mode: horizontal-tb !important;
     text-orientation: mixed !important;
+
+    width: 2rem !important;
+    height: 2rem !important;
+
+    min-width: 2rem !important;
+    min-height: 2rem !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    text-align: left !important;
+
+    overflow: visible !important;
   }
+
 
   .nav button[onclick="setFocus('')"] {
     display: none;
   }
+
 
   .html,
   .css,
@@ -412,32 +534,44 @@ body.viewer-only-page {
     width: 100%;
   }
 
+
   .html,
   .css,
   .js {
     height: auto !important;
+
     min-height: calc(100vh - 32px);
     max-height: calc(100vh - 32px);
+
     overflow-y: auto;
+
     touch-action: pan-y;
+
     -webkit-overflow-scrolling: touch;
+
     overscroll-behavior: auto;
   }
+
 
   .viewer {
     position: relative;
     z-index: 2;
   }
 
+
   .html,
   .css,
   .js,
   .viewer {
     position: sticky;
+
     top: 32px;
+
     align-self: start;
+
     flex: 0 0 auto;
   }
+
 
   .html {
     z-index: 1;
@@ -453,16 +587,23 @@ body.viewer-only-page {
 
   .viewer {
     z-index: 4;
+
     top: 0;
+
     min-height: calc(100vh + 32px);
   }
 
+
   .grid.viewer-only {
     display: block;
+
     width: 100vw;
+
     height: auto;
+
     min-height: 0;
   }
+
 
   .grid.viewer-only .viewer {
     min-height: 100vh;
@@ -471,12 +612,20 @@ body.viewer-only-page {
 
 }
 
+
+/* ----------------------------------------
+   Textareas
+   ---------------------------------------- */
+
 textarea {
   resize: none;
+
   -webkit-border-radius: 0;
   border-radius: 0;
+
   -webkit-box-shadow: none;
   box-shadow: none;
+
   -webkit-appearance: none;
   -moz-appearance: none;
   -ms-appearance: none;
@@ -659,8 +808,29 @@ var editorCSS = document.querySelector('.css');
 var editorJS = document.querySelector('.js');
 var viewer = document.querySelector('.viewer');
 var projectNameInput = document.querySelector('.project-name');
+var projectNameWrap = null;
 
 var defaultPageTitle = "[ 2358 | TE ]";
+
+
+// ----------------------------------------
+// Project name wrapper
+// ----------------------------------------
+
+projectNameWrap =
+  document.createElement("div");
+
+projectNameWrap.className =
+  "project-name-wrap";
+
+projectNameInput.parentNode.insertBefore(
+  projectNameWrap,
+  projectNameInput
+);
+
+projectNameWrap.appendChild(
+  projectNameInput
+);
 
 
 // ----------------------------------------
@@ -675,13 +845,20 @@ var projectNameTickerPauseUntil = 0;
 function stopProjectNameTicker(reset) {
 
   if (projectNameTickerFrame !== null) {
-    cancelAnimationFrame(projectNameTickerFrame);
+
+    cancelAnimationFrame(
+      projectNameTickerFrame
+    );
+
     projectNameTickerFrame = null;
+
   }
 
   if (reset) {
-    projectNameInput.scrollLeft = 0;
-    projectNameInput.scrollTop = 0;
+
+    projectNameWrap.scrollLeft = 0;
+    projectNameWrap.scrollTop = 0;
+
   }
 
 }
@@ -690,7 +867,9 @@ function stopProjectNameTicker(reset) {
 function projectNameIsVertical() {
 
   var writingMode =
-    window.getComputedStyle(projectNameInput).writingMode;
+    window.getComputedStyle(
+      projectNameInput
+    ).writingMode;
 
   return (
     writingMode === "vertical-rl" ||
@@ -700,22 +879,135 @@ function projectNameIsVertical() {
 }
 
 
+function getRootFontSize() {
+
+  var size =
+    parseFloat(
+      window.getComputedStyle(
+        document.documentElement
+      ).fontSize
+    );
+
+  return isNaN(size)
+    ? 16
+    : size;
+
+}
+
+
+function getProjectNameUnit() {
+
+  return getRootFontSize() * 2;
+
+}
+
+
+function getProjectNameLength() {
+
+  return Math.max(
+    projectNameInput.value.length,
+    1
+  );
+
+}
+
+
+function getProjectNameContentSize() {
+
+  var unit =
+    getProjectNameUnit();
+
+  var length =
+    getProjectNameLength();
+
+  if (projectNameIsVertical()) {
+
+    return {
+      width: unit,
+      height: length * unit
+    };
+
+  }
+
+  return {
+    width: length * unit,
+    height: unit
+  };
+
+}
+
+
+function updateProjectNameViewport() {
+
+  if (!projectNameWrap) {
+    return;
+  }
+
+  var size =
+    getProjectNameContentSize();
+
+  if (projectNameIsVertical()) {
+
+    /*
+     * The wrapper is the visible vertical area.
+     * The input is allowed to become taller than
+     * it so the wrapper itself can scroll.
+     */
+
+    projectNameInput.style.width =
+      size.width + "px";
+
+    projectNameInput.style.height =
+      size.height + "px";
+
+    projectNameInput.style.textAlign =
+      "left";
+
+  } else {
+
+    /*
+     * The wrapper is the visible horizontal area.
+     * The input is allowed to become wider than
+     * it so the wrapper itself can scroll.
+     */
+
+    projectNameInput.style.width =
+      size.width + "px";
+
+    projectNameInput.style.height =
+      size.height + "px";
+
+    projectNameInput.style.textAlign =
+      "left";
+
+  }
+
+  projectNameWrap.scrollLeft = 0;
+  projectNameWrap.scrollTop = 0;
+
+}
+
+
 function projectNameGetOverflow() {
+
+  if (!projectNameWrap) {
+    return 0;
+  }
 
   if (projectNameIsVertical()) {
 
     return Math.max(
       0,
-      projectNameInput.scrollHeight -
-      projectNameInput.clientHeight
+      projectNameWrap.scrollHeight -
+      projectNameWrap.clientHeight
     );
 
   }
 
   return Math.max(
     0,
-    projectNameInput.scrollWidth -
-    projectNameInput.clientWidth
+    projectNameWrap.scrollWidth -
+    projectNameWrap.clientWidth
   );
 
 }
@@ -740,15 +1032,19 @@ function startProjectNameTicker() {
 
   stopProjectNameTicker(false);
 
+  updateProjectNameViewport();
+
   if (!projectNameNeedsTicker()) {
 
-    projectNameInput.scrollLeft = 0;
-    projectNameInput.scrollTop = 0;
+    projectNameWrap.scrollLeft = 0;
+    projectNameWrap.scrollTop = 0;
 
     return;
+
   }
 
   projectNameTickerDirection = 1;
+
   projectNameTickerPauseUntil =
     performance.now() + 1000;
 
@@ -766,14 +1062,16 @@ function startProjectNameTicker() {
     }
 
 
-    var overflow = projectNameGetOverflow();
+    var overflow =
+      projectNameGetOverflow();
 
     if (overflow <= 2) {
 
-      projectNameInput.scrollLeft = 0;
-      projectNameInput.scrollTop = 0;
+      projectNameWrap.scrollLeft = 0;
+      projectNameWrap.scrollTop = 0;
 
       projectNameTickerFrame = null;
+
       return;
 
     }
@@ -784,66 +1082,76 @@ function startProjectNameTicker() {
       if (projectNameIsVertical()) {
 
         var currentTop =
-          projectNameInput.scrollTop;
+          projectNameWrap.scrollTop;
 
         var nextTop =
           currentTop +
           (0.35 * projectNameTickerDirection);
 
+
         if (nextTop >= overflow) {
 
-          projectNameInput.scrollTop = overflow;
+          projectNameWrap.scrollTop =
+            overflow;
 
-          projectNameTickerDirection = -1;
+          projectNameTickerDirection =
+            -1;
 
           projectNameTickerPauseUntil =
             now + 1200;
 
         } else if (nextTop <= 0) {
 
-          projectNameInput.scrollTop = 0;
+          projectNameWrap.scrollTop = 0;
 
-          projectNameTickerDirection = 1;
+          projectNameTickerDirection =
+            1;
 
           projectNameTickerPauseUntil =
             now + 1200;
 
         } else {
 
-          projectNameInput.scrollTop = nextTop;
+          projectNameWrap.scrollTop =
+            nextTop;
 
         }
 
       } else {
 
         var currentLeft =
-          projectNameInput.scrollLeft;
+          projectNameWrap.scrollLeft;
 
         var nextLeft =
           currentLeft +
           (0.35 * projectNameTickerDirection);
 
+
         if (nextLeft >= overflow) {
 
-          projectNameInput.scrollLeft = overflow;
+          projectNameWrap.scrollLeft =
+            overflow;
 
-          projectNameTickerDirection = -1;
+          projectNameTickerDirection =
+            -1;
 
           projectNameTickerPauseUntil =
             now + 1200;
 
         } else if (nextLeft <= 0) {
 
-          projectNameInput.scrollLeft = 0;
+          projectNameWrap.scrollLeft = 0;
 
-          projectNameTickerDirection = 1;
+          projectNameTickerDirection =
+            1;
 
           projectNameTickerPauseUntil =
             now + 1200;
 
         } else {
 
-          projectNameInput.scrollLeft = nextLeft;
+          projectNameWrap.scrollLeft =
+            nextLeft;
 
         }
 
@@ -870,6 +1178,8 @@ function updateProjectNameTicker() {
 
   requestAnimationFrame(function() {
 
+    updateProjectNameViewport();
+
     if (!urlHide) {
       startProjectNameTicker();
     }
@@ -881,11 +1191,13 @@ function updateProjectNameTicker() {
 
 function updatePageTitle() {
 
-  var name = projectNameInput.value.trim();
+  var name =
+    projectNameInput.value.trim();
 
-  document.title = name
-    ? "[ " + name + " ]"
-    : defaultPageTitle;
+  document.title =
+    name
+      ? "[ " + name + " ]"
+      : defaultPageTitle;
 
 }
 
@@ -894,48 +1206,65 @@ function updatePageTitle() {
 // hash
 // ----------------------------------------
 
-var rawHash = window.location.hash
-  ? window.location.hash.substring(1)
-  : "";
+var rawHash =
+  window.location.hash
+    ? window.location.hash.substring(1)
+    : "";
 
-var hashParts = rawHash.split("?");
+var hashParts =
+  rawHash.split("?");
 
-var hash = hashParts[0] || "P";
+var hash =
+  hashParts[0] || "P";
 
-var projectName = hash !== "P"
-  ? decodeURIComponent(hash)
-  : "";
+var projectName =
+  hash !== "P"
+    ? decodeURIComponent(hash)
+    : "";
 
-var urlMarker = (hashParts[1] || "").toUpperCase();
+var urlMarker =
+  (hashParts[1] || "").toUpperCase();
 
-var urlHide = urlMarker === "H";
+var urlHide =
+  urlMarker === "H";
 
-var urlLayout = /^(T|R|B|L)$/.test(urlMarker)
+var urlLayout =
+  /^(T|R|B|L)$/.test(urlMarker)
     ? urlMarker.toLowerCase()
     : "left";
 
-var hashPayload = urlHide || /^(T|R|B|L)$/.test(urlMarker)
-  ? hashParts.slice(2).join("?")
-  : hashParts.slice(1).join("?");
+var hashPayload =
+  urlHide ||
+  /^(T|R|B|L)$/.test(urlMarker)
+    ? hashParts.slice(2).join("?")
+    : hashParts.slice(1).join("?");
 
-projectNameInput.value = projectName;
+projectNameInput.value =
+  projectName;
 
 
 function updateProjectNameSize() {
 
-  var length = Math.max(projectNameInput.value.length, 1);
+  var length =
+    Math.max(
+      projectNameInput.value.length,
+      1
+    );
 
   projectNameInput.style.setProperty(
     "--project-name-length",
     length
   );
 
+  updateProjectNameViewport();
+
 }
 
 
 function updateProjectNameURL() {
 
-  var name = projectNameInput.value.trim();
+  var name =
+    projectNameInput.value.trim();
 
   if (!name) {
 
@@ -946,7 +1275,9 @@ function updateProjectNameURL() {
       null,
       "",
       "#P" +
-      ((urlLayout || urlHide) ? "?" + getUrlMarker() : "") +
+      ((urlLayout || urlHide)
+        ? "?" + getUrlMarker()
+        : "") +
       "?" + encodeEditorData()
     );
 
@@ -957,14 +1288,19 @@ function updateProjectNameURL() {
 
   }
 
-  projectName = name;
-  hash = encodeURIComponent(name);
+  projectName =
+    name;
+
+  hash =
+    encodeURIComponent(name);
 
   history.replaceState(
     null,
     "",
     "#" + hash +
-    ((urlLayout || urlHide) ? "?" + getUrlMarker() : "") +
+    ((urlLayout || urlHide)
+      ? "?" + getUrlMarker()
+      : "") +
     "?" + encodeEditorData()
   );
 
@@ -973,35 +1309,47 @@ function updateProjectNameURL() {
 }
 
 
-projectNameInput.addEventListener("input", function() {
+projectNameInput.addEventListener(
+  "input",
+  function() {
 
-  updateProjectNameSize();
-  updateProjectNameURL();
-  updatePageTitle();
-  updateProjectNameTicker();
+    updateProjectNameSize();
+    updateProjectNameURL();
+    updatePageTitle();
+    updateProjectNameTicker();
 
-});
-
-
-projectNameInput.addEventListener("focus", function() {
-
-  stopProjectNameTicker(true);
-
-});
+  }
+);
 
 
-projectNameInput.addEventListener("blur", function() {
+projectNameInput.addEventListener(
+  "focus",
+  function() {
 
-  updateProjectNameTicker();
+    stopProjectNameTicker(true);
 
-});
+  }
+);
 
 
-window.addEventListener("resize", function() {
+projectNameInput.addEventListener(
+  "blur",
+  function() {
 
-  updateProjectNameTicker();
+    updateProjectNameTicker();
 
-});
+  }
+);
+
+
+window.addEventListener(
+  "resize",
+  function() {
+
+    updateProjectNameTicker();
+
+  }
+);
 
 
 updateProjectNameSize();
@@ -1021,38 +1369,50 @@ function loadEditorDataFromHash() {
 
   try {
 
-    var base64 = hashPayload
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
+    var base64 =
+      hashPayload
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
 
     while (base64.length % 4) {
       base64 += "=";
     }
 
-    var binary = atob(base64);
+    var binary =
+      atob(base64);
+
     var decoded;
 
     try {
 
-      decoded = decodeURIComponent(binary);
+      decoded =
+        decodeURIComponent(binary);
 
     } catch (error) {
 
-      decoded = decodeURIComponent(
-        binary
-          .split("")
-          .map(function(character) {
-            return "%" +
-              ("00" +
-              character.charCodeAt(0).toString(16))
-              .slice(-2);
-          })
-          .join("")
-      );
+      decoded =
+        decodeURIComponent(
+          binary
+            .split("")
+            .map(
+              function(character) {
+
+                return "%" +
+                  ("00" +
+                    character
+                      .charCodeAt(0)
+                      .toString(16))
+                    .slice(-2);
+
+              }
+            )
+            .join("")
+        );
 
     }
 
-    var data = JSON.parse(decoded);
+    var data =
+      JSON.parse(decoded);
 
     if (
       !data ||
@@ -1060,12 +1420,19 @@ function loadEditorDataFromHash() {
       typeof data.css !== "string" ||
       typeof data.js !== "string"
     ) {
+
       return false;
+
     }
 
-    editorHTML.value = data.html;
-    editorCSS.value = data.css;
-    editorJS.value = data.js;
+    editorHTML.value =
+      data.html;
+
+    editorCSS.value =
+      data.css;
+
+    editorJS.value =
+      data.js;
 
     return true;
 
@@ -1077,17 +1444,21 @@ function loadEditorDataFromHash() {
 
 }
 
-var editorDataFromHash = loadEditorDataFromHash();
+
+var editorDataFromHash =
+  loadEditorDataFromHash();
 
 
 function encodeEditorData() {
 
   return btoa(
-    encodeURIComponent(JSON.stringify({
-      html: editorHTML.value,
-      css: editorCSS.value,
-      js: editorJS.value
-    }))
+    encodeURIComponent(
+      JSON.stringify({
+        html: editorHTML.value,
+        css: editorCSS.value,
+        js: editorJS.value
+      })
+    )
   );
 
 }
@@ -1095,7 +1466,9 @@ function encodeEditorData() {
 
 function getLayoutMarker() {
 
-  return normalizeLayout(urlLayout).charAt(0).toUpperCase();
+  return normalizeLayout(
+    urlLayout
+  ).charAt(0).toUpperCase();
 
 }
 
@@ -1117,7 +1490,9 @@ function updateHashFromEditors() {
       null,
       "",
       "#" + hash +
-      ((urlLayout || urlHide) ? "?" + getUrlMarker() : "") +
+      ((urlLayout || urlHide)
+        ? "?" + getUrlMarker()
+        : "") +
       "?" + encodeEditorData()
     );
 
@@ -1147,7 +1522,9 @@ function resizeMobileEditor(editor) {
 
   } else {
 
-    editor.style.removeProperty("height");
+    editor.style.removeProperty(
+      "height"
+    );
 
   }
 
@@ -1167,9 +1544,15 @@ function resizeMobileEditors() {
 // Viewer document helpers
 // ----------------------------------------
 
-function buildViewerSrcdoc(HTMLView, CSSView, JSView) {
+function buildViewerSrcdoc(
+  HTMLView,
+  CSSView,
+  JSView
+) {
 
-  return HTMLView + CSSView + JSView;
+  return HTMLView +
+    CSSView +
+    JSView;
 
 }
 
@@ -1188,16 +1571,19 @@ function isTransparentBackgroundColor(color) {
     return true;
   }
 
-  var match = color.match(
-    /^rgba?\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*(?:,\s*([\d.]+)\s*)?\)$/
-  );
+  var match =
+    color.match(
+      /^rgba?\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*(?:,\s*([\d.]+)\s*)?\)$/
+    );
 
   if (
     match &&
     match[1] !== undefined
   ) {
 
-    return parseFloat(match[1]) === 0;
+    return parseFloat(
+      match[1]
+    ) === 0;
 
   }
 
@@ -1212,9 +1598,13 @@ function getBackgroundSource(style) {
     return null;
   }
 
-  var image = style.backgroundImage;
+  var image =
+    style.backgroundImage;
 
-  if (image && image !== "none") {
+  if (
+    image &&
+    image !== "none"
+  ) {
 
     return {
       image: image,
@@ -1229,7 +1619,11 @@ function getBackgroundSource(style) {
 
   }
 
-  if (!isTransparentBackgroundColor(style.backgroundColor)) {
+  if (
+    !isTransparentBackgroundColor(
+      style.backgroundColor
+    )
+  ) {
 
     return {
       image: "none",
@@ -1258,32 +1652,47 @@ function syncViewerBackground() {
 
   try {
 
-    var frameDocument = viewer.contentDocument;
+    var frameDocument =
+      viewer.contentDocument;
 
     if (!frameDocument) {
       return;
     }
 
-    var frameHTML = frameDocument.documentElement;
-    var frameBody = frameDocument.body;
+    var frameHTML =
+      frameDocument.documentElement;
+
+    var frameBody =
+      frameDocument.body;
 
     if (!frameHTML) {
       return;
     }
 
     var htmlStyle =
-      window.getComputedStyle(frameHTML);
+      window.getComputedStyle(
+        frameHTML
+      );
 
-    var bodyStyle = frameBody
-      ? window.getComputedStyle(frameBody)
-      : null;
+    var bodyStyle =
+      frameBody
+        ? window.getComputedStyle(
+            frameBody
+          )
+        : null;
 
     var background =
-      getBackgroundSource(bodyStyle);
+      getBackgroundSource(
+        bodyStyle
+      );
 
     if (!background) {
+
       background =
-        getBackgroundSource(htmlStyle);
+        getBackgroundSource(
+          htmlStyle
+        );
+
     }
 
     var pageHTML =
@@ -1310,12 +1719,15 @@ function syncViewerBackground() {
 
     }
 
-    var color = background.color;
+    var color =
+      background.color;
 
     if (
       !color ||
       color === "transparent" ||
-      isTransparentBackgroundColor(color)
+      isTransparentBackgroundColor(
+        color
+      )
     ) {
 
       color =
@@ -1391,21 +1803,22 @@ function resizeViewerToContent() {
       return;
     }
 
-    var height = Math.max(
-      frameHTML.scrollHeight || 0,
-      frameHTML.offsetHeight || 0,
-      frameHTML.clientHeight || 0,
-      frameBody
-        ? frameBody.scrollHeight || 0
-        : 0,
-      frameBody
-        ? frameBody.offsetHeight || 0
-        : 0,
-      frameBody
-        ? frameBody.clientHeight || 0
-        : 0,
-      window.innerHeight
-    );
+    var height =
+      Math.max(
+        frameHTML.scrollHeight || 0,
+        frameHTML.offsetHeight || 0,
+        frameHTML.clientHeight || 0,
+        frameBody
+          ? frameBody.scrollHeight || 0
+          : 0,
+        frameBody
+          ? frameBody.offsetHeight || 0
+          : 0,
+        frameBody
+          ? frameBody.clientHeight || 0
+          : 0,
+        window.innerHeight
+      );
 
     viewer.style.setProperty(
       "height",
@@ -1448,40 +1861,58 @@ function updateViewerOnlyPage() {
 // Viewer load
 // ----------------------------------------
 
-viewer.addEventListener("load", function() {
+viewer.addEventListener(
+  "load",
+  function() {
 
-  if (!urlHide) {
-    return;
+    if (!urlHide) {
+      return;
+    }
+
+    updateViewerOnlyPage();
+
+    setTimeout(
+      function() {
+        updateViewerOnlyPage();
+      },
+      0
+    );
+
+    setTimeout(
+      function() {
+        updateViewerOnlyPage();
+      },
+      100
+    );
+
+    setTimeout(
+      function() {
+        updateViewerOnlyPage();
+      },
+      500
+    );
+
+    setTimeout(
+      function() {
+        updateViewerOnlyPage();
+      },
+      1000
+    );
+
   }
-
-  updateViewerOnlyPage();
-
-  setTimeout(function() {
-    updateViewerOnlyPage();
-  }, 0);
-
-  setTimeout(function() {
-    updateViewerOnlyPage();
-  }, 100);
-
-  setTimeout(function() {
-    updateViewerOnlyPage();
-  }, 500);
-
-  setTimeout(function() {
-    updateViewerOnlyPage();
-  }, 1000);
-
-});
+);
 
 
-window.addEventListener("resize", function() {
+window.addEventListener(
+  "resize",
+  function() {
 
-  if (urlHide) {
-    updateViewerOnlyPage();
+    if (urlHide) {
+      updateViewerOnlyPage();
+    }
+
   }
-
-});
+);
 
 
 // ----------------------------------------
@@ -1517,6 +1948,7 @@ if (editorDataFromHash) {
 
   }
 
+
   function updateViewerHashPayload() {
 
     var HTMLView =
@@ -1545,6 +1977,7 @@ if (editorDataFromHash) {
 
   }
 
+
   window.addEventListener(
     "input",
     updateViewerHashPayload
@@ -1559,6 +1992,7 @@ if (editorDataFromHash) {
     "resize",
     resizeMobileEditors
   );
+
 
   editorHTML.addEventListener(
     "keyup",
@@ -1575,12 +2009,14 @@ if (editorDataFromHash) {
     saveJSDataHashPayload
   );
 
+
   updateViewerHashPayload();
   resizeMobileEditors();
 
 } else if (window.location.hash) {
 
   // populate editors from hash
+
   editorHTML.value =
     localStorage.getItem(
       'HTMLcontent' + hash
@@ -1598,6 +2034,7 @@ if (editorDataFromHash) {
 
 
   // save data for each editor
+
   function saveHTMLDataHash() {
 
     localStorage.setItem(
@@ -1627,6 +2064,7 @@ if (editorDataFromHash) {
 
 
   // update viewer
+
   function updateViewerHash() {
 
     var HTMLView =
@@ -1657,6 +2095,7 @@ if (editorDataFromHash) {
 
 
   // listen and fire
+
   window.addEventListener(
     "input",
     updateViewerHash
@@ -1671,6 +2110,7 @@ if (editorDataFromHash) {
     "resize",
     resizeMobileEditors
   );
+
 
   editorHTML.addEventListener(
     "keyup",
@@ -1687,23 +2127,32 @@ if (editorDataFromHash) {
     saveJSDataHash
   );
 
+
   updateViewerHash();
   resizeMobileEditors();
 
 } else {
 
   // populate editors from local storage
+
   editorHTML.value =
-    localStorage.getItem('HTMLcontent') || '';
+    localStorage.getItem(
+      'HTMLcontent'
+    ) || '';
 
   editorCSS.value =
-    localStorage.getItem('CSScontent') || '';
+    localStorage.getItem(
+      'CSScontent'
+    ) || '';
 
   editorJS.value =
-    localStorage.getItem('JScontent') || '';
+    localStorage.getItem(
+      'JScontent'
+    ) || '';
 
 
   // save data for each editor
+
   function saveHTMLData() {
 
     localStorage.setItem(
@@ -1733,6 +2182,7 @@ if (editorDataFromHash) {
 
 
   // update viewer
+
   function updateViewer() {
 
     var HTMLView =
@@ -1763,6 +2213,7 @@ if (editorDataFromHash) {
 
 
   // listen and fire
+
   window.addEventListener(
     "input",
     updateViewer
@@ -1778,6 +2229,7 @@ if (editorDataFromHash) {
     resizeMobileEditors
   );
 
+
   editorHTML.addEventListener(
     "keyup",
     saveHTMLData
@@ -1792,6 +2244,7 @@ if (editorDataFromHash) {
     "keyup",
     saveJSData
   );
+
 
   updateViewer();
   resizeMobileEditors();
@@ -1853,6 +2306,7 @@ function enableEditorHistory(editor) {
         );
 
         history.redo = [];
+
         history.value =
           editor.value;
 
@@ -1900,7 +2354,9 @@ function enableEditorHistory(editor) {
         return;
       }
 
-      target.push(editor.value);
+      target.push(
+        editor.value
+      );
 
       editor.value =
         source.pop();
@@ -1941,7 +2397,10 @@ enableEditorHistory(editorJS);
 // Class utilities
 // ----------------------------------------
 
-function removeClassesByPrefix(el, prefix) {
+function removeClassesByPrefix(
+  el,
+  prefix
+) {
 
   for (
     var i = el.classList.length - 1;
@@ -1950,7 +2409,9 @@ function removeClassesByPrefix(el, prefix) {
   ) {
 
     if (
-      el.classList[i].startsWith(prefix)
+      el.classList[i].startsWith(
+        prefix
+      )
     ) {
 
       el.classList.remove(
@@ -1977,7 +2438,9 @@ function getLayout() {
 
   if (gridLayout) {
 
-    setLayout(gridLayout);
+    setLayout(
+      gridLayout
+    );
 
   } else {
 
@@ -2009,7 +2472,10 @@ function normalizeLayout(pos) {
 }
 
 
-function setLayout(pos, updateUrl) {
+function setLayout(
+  pos,
+  updateUrl
+) {
 
   pos =
     normalizeLayout(pos);
@@ -2031,13 +2497,15 @@ function setLayout(pos, updateUrl) {
     pos
   );
 
+
   if (
     updateUrl &&
     hash &&
     !urlHide
   ) {
 
-    urlLayout = pos;
+    urlLayout =
+      pos;
 
     history.replaceState(
       null,
@@ -2090,11 +2558,14 @@ function setViewerOnly(hidden) {
       "important"
     );
 
-    setTimeout(function() {
+    setTimeout(
+      function() {
 
-      updateViewerOnlyPage();
+        updateViewerOnlyPage();
 
-    }, 0);
+      },
+      0
+    );
 
   } else {
 
@@ -2168,7 +2639,9 @@ function getFocus() {
 
   if (editorFocus) {
 
-    setFocus(editorFocus);
+    setFocus(
+      editorFocus
+    );
 
   } else {
 
@@ -2195,9 +2668,11 @@ function setFocus(pos) {
   );
 
   if (pos) {
+
     grid.classList.add(
       focusClass
     );
+
   }
 
   localStorage.setItem(
@@ -2216,21 +2691,32 @@ getLayout();
 getFocus();
 setViewerOnly(urlHide);
 
-if (urlLayout || urlHide) {
+
+if (
+  urlLayout ||
+  urlHide
+) {
 
   if (urlLayout) {
-    setLayout(urlLayout);
+
+    setLayout(
+      urlLayout
+    );
+
   }
 
   window.addEventListener(
     "load",
     function() {
 
-      setTimeout(function() {
+      setTimeout(
+        function() {
 
-        scrollToViewer();
+          scrollToViewer();
 
-      }, 500);
+        },
+        500
+      );
 
     }
   );
@@ -2280,7 +2766,9 @@ function shareHash() {
 
     navigator.clipboard
       .writeText(url)
-      .catch(copyFallback);
+      .catch(
+        copyFallback
+      );
 
   } else {
 
@@ -2945,6 +3433,7 @@ function viewerIsEmpty() {
    * The yellow bg-gold state is ONLY for
    * the normal editor interface.
    */
+
   if (urlHide) {
 
     viewer.classList.remove(
@@ -2965,6 +3454,7 @@ function viewerIsEmpty() {
    * unless the user's HTML/CSS specifies
    * another background.
    */
+
   if (
     editorHTML.value !== "" ||
     editorCSS.value !== "" ||
@@ -3003,7 +3493,9 @@ function scrollToViewer() {
   }
 
   scrollToSection(
-    document.getElementById("viewer")
+    document.getElementById(
+      "viewer"
+    )
   );
 
 }
