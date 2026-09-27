@@ -321,6 +321,10 @@ body.viewer-only-page {
   z-index: 2;
 }
 
+.project-name.project-name--has-text {
+  padding-left: 1.5em;
+}
+
 .project-name::-webkit-scrollbar {
   width: 0;
   height: 0;
@@ -380,6 +384,11 @@ body.viewer-only-page {
   overflow: hidden;
 
   text-overflow: clip;
+}
+
+.grid--right .project-name.project-name--has-text,
+.grid--left .project-name.project-name--has-text {
+  padding-top: 1.5em;
 }
 
 
@@ -445,11 +454,6 @@ body.viewer-only-page {
   }
 
 
-  /*
-   * Mobile navigation is ALWAYS horizontal,
-   * regardless of T/R/B/L desktop layout.
-   */
-
   .nav,
   .grid--top .nav,
   .grid--right .nav,
@@ -485,11 +489,6 @@ body.viewer-only-page {
     display: block;
   }
 
-
-  /*
-   * The project name takes ALL remaining
-   * horizontal space on mobile.
-   */
 
   .project-name-wrap,
   .grid--right .project-name-wrap,
@@ -535,6 +534,14 @@ body.viewer-only-page {
     overflow: hidden !important;
 
     text-overflow: clip !important;
+  }
+
+
+  .project-name.project-name--has-text,
+  .grid--right .project-name.project-name--has-text,
+  .grid--left .project-name.project-name--has-text {
+    padding-left: 1.5em !important;
+    padding-top: 0.5em !important;
   }
 
 
@@ -839,38 +846,26 @@ var defaultPageTitle = "[ 2358 | TE ]";
 // Project name display
 // ----------------------------------------
 
-function projectNameIsVertical() {
-
-  return (
-    window.innerWidth > 600 &&
-    (
-      grid.classList.contains("grid--right") ||
-      grid.classList.contains("grid--left")
-    )
-  );
-
-}
-
-
 function updateProjectNameDisplay() {
 
   if (!projectNameInput) {
     return;
   }
 
-  /*
-   * The project name is displayed directly in
-   * the input and simply clipped when it exceeds
-   * the available space.
-   *
-   * No dots or ellipsis are added.
-   */
+  var hasText =
+    projectNameInput.value.trim() !== "";
 
-  projectNameInput.style.paddingRight = "";
-  projectNameInput.style.paddingBottom = "";
+  projectNameInput.classList.toggle(
+    "project-name--has-text",
+    hasText
+  );
 
 }
 
+
+// ----------------------------------------
+// Project name URL
+// ----------------------------------------
 
 function updateProjectNameURL() {
 
