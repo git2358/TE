@@ -254,16 +254,19 @@ body.viewer-only-page {
 
 
 /* ----------------------------------------
-   Project name wrapper
+   Project name
    ---------------------------------------- */
 
 .project-name-wrap {
   box-sizing: border-box;
 
-  flex: 0 1 auto;
+  flex: 1 1 auto;
 
-  min-width: 2rem;
+  min-width: 0;
   min-height: 2rem;
+
+  width: auto;
+  height: 2rem;
 
   overflow: hidden;
 
@@ -272,26 +275,21 @@ body.viewer-only-page {
   background: #333;
 }
 
-
-/* ----------------------------------------
-   Project name input
-   ---------------------------------------- */
-
 .project-name {
   box-sizing: border-box;
 
   display: block;
 
-  width: 2rem;
+  width: 100%;
   height: 2rem;
 
-  min-width: 2rem;
+  min-width: 0;
   min-height: 2rem;
 
-  max-width: none;
-  max-height: none;
+  max-width: 100%;
+  max-height: 100%;
 
-  flex: none;
+  flex: 1 1 auto;
 
   background: #333;
   color: #fff;
@@ -308,7 +306,8 @@ body.viewer-only-page {
 
   white-space: nowrap;
 
-  overflow: visible;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -341,15 +340,15 @@ body.viewer-only-page {
 .grid--right .project-name-wrap,
 .grid--left .project-name-wrap {
   width: 2rem;
+  height: auto;
 
-  height: calc(var(--project-name-length, 1) * 2rem);
-
-  flex: 0 1 auto;
+  flex: 1 1 auto;
 
   min-width: 2rem;
-  min-height: 2rem;
+  min-height: 0;
 
   max-width: 2rem;
+  max-height: none;
 
   overflow: hidden;
 }
@@ -357,23 +356,23 @@ body.viewer-only-page {
 .grid--right .project-name,
 .grid--left .project-name {
   width: 2rem;
-
-  height: calc(var(--project-name-length, 1) * 2rem);
+  height: 100%;
 
   min-width: 2rem;
-  min-height: 2rem;
+  min-height: 0;
 
-  max-width: none;
-  max-height: none;
+  max-width: 2rem;
+  max-height: 100%;
 
   writing-mode: vertical-rl;
   text-orientation: upright;
 
-  text-align: left;
+  text-align: start;
 
   white-space: nowrap;
 
-  overflow: visible;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
@@ -449,7 +448,11 @@ body.viewer-only-page {
    * regardless of T/R/B/L desktop layout.
    */
 
-  .nav {
+  .nav,
+  .grid--top .nav,
+  .grid--right .nav,
+  .grid--bottom .nav,
+  .grid--left .nav {
     position: sticky;
     top: 0;
     z-index: 1;
@@ -482,41 +485,53 @@ body.viewer-only-page {
 
 
   /*
-   * Mobile project name is always horizontal.
+   * The project name takes ALL remaining
+   * horizontal space on mobile.
    */
 
-  .project-name-wrap {
+  .project-name-wrap,
+  .grid--right .project-name-wrap,
+  .grid--left .project-name-wrap {
+    box-sizing: border-box;
+
     width: auto !important;
     height: 2rem !important;
 
-    min-width: 2rem !important;
+    min-width: 0 !important;
     min-height: 2rem !important;
 
     max-width: none !important;
-    max-height: none !important;
+    max-height: 2rem !important;
 
-    flex: 0 1 auto !important;
+    flex: 1 1 auto !important;
 
-    overflow: hidden;
+    overflow: hidden !important;
   }
 
 
-  .project-name {
+  .project-name,
+  .grid--right .project-name,
+  .grid--left .project-name {
+    box-sizing: border-box;
+
     writing-mode: horizontal-tb !important;
     text-orientation: mixed !important;
 
-    width: 2rem !important;
+    width: 100% !important;
     height: 2rem !important;
 
-    min-width: 2rem !important;
+    min-width: 0 !important;
     min-height: 2rem !important;
 
-    max-width: none !important;
-    max-height: none !important;
+    max-width: 100% !important;
+    max-height: 2rem !important;
 
     text-align: left !important;
 
-    overflow: visible !important;
+    white-space: nowrap;
+
+    overflow: hidden !important;
+    text-overflow: ellipsis;
   }
 
 
@@ -745,16 +760,18 @@ textarea::placeholder {
       X
     </button>
 
-    <input
-      class="project-name pointer bg-dark-gray near-white bn outline-0 pa2 fl ma0 code f7"
-      type="text"
-      placeholder="P"
-      maxlength="32"
-      aria-label="Project name"
-      title="Project Name"
-      autocomplete="off"
-      autocapitalize="off"
-      spellcheck="false">
+    <div class="project-name-wrap">
+      <input
+        class="project-name pointer bg-dark-gray near-white bn outline-0 pa2 fl ma0 code f7"
+        type="text"
+        placeholder="P"
+        maxlength="32"
+        aria-label="Project name"
+        title="Project Name"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false">
+    </div>
 
   </div>
 
@@ -808,398 +825,8 @@ var editorCSS = document.querySelector('.css');
 var editorJS = document.querySelector('.js');
 var viewer = document.querySelector('.viewer');
 var projectNameInput = document.querySelector('.project-name');
-var projectNameWrap = null;
 
 var defaultPageTitle = "[ 2358 | TE ]";
-
-
-// ----------------------------------------
-// Project name wrapper
-// ----------------------------------------
-
-projectNameWrap =
-  document.createElement("div");
-
-projectNameWrap.className =
-  "project-name-wrap";
-
-projectNameInput.parentNode.insertBefore(
-  projectNameWrap,
-  projectNameInput
-);
-
-projectNameWrap.appendChild(
-  projectNameInput
-);
-
-
-// ----------------------------------------
-// Project name ticker
-// ----------------------------------------
-
-var projectNameTickerFrame = null;
-var projectNameTickerDirection = 1;
-var projectNameTickerPauseUntil = 0;
-
-
-function stopProjectNameTicker(reset) {
-
-  if (projectNameTickerFrame !== null) {
-
-    cancelAnimationFrame(
-      projectNameTickerFrame
-    );
-
-    projectNameTickerFrame = null;
-
-  }
-
-  if (reset) {
-
-    projectNameWrap.scrollLeft = 0;
-    projectNameWrap.scrollTop = 0;
-
-  }
-
-}
-
-
-function projectNameIsVertical() {
-
-  var writingMode =
-    window.getComputedStyle(
-      projectNameInput
-    ).writingMode;
-
-  return (
-    writingMode === "vertical-rl" ||
-    writingMode === "vertical-lr"
-  );
-
-}
-
-
-function getRootFontSize() {
-
-  var size =
-    parseFloat(
-      window.getComputedStyle(
-        document.documentElement
-      ).fontSize
-    );
-
-  return isNaN(size)
-    ? 16
-    : size;
-
-}
-
-
-function getProjectNameUnit() {
-
-  return getRootFontSize() * 2;
-
-}
-
-
-function getProjectNameLength() {
-
-  return Math.max(
-    projectNameInput.value.length,
-    1
-  );
-
-}
-
-
-function getProjectNameContentSize() {
-
-  var unit =
-    getProjectNameUnit();
-
-  var length =
-    getProjectNameLength();
-
-  if (projectNameIsVertical()) {
-
-    return {
-      width: unit,
-      height: length * unit
-    };
-
-  }
-
-  return {
-    width: length * unit,
-    height: unit
-  };
-
-}
-
-
-function updateProjectNameViewport() {
-
-  if (!projectNameWrap) {
-    return;
-  }
-
-  var size =
-    getProjectNameContentSize();
-
-  if (projectNameIsVertical()) {
-
-    /*
-     * The wrapper is the visible vertical area.
-     * The input is allowed to become taller than
-     * it so the wrapper itself can scroll.
-     */
-
-    projectNameInput.style.width =
-      size.width + "px";
-
-    projectNameInput.style.height =
-      size.height + "px";
-
-    projectNameInput.style.textAlign =
-      "left";
-
-  } else {
-
-    /*
-     * The wrapper is the visible horizontal area.
-     * The input is allowed to become wider than
-     * it so the wrapper itself can scroll.
-     */
-
-    projectNameInput.style.width =
-      size.width + "px";
-
-    projectNameInput.style.height =
-      size.height + "px";
-
-    projectNameInput.style.textAlign =
-      "left";
-
-  }
-
-  projectNameWrap.scrollLeft = 0;
-  projectNameWrap.scrollTop = 0;
-
-}
-
-
-function projectNameGetOverflow() {
-
-  if (!projectNameWrap) {
-    return 0;
-  }
-
-  if (projectNameIsVertical()) {
-
-    return Math.max(
-      0,
-      projectNameWrap.scrollHeight -
-      projectNameWrap.clientHeight
-    );
-
-  }
-
-  return Math.max(
-    0,
-    projectNameWrap.scrollWidth -
-    projectNameWrap.clientWidth
-  );
-
-}
-
-
-function projectNameNeedsTicker() {
-
-  if (urlHide) {
-    return false;
-  }
-
-  if (document.activeElement === projectNameInput) {
-    return false;
-  }
-
-  return projectNameGetOverflow() > 2;
-
-}
-
-
-function startProjectNameTicker() {
-
-  stopProjectNameTicker(false);
-
-  updateProjectNameViewport();
-
-  if (!projectNameNeedsTicker()) {
-
-    projectNameWrap.scrollLeft = 0;
-    projectNameWrap.scrollTop = 0;
-
-    return;
-
-  }
-
-  projectNameTickerDirection = 1;
-
-  projectNameTickerPauseUntil =
-    performance.now() + 1000;
-
-
-  function tick(now) {
-
-    if (
-      urlHide ||
-      document.activeElement === projectNameInput
-    ) {
-
-      projectNameTickerFrame = null;
-      return;
-
-    }
-
-
-    var overflow =
-      projectNameGetOverflow();
-
-    if (overflow <= 2) {
-
-      projectNameWrap.scrollLeft = 0;
-      projectNameWrap.scrollTop = 0;
-
-      projectNameTickerFrame = null;
-
-      return;
-
-    }
-
-
-    if (now >= projectNameTickerPauseUntil) {
-
-      if (projectNameIsVertical()) {
-
-        var currentTop =
-          projectNameWrap.scrollTop;
-
-        var nextTop =
-          currentTop +
-          (0.35 * projectNameTickerDirection);
-
-
-        if (nextTop >= overflow) {
-
-          projectNameWrap.scrollTop =
-            overflow;
-
-          projectNameTickerDirection =
-            -1;
-
-          projectNameTickerPauseUntil =
-            now + 1200;
-
-        } else if (nextTop <= 0) {
-
-          projectNameWrap.scrollTop = 0;
-
-          projectNameTickerDirection =
-            1;
-
-          projectNameTickerPauseUntil =
-            now + 1200;
-
-        } else {
-
-          projectNameWrap.scrollTop =
-            nextTop;
-
-        }
-
-      } else {
-
-        var currentLeft =
-          projectNameWrap.scrollLeft;
-
-        var nextLeft =
-          currentLeft +
-          (0.35 * projectNameTickerDirection);
-
-
-        if (nextLeft >= overflow) {
-
-          projectNameWrap.scrollLeft =
-            overflow;
-
-          projectNameTickerDirection =
-            -1;
-
-          projectNameTickerPauseUntil =
-            now + 1200;
-
-        } else if (nextLeft <= 0) {
-
-          projectNameWrap.scrollLeft = 0;
-
-          projectNameTickerDirection =
-            1;
-
-          projectNameTickerPauseUntil =
-            now + 1200;
-
-        } else {
-
-          projectNameWrap.scrollLeft =
-            nextLeft;
-
-        }
-
-      }
-
-    }
-
-
-    projectNameTickerFrame =
-      requestAnimationFrame(tick);
-
-  }
-
-
-  projectNameTickerFrame =
-    requestAnimationFrame(tick);
-
-}
-
-
-function updateProjectNameTicker() {
-
-  stopProjectNameTicker(true);
-
-  requestAnimationFrame(function() {
-
-    updateProjectNameViewport();
-
-    if (!urlHide) {
-      startProjectNameTicker();
-    }
-
-  });
-
-}
-
-
-function updatePageTitle() {
-
-  var name =
-    projectNameInput.value.trim();
-
-  document.title =
-    name
-      ? "[ " + name + " ]"
-      : defaultPageTitle;
-
-}
 
 
 // ----------------------------------------
@@ -1243,24 +870,6 @@ projectNameInput.value =
   projectName;
 
 
-function updateProjectNameSize() {
-
-  var length =
-    Math.max(
-      projectNameInput.value.length,
-      1
-    );
-
-  projectNameInput.style.setProperty(
-    "--project-name-length",
-    length
-  );
-
-  updateProjectNameViewport();
-
-}
-
-
 function updateProjectNameURL() {
 
   var name =
@@ -1281,7 +890,6 @@ function updateProjectNameURL() {
       "?" + encodeEditorData()
     );
 
-    updateProjectNameSize();
     updatePageTitle();
 
     return;
@@ -1301,10 +909,21 @@ function updateProjectNameURL() {
     ((urlLayout || urlHide)
       ? "?" + getUrlMarker()
       : "") +
-    "?" + encodeEditorData()
+      "?" + encodeEditorData()
   );
 
-  updateProjectNameSize();
+}
+
+
+function updatePageTitle() {
+
+  var name =
+    projectNameInput.value.trim();
+
+  document.title =
+    name
+      ? "[ " + name + " ]"
+      : defaultPageTitle;
 
 }
 
@@ -1313,48 +932,11 @@ projectNameInput.addEventListener(
   "input",
   function() {
 
-    updateProjectNameSize();
     updateProjectNameURL();
     updatePageTitle();
-    updateProjectNameTicker();
 
   }
 );
-
-
-projectNameInput.addEventListener(
-  "focus",
-  function() {
-
-    stopProjectNameTicker(true);
-
-  }
-);
-
-
-projectNameInput.addEventListener(
-  "blur",
-  function() {
-
-    updateProjectNameTicker();
-
-  }
-);
-
-
-window.addEventListener(
-  "resize",
-  function() {
-
-    updateProjectNameTicker();
-
-  }
-);
-
-
-updateProjectNameSize();
-updatePageTitle();
-updateProjectNameTicker();
 
 
 // ----------------------------------------
@@ -2517,8 +2099,6 @@ function setLayout(
 
   }
 
-  updateProjectNameTicker();
-
 }
 
 
@@ -2618,8 +2198,6 @@ function setViewerOnly(hidden) {
     );
 
     viewerIsEmpty();
-
-    updateProjectNameTicker();
 
   }
 
@@ -3585,8 +3163,6 @@ window.addEventListener(
         if (urlHide) {
           updateViewerOnlyPage();
         }
-
-        updateProjectNameTicker();
 
       },
       500
