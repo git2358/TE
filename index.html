@@ -55,6 +55,15 @@ html {
   -webkit-overflow-scrolling: touch;
 }
 
+html.viewer-only-page,
+body.viewer-only-page {
+  min-height: 100%;
+}
+
+body.viewer-only-page {
+  overflow-x: hidden;
+}
+
 .grid {
   display: grid;
 }
@@ -232,8 +241,8 @@ html {
 .grid.viewer-only {
   display: block;
   width: 100vw;
-  height: auto;
   min-height: 0;
+  height: auto;
 }
 
 .grid.viewer-only .nav,
@@ -371,10 +380,14 @@ html {
 
   .grid.viewer-only {
     display: block;
+    width: 100vw;
+    height: auto;
+    min-height: 0;
   }
 
   .grid.viewer-only .viewer {
     min-height: 100vh;
+    height: 100vh;
   }
 
 }
@@ -581,7 +594,10 @@ function updatePageTitle() {
 }
 
 
+// ----------------------------------------
 // hash
+// ----------------------------------------
+
 var rawHash = window.location.hash
   ? window.location.hash.substring(1)
   : "";
@@ -608,12 +624,14 @@ var hashPayload = urlHide || /^(T|R|B|L)$/.test(urlMarker)
 
 projectNameInput.value = projectName;
 
+
 function updateProjectNameSize() {
 
   var length = Math.max(projectNameInput.value.length, 1);
   projectNameInput.style.setProperty("--project-name-length", length);
 
 }
+
 
 function updateProjectNameURL() {
 
@@ -654,6 +672,7 @@ function updateProjectNameURL() {
 
 }
 
+
 projectNameInput.addEventListener("input", function() {
   updateProjectNameSize();
   updateProjectNameURL();
@@ -664,7 +683,10 @@ updateProjectNameSize();
 updatePageTitle();
 
 
+// ----------------------------------------
 // URL payload
+// ----------------------------------------
+
 function loadEditorDataFromHash() {
 
   if (!hashPayload) {
@@ -800,161 +822,200 @@ function resizeMobileEditors() {
 
 
 // ----------------------------------------
-// Viewer height + H-mode background
+// Viewer document helpers
 // ----------------------------------------
 
-var viewerBackgroundProperties = [
-  "background-color",
-  "background-image",
-  "background-repeat",
-  "background-position",
-  "background-size",
-  "background-attachment"
-];
+function buildViewerSrcdoc(HTMLView, CSSView, JSView) {
 
-
-function getViewerContentHeight() {
-
-  if (!urlHide) {
-    return 0;
-  }
-
-  try {
-
-    if (!viewer.contentDocument) {
-      return 0;
-    }
-
-    var doc = viewer.contentDocument;
-    var body = doc.body;
-    var html = doc.documentElement;
-
-    return Math.max(
-      body ? body.scrollHeight : 0,
-      body ? body.offsetHeight : 0,
-      html ? html.scrollHeight : 0,
-      html ? html.offsetHeight : 0,
-      window.innerHeight || 0
-    );
-
-  } catch (error) {
-
-    return 0;
-
-  }
+  return HTMLView + CSSView + JSView;
 
 }
 
 
-function getViewerBackground() {
+// ----------------------------------------
+// Viewer background in H mode
+// ----------------------------------------
 
-  if (!urlHide) {
-    return null;
+function isTransparentBackgroundColor(color) {
+
+  if (!color) {
+    return true;
   }
 
-  try {
-
-    if (!viewer.contentDocument) {
-      return null;
-    }
-
-    var doc = viewer.contentDocument;
-    var html = doc.documentElement;
-    var body = doc.body;
-
-    if (!html || !body) {
-      return null;
-    }
-
-    var htmlStyle = window.getComputedStyle(html);
-    var bodyStyle = window.getComputedStyle(body);
-
-    var background = {};
-
-    viewerBackgroundProperties.forEach(function(property) {
-
-      var htmlValue = htmlStyle.getPropertyValue(property);
-      var bodyValue = bodyStyle.getPropertyValue(property);
-
-      var value = bodyValue;
-
-      if (
-        !value ||
-        value === "transparent" ||
-        value === "rgba(0, 0, 0, 0)"
-      ) {
-        value = htmlValue;
-      }
-
-      background[property] = value;
-
-    });
-
-    return background;
-
-  } catch (error) {
-
-    return null;
-
+  if (color === "transparent") {
+    return true;
   }
+
+  var match = color.match(
+    /^rgba?\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*(?:,\s*([\d.]+)\s*)?\)$/
+  );
+
+  if (match && match[1] !== undefined) {
+    return parseFloat(match[1]) === 0;
+  }
+
+  return false;
 
 }
 
 
-function applyViewerBackground(background) {
+function getBackgroundSource(style) {
 
-  if (!urlHide || !background) {
+  if (!style) {
+    return null;
+  }
+
+  var image = style.backgroundImage;
+
+  if (image && image !== "none") {
+
+    return {
+      image: image,
+      color: style.backgroundColor,
+      repeat: style.backgroundRepeat,
+      position: style.backgroundPosition,
+      size: style.backgroundSize,
+      attachment: style.backgroundAttachment,
+      origin: style.backgroundOrigin,
+      clip: style.backgroundClip
+    };
+
+  }
+
+  if (!isTransparentBackgroundColor(style.backgroundColor)) {
+
+    return {
+      image: "none",
+      color: style.backgroundColor,
+      repeat: style.backgroundRepeat,
+      position: style.backgroundPosition,
+      size: style.backgroundSize,
+      attachment: style.backgroundAttachment,
+      origin: style.backgroundOrigin,
+      clip: style.backgroundClip
+    };
+
+  }
+
+  return null;
+
+}
+
+
+function syncViewerBackground() {
+
+  // Background inheritance is ONLY used in H mode.
+  if (!urlHide) {
     return;
   }
 
-  viewerBackgroundProperties.forEach(function(property) {
+  try {
 
-    var value = background[property];
+    var frameDocument = viewer.contentDocument;
+
+    if (!frameDocument) {
+      return;
+    }
+
+    var frameHTML = frameDocument.documentElement;
+    var frameBody = frameDocument.body;
+
+    if (!frameHTML) {
+      return;
+    }
+
+    var htmlStyle = window.getComputedStyle(frameHTML);
+    var bodyStyle = frameBody
+      ? window.getComputedStyle(frameBody)
+      : null;
+
+    var background = getBackgroundSource(bodyStyle);
+
+    if (!background) {
+      background = getBackgroundSource(htmlStyle);
+    }
+
+    var pageHTML = document.documentElement;
+    var pageBody = document.body;
+
+    if (!background) {
+
+      // Normal webpage default.
+      pageHTML.style.backgroundImage = "none";
+      pageHTML.style.backgroundColor = "rgb(255, 255, 255)";
+
+      pageBody.style.backgroundImage = "none";
+      pageBody.style.backgroundColor = "rgb(255, 255, 255)";
+
+      return;
+
+    }
+
+    var color = background.color;
 
     if (
-      value !== undefined &&
-      value !== null &&
-      value !== ""
+      !color ||
+      color === "transparent" ||
+      isTransparentBackgroundColor(color)
     ) {
-
-      document.documentElement.style.setProperty(
-        property,
-        value
-      );
-
-      document.body.style.setProperty(
-        property,
-        value
-      );
-
+      color = "rgb(255, 255, 255)";
     }
 
-  });
+    pageHTML.style.backgroundImage = "none";
+    pageHTML.style.backgroundColor = color;
+
+    pageBody.style.backgroundImage = background.image;
+    pageBody.style.backgroundColor = color;
+    pageBody.style.backgroundRepeat = background.repeat;
+    pageBody.style.backgroundPosition = background.position;
+    pageBody.style.backgroundSize = background.size;
+    pageBody.style.backgroundAttachment = background.attachment;
+    pageBody.style.backgroundOrigin = background.origin;
+    pageBody.style.backgroundClip = background.clip;
+
+  } catch (error) {
+
+    // Ignore inaccessible or not-yet-loaded iframe states.
+
+  }
 
 }
 
 
-function clearViewerBackground() {
+// ----------------------------------------
+// H mode iframe sizing
+// ----------------------------------------
 
-  viewerBackgroundProperties.forEach(function(property) {
-
-    document.documentElement.style.removeProperty(property);
-    document.body.style.removeProperty(property);
-
-  });
-
-}
-
-
-function updateViewerOnlyDisplay() {
+function resizeViewerToContent() {
 
   if (!urlHide) {
     return;
   }
 
-  var height = getViewerContentHeight();
+  try {
 
-  if (height > 0) {
+    var frameDocument = viewer.contentDocument;
+
+    if (!frameDocument) {
+      return;
+    }
+
+    var frameHTML = frameDocument.documentElement;
+    var frameBody = frameDocument.body;
+
+    if (!frameHTML) {
+      return;
+    }
+
+    var height = Math.max(
+      frameHTML.scrollHeight || 0,
+      frameHTML.offsetHeight || 0,
+      frameHTML.clientHeight || 0,
+      frameBody ? frameBody.scrollHeight || 0 : 0,
+      frameBody ? frameBody.offsetHeight || 0 : 0,
+      frameBody ? frameBody.clientHeight || 0 : 0,
+      window.innerHeight
+    );
 
     viewer.style.setProperty(
       "height",
@@ -962,83 +1023,74 @@ function updateViewerOnlyDisplay() {
       "important"
     );
 
-  }
+    viewer.style.setProperty(
+      "min-height",
+      window.innerHeight + "px",
+      "important"
+    );
 
-  var background = getViewerBackground();
+  } catch (error) {
 
-  if (background) {
-    applyViewerBackground(background);
+    viewer.style.setProperty(
+      "height",
+      "100vh",
+      "important"
+    );
+
   }
 
 }
 
 
-function enableViewerOnlyAutoHeight() {
+function updateViewerOnlyPage() {
 
-  viewer.addEventListener("load", function() {
+  if (!urlHide) {
+    return;
+  }
 
-    if (!urlHide) {
-      return;
-    }
-
-    updateViewerOnlyDisplay();
-
-    setTimeout(updateViewerOnlyDisplay, 50);
-    setTimeout(updateViewerOnlyDisplay, 200);
-    setTimeout(updateViewerOnlyDisplay, 500);
-    setTimeout(updateViewerOnlyDisplay, 1000);
-
-    try {
-
-      var doc = viewer.contentDocument;
-
-      if (!doc) {
-        return;
-      }
-
-      var body = doc.body;
-      var html = doc.documentElement;
-
-      if (window.ResizeObserver) {
-
-        if (body) {
-          new ResizeObserver(updateViewerOnlyDisplay).observe(body);
-        }
-
-        if (html) {
-          new ResizeObserver(updateViewerOnlyDisplay).observe(html);
-        }
-
-      }
-
-      if (window.MutationObserver) {
-
-        var observerTarget = html || body;
-
-        if (observerTarget) {
-
-          new MutationObserver(function() {
-            updateViewerOnlyDisplay();
-          }).observe(
-            observerTarget,
-            {
-              attributes: true,
-              childList: true,
-              subtree: true
-            }
-          );
-
-        }
-
-      }
-
-    } catch (error) {
-      // Ignore iframe observer errors.
-    }
-
-  });
+  syncViewerBackground();
+  resizeViewerToContent();
 
 }
+
+
+// ----------------------------------------
+// Viewer load
+// ----------------------------------------
+
+viewer.addEventListener("load", function() {
+
+  if (!urlHide) {
+    return;
+  }
+
+  updateViewerOnlyPage();
+
+  setTimeout(function() {
+    updateViewerOnlyPage();
+  }, 0);
+
+  setTimeout(function() {
+    updateViewerOnlyPage();
+  }, 100);
+
+  setTimeout(function() {
+    updateViewerOnlyPage();
+  }, 500);
+
+  setTimeout(function() {
+    updateViewerOnlyPage();
+  }, 1000);
+
+});
+
+window.addEventListener("resize", function() {
+
+  if (urlHide) {
+    updateViewerOnlyPage();
+  }
+
+});
 
 
 // ----------------------------------------
@@ -1074,10 +1126,15 @@ if (editorDataFromHash) {
       editorJS.value +
       '\n<\/script>';
 
-    viewer.srcdoc = HTMLView + CSSView + JSView;
+    viewer.srcdoc = buildViewerSrcdoc(
+      HTMLView,
+      CSSView,
+      JSView
+    );
 
     updateHashFromEditors();
     viewerIsEmpty();
+
   }
 
   window.addEventListener("input", updateViewerHashPayload);
@@ -1127,10 +1184,15 @@ if (editorDataFromHash) {
       editorJS.value +
       '\n<\/script>';
 
-    viewer.srcdoc = HTMLView + CSSView + JSView;
+    viewer.srcdoc = buildViewerSrcdoc(
+      HTMLView,
+      CSSView,
+      JSView
+    );
 
     updateHashFromEditors();
     viewerIsEmpty();
+
   }
 
   // listen and fire
@@ -1181,10 +1243,15 @@ if (editorDataFromHash) {
       editorJS.value +
       '\n<\/script>';
 
-    viewer.srcdoc = HTMLView + CSSView + JSView;
+    viewer.srcdoc = buildViewerSrcdoc(
+      HTMLView,
+      CSSView,
+      JSView
+    );
 
     updateHashFromEditors();
     viewerIsEmpty();
+
   }
 
   // listen and fire
@@ -1198,6 +1265,7 @@ if (editorDataFromHash) {
 
   updateViewer();
   resizeMobileEditors();
+
 }
 
 
@@ -1369,15 +1437,54 @@ function setViewerOnly(hidden) {
 
   grid.classList.toggle("viewer-only", hidden);
 
+  document.documentElement.classList.toggle(
+    "viewer-only-page",
+    hidden
+  );
+
+  document.body.classList.toggle(
+    "viewer-only-page",
+    hidden
+  );
+
   if (hidden) {
 
-    viewer.style.removeProperty("height");
+    viewer.classList.remove("bg-gold");
+
+    viewer.style.setProperty(
+      "height",
+      "100vh",
+      "important"
+    );
+
+    viewer.style.setProperty(
+      "min-height",
+      "100vh",
+      "important"
+    );
+
+    setTimeout(function() {
+      updateViewerOnlyPage();
+    }, 0);
 
   } else {
 
     viewer.style.removeProperty("height");
+    viewer.style.removeProperty("min-height");
 
-    clearViewerBackground();
+    document.documentElement.style.removeProperty("background-image");
+    document.documentElement.style.removeProperty("background-color");
+
+    document.body.style.removeProperty("background-image");
+    document.body.style.removeProperty("background-color");
+    document.body.style.removeProperty("background-repeat");
+    document.body.style.removeProperty("background-position");
+    document.body.style.removeProperty("background-size");
+    document.body.style.removeProperty("background-attachment");
+    document.body.style.removeProperty("background-origin");
+    document.body.style.removeProperty("background-clip");
+
+    viewerIsEmpty();
 
   }
 
@@ -1428,7 +1535,6 @@ function setFocus(pos) {
 getLayout();
 getFocus();
 setViewerOnly(urlHide);
-enableViewerOnlyAutoHeight();
 
 if (urlLayout || urlHide) {
 
@@ -1621,7 +1727,6 @@ function createZip(files) {
       data: data
     });
 
-
     // ----------------------------------------
     // Central directory header
     // ----------------------------------------
@@ -1775,36 +1880,39 @@ function downloadZip() {
 function viewerIsEmpty() {
 
   /*
-   * H mode:
-   * The preview's actual background is allowed to control
-   * the parent page, so do not force the yellow/white
-   * editor-mode background here.
+   * H mode is a normal webpage preview.
+   * The yellow bg-gold state is ONLY for
+   * the normal editor interface.
    */
   if (urlHide) {
+
+    viewer.classList.remove("bg-gold");
+
     return;
+
   }
 
+
+  /*
+   * Normal edit mode:
+   *
+   * Empty editors = yellow placeholder.
+   *
+   * Any content = normal white iframe
+   * unless the user's HTML/CSS specifies
+   * another background.
+   */
   if (
     editorHTML.value !== "" ||
     editorCSS.value !== "" ||
     editorJS.value !== ""
   ) {
 
-    /*
-     * Once anything is entered, the normal preview is
-     * white unless the user's own HTML/CSS specifies
-     * another background.
-     */
     viewer.classList.remove("bg-gold");
-    viewer.style.backgroundColor = "#fff";
 
   } else {
 
-    /*
-     * Empty editor = TE's normal yellow preview.
-     */
     viewer.classList.add("bg-gold");
-    viewer.style.removeProperty("background-color");
 
   }
 
@@ -1888,6 +1996,10 @@ window.addEventListener("load", function() {
   setTimeout(function() {
 
     scrollToViewer();
+
+    if (urlHide) {
+      updateViewerOnlyPage();
+    }
 
   }, 500);
 
