@@ -3394,16 +3394,6 @@ function viewerIsEmpty() {
 
 function scrollToViewer() {
 
-  if (
-    editorHTML.value === "" &&
-    editorCSS.value === "" &&
-    editorJS.value === ""
-  ) {
-
-    return;
-
-  }
-
   scrollToSection(
     document.getElementById(
       "viewer"
