@@ -2986,7 +2986,13 @@ function shareHash() {
   updateHashFromEditors();
 
   var url =
-    window.location.href;
+    window.location.origin +
+    window.location.pathname +
+    window.location.search +
+    "#" +
+    hash +
+    "?H?" +
+    encodeEditorData();
 
 
   function copyFallback() {
